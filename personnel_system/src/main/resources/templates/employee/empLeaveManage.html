@@ -1,0 +1,201 @@
+
+    <!DOCTYPE html>
+    <html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>离职管理</title>
+        <link th:href="@{/css/button-skin.css}" rel="stylesheet" type="text/css"/>
+        <script type="text/javascript" th:src="@{/libs/boot.js}"></script>
+    <style type="text/css">
+        html, body {
+            width: 100%;
+            height: 98%;
+            border: 0;
+            margin: 0;
+            padding: 0;
+            overflow: visible;
+        }
+    </style>
+</head>
+<body>
+    <div style="width:98%;margin-left:1%;margin-top:15px;">
+        <div class="mini-toolbar" style="border-bottom:0;padding:0px; height: 40px">
+            <table style="width:100%;">
+                <tr>
+                    <td style="white-space:nowrap;">
+                        <input id="employeeName" class="mini-textbox" emptyText="请输入姓名" style="width:100px;" onenter="onKeyEnter"/>
+                        <a class="mini-button" iconCls="icon-search" onclick="search()">查询</a>
+                        <a class="mini-button" iconCls="icon-edit" onclick="onformal()">转正</a>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div class="mini-fit">
+        <div id="datagrid1" class="mini-datagrid" style="width:98%;height:100%;float:left;margin-left:1%;"
+             url="../employee/leaveEmployee/getLeaveEmps" idField="id"
+             allowResize="true" sizeList="[20,30,50,100,200]" pageSize="200">
+            <div property="columns">
+                <div type="indexcolumn"></div>
+                <div type="checkcolumn"></div>
+                <div field="employeeName" width="80" headerAlign="center"
+                     align="center">姓名
+                </div>
+                <div field="employeeSex" width="50" align="center"
+                     headerAlign="center">性别
+                </div>
+                <div field="employeeState" width="80" align="center"
+                     headerAlign="center" renderer="onMarriedRenderer">职位状态
+                </div>
+                <div field="employeeNation" width="80" align="center"
+                     headerAlign="center">民族
+                </div>
+                <div field="employeeNo" width="80" align="center"
+                     headerAlign="center">职工编号
+                </div>
+                <div field="employeePolitical" width="80" headerAlign="center"
+                     align="center">政治面貌
+                </div>
+                <div field="isMarried" width="80" headerAlign="center"
+                     align="center">婚姻状况
+                </div>
+                <div field="employeeJob" width="100" align="center"
+                     headerAlign="center">职务
+                </div>
+                <div field="employeeEdu" width="80" headerAlign="center"
+                     align="center">学历
+                </div>
+                <div field="employeeMajor" width="80" headerAlign="center"
+                     align="center">所学专业
+                </div>
+                <div field="employeeGraduationSchool" width="80"
+                     headerAlign="center" align="center">毕业学校
+                </div>
+                <div field="employeeGraduationDate" width="80" headerAlign="center"
+                     align="center" renderer="onBirthdayRenderer">毕业时间
+                </div>
+
+                <div field="isTecherQualification" width="100" headerAlign="center"
+                     align="center" renderer="isHas">是否有教师资格证
+                </div>
+                <div field="employeeTitleDate" width="100" headerAlign="center"
+                     align="center" renderer="onBirthdayRenderer">职称获取时间
+                </div>
+                <div field="employeeTitle" width="100" headerAlign="center"
+                     align="center">职称
+                </div>
+                <div field="employeeQualification" width="100" align="center"
+                     headerAlign="center">教师资格证
+                </div>
+                <div field="employeeBirthday" width="100" align="center"
+                     headerAlign="center" dateFormat="yyyy-MM-dd">出生日期
+                </div>
+                <div field="employeeSkill" width="80" align="center"
+                     headerAlign="center">特长
+                </div>
+                <div field="employeeHealth" width="80" align="center"
+                     headerAlign="center">健康状况
+                </div>
+                <div field="employeePhone" width="100" align="center"
+                     headerAlign="center">手机号码
+                </div>
+                <div field="employeeQq" width="100" align="center"
+                     headerAlign="center">QQ号码
+                </div>
+                <div field="employeeWebchat" width="100" align="center"
+                     headerAlign="center">微信号码
+                </div>
+                <div field="employee_idcard" width="100" align="center"
+                     headerAlign="center">身份证号码
+                </div>
+                <div field="employee_native_place" width="80" align="center"
+                     headerAlign="center">籍贯
+                </div>
+                <div field="employeePostcode" width="80" align="center"
+                     headerAlign="center">邮编
+                </div>
+                <div field="employeeEmail" width="100" align="center"
+                     headerAlign="center">电子邮箱
+                </div>
+                <div field="employeeAddr" width="100" align="center"
+                     headerAlign="center">通讯地址
+                </div>
+                <div field="createTime" width="80" headerAlign="center"
+                     align="center" dateFormat="yyyy-MM-dd" allowSort="true">录入日期
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script type="text/javascript">
+    mini.parse();
+    var grid = mini.get("datagrid1");
+
+    grid.load({
+        key: "", //自定义
+        employeeName: "",
+        pageIndex: 0,
+        pageSize: 100,
+        sortField: "",
+        sortOrder: "asc",
+    });
+    grid.frozenColumns(0, 4);
+
+
+    function search() {
+        var employeeName = mini.get("employeeName").getValue();
+        grid.load({
+            employeeName: employeeName
+        });
+    }
+
+    function onKeyEnter(e) {
+        search();
+    }
+
+    //时间格式
+    function onBirthdayRenderer(e) {
+        var value = e.value;
+        if (value)
+            return mini.formatDate(value, 'yyyy-MM-dd');
+        return "";
+    }
+
+    function onMarriedRenderer(e) {
+        if (e.value == 1) {
+            return "试用";
+        } else if (e.value == 2) {
+            return "正式";
+        } else if (e.value == 3) {
+            return "离职";
+        }
+    }
+
+
+
+    //职工转正
+    function onformal() {
+        var row = grid.getSelected();
+        if (row) {
+            var state = row.employee_state;
+            if (state == '2') {
+                mini.alert(row.employee_name + '员工已转正了!');
+                return;
+            }
+            mini.open({
+                url: "../personnel/employee/onFormal?employeeId=" + row.employeeId +
+                "&inductionTime=" + row.inductionTime,
+                title: "职工转正信息",
+                width: 600,
+                height: 430,
+                onload: function () {
+                },
+                ondestroy: function (action) {
+                    grid.reload();
+                }
+            });
+        } else {
+            mini.alert("请选中一条记录");
+        }
+    }
+</script>
+</html>

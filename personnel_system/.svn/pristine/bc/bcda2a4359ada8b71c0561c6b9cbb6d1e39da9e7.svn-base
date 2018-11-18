@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zakj.personnel.dao.SmdEmployeeJobRecordDao">
+	<select id="queryObject" resultType="com.zakj.personnel.entity.SmdEmployeeJobRecordEntity">
+		select * from smd_employee_job_record where record_id = #{value}
+	</select>
+
+	<select id="queryList" resultType="java.util.Map">
+		select * from smd_employee_job_record where employee_id = #{employeeId}
+        <choose>
+			<when test="sortField != null and sortField.trim() != ''">
+				order by ${sortField} ${sortOrder}
+			</when>
+			<otherwise>
+                order by record_id desc
+			</otherwise>
+        </choose>
+		<if test="pageIndex != null and pageSize != null">
+			limit #{pageIndex}, #{pageSize}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from smd_employee_job_record where employee_id = #{employeeId}
+	</select>
+	 
+	<insert id="save" parameterType="com.zakj.personnel.entity.SmdEmployeeJobRecordEntity">
+		<selectKey keyProperty="recordId" resultType="string"
+				   order="BEFORE">
+			select replace(uuid(), '-', '') as id from dual
+		</selectKey>
+		insert into smd_employee_job_record
+		(
+			`record_id`, 
+			`employee_id`, 
+			`employee_name`, 
+			`employee_dept_id`, 
+			`employee_dept_name`, 
+			`employee_job_id`, 
+			`employee_job_name`, 
+			`creator_user_id`, 
+			`creator_user_name`, 
+			`creator_time`, 
+			`creator_dapt_id`, 
+			`creator_dept_name`, 
+			`employee_schoole_id`, 
+			`employee_schoole_name`, 
+			`employee_clazz_id`, 
+			`employee_clazz_name`, 
+			`parttime_dept_id`, 
+			`parttime_dept_name`, 
+			`parttime_job_id`, 
+			`parttime_job_name`, 
+			`parttime_clazz_id`, 
+			`parttime_clazz_name`, 
+			`parttime_school_id`, 
+			`parttime_school_name`
+		)
+		values
+		(
+			#{recordId}, 
+			#{employeeId}, 
+			#{employeeName}, 
+			#{employeeDeptId}, 
+			#{employeeDeptName}, 
+			#{employeeJobId}, 
+			#{employeeJobName}, 
+			#{creatorUserId}, 
+			#{creatorUserName}, 
+			#{creatorTime}, 
+			#{creatorDaptId}, 
+			#{creatorDeptName}, 
+			#{employeeSchooleId}, 
+			#{employeeSchooleName}, 
+			#{employeeClazzId}, 
+			#{employeeClazzName}, 
+			#{parttimeDeptId}, 
+			#{parttimeDeptName}, 
+			#{parttimeJobId}, 
+			#{parttimeJobName}, 
+			#{parttimeClazzId}, 
+			#{parttimeClazzName}, 
+			#{parttimeSchoolId}, 
+			#{parttimeSchoolName}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="com.zakj.personnel.entity.SmdEmployeeJobRecordEntity">
+		update smd_employee_job_record 
+		<set>
+			<if test="employeeId != null">`employee_id` = #{employeeId}, </if>
+			<if test="employeeName != null">`employee_name` = #{employeeName}, </if>
+			<if test="employeeDeptId != null">`employee_dept_id` = #{employeeDeptId}, </if>
+			<if test="employeeDeptName != null">`employee_dept_name` = #{employeeDeptName}, </if>
+			<if test="employeeJobId != null">`employee_job_id` = #{employeeJobId}, </if>
+			<if test="employeeJobName != null">`employee_job_name` = #{employeeJobName}, </if>
+			<if test="creatorUserId != null">`creator_user_id` = #{creatorUserId}, </if>
+			<if test="creatorUserName != null">`creator_user_name` = #{creatorUserName}, </if>
+			<if test="creatorTime != null">`creator_time` = #{creatorTime}, </if>
+			<if test="creatorDaptId != null">`creator_dapt_id` = #{creatorDaptId}, </if>
+			<if test="creatorDeptName != null">`creator_dept_name` = #{creatorDeptName}, </if>
+			<if test="employeeSchooleId != null">`employee_schoole_id` = #{employeeSchooleId}, </if>
+			<if test="employeeSchooleName != null">`employee_schoole_name` = #{employeeSchooleName}, </if>
+			<if test="employeeClazzId != null">`employee_clazz_id` = #{employeeClazzId}, </if>
+			<if test="employeeClazzName != null">`employee_clazz_name` = #{employeeClazzName}, </if>
+			<if test="parttimeDeptId != null">`parttime_dept_id` = #{parttimeDeptId}, </if>
+			<if test="parttimeDeptName != null">`parttime_dept_name` = #{parttimeDeptName}, </if>
+			<if test="parttimeJobId != null">`parttime_job_id` = #{parttimeJobId}, </if>
+			<if test="parttimeJobName != null">`parttime_job_name` = #{parttimeJobName}, </if>
+			<if test="parttimeClazzId != null">`parttime_clazz_id` = #{parttimeClazzId}, </if>
+			<if test="parttimeClazzName != null">`parttime_clazz_name` = #{parttimeClazzName}, </if>
+			<if test="parttimeSchoolId != null">`parttime_school_id` = #{parttimeSchoolId}, </if>
+			<if test="parttimeSchoolName != null">`parttime_school_name` = #{parttimeSchoolName}</if>
+		</set>
+		where record_id = #{recordId}
+	</update>
+	
+	<delete id="delete">
+		delete from smd_employee_job_record where record_id = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from smd_employee_job_record where record_id in 
+		<foreach item="recordId" collection="array" open="(" separator="," close=")">
+			#{recordId}
+		</foreach>
+	</delete>
+</mapper>

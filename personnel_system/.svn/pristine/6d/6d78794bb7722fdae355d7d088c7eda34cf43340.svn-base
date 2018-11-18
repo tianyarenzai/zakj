@@ -1,0 +1,224 @@
+package com.zakj.personnel.controller;
+
+import com.zakj.personnel.service.SmdEmployeeClazzSubjectService;
+import com.zakj.security.aspect.SysLog;
+import com.zakj.security.common.beans.AjaxListResult;
+import com.zakj.security.controller.BaseController;
+import com.zakj.utils.JsonTools;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+
+/**
+ * InnoDB free: 12288 kB; (`xk_id`) REFER `renren_fast/zyk_xk`(`xkID`); (`employee_
+ *
+ * @author zhangxia
+ * @email zhangxia_rgcdlb@163.com
+ * @date 2018-02-27 10:55:06
+ */
+@RestController
+@RequestMapping("/employee/smdemployeeclazzsubject")
+public class SmdEmployeeClazzSubjectController extends BaseController {
+
+    @Autowired
+    private SmdEmployeeClazzSubjectService smdEmployeeClazzSubjectService;
+
+    /**
+     * 列表
+     */
+    @RequestMapping(value = "list", method = RequestMethod.POST)
+    public @ResponseBody
+    AjaxListResult<Map<String, Object>> list(Model model, HttpServletRequest req, HttpSession session)
+            throws Exception {
+        AjaxListResult<Map<String, Object>> data = new AjaxListResult<Map<String, Object>>();
+        List<Map<String, Object>> list = null;
+        try {
+            Map<String, Object> map = this.getRequestParams(req);
+            String employeeId = map.get("employeeId").toString();
+            System.out.println("employeeId: ---------------------- " + employeeId);
+            String orgId = map.get("orgId").toString();
+            System.out.println("orgId: --------------------------- " + orgId);
+            list = this.smdEmployeeClazzSubjectService.queryList(map);
+            data.setData(list);
+            data.setTotal(this.smdEmployeeClazzSubjectService.queryTotal(map));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return data;
+    }
+
+
+    /**
+     * 获取年级信息
+     *
+     * @param req
+     * @param session
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "getGrades", method = RequestMethod.GET)
+    @ResponseBody
+    public AjaxListResult<Map<String, Object>> getGrades(HttpServletRequest req, HttpSession session) throws Exception {
+        AjaxListResult<Map<String, Object>> result = new AjaxListResult<Map<String, Object>>();
+        Map<String, Object> map = this.getRequestParams(req);
+        String orgId = map.get("orgId").toString();
+        System.out.println("orgId:---------------------------- " + orgId);
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        list = this.smdEmployeeClazzSubjectService.getGrades(orgId);
+        result.setData(list);
+        return result;
+    }
+
+    /**
+     * 获取当前年级的班级
+     *
+     * @param req
+     * @param session
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "getClazzs")
+    @ResponseBody
+    public AjaxListResult<Map<String, Object>> getClazzs(HttpServletRequest req, HttpSession session) throws Exception {
+        AjaxListResult<Map<String, Object>> result = new AjaxListResult<Map<String, Object>>();
+        Map<String, Object> map = this.getRequestParams(req);
+        String gradeId = map.get("gradeId").toString();
+        System.out.println("gradeId: ---------------------- " + gradeId);
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        list = this.smdEmployeeClazzSubjectService.getClazzs(gradeId);
+        result.setData(list);
+        return result;
+    }
+
+    /**
+     * 获取学科
+     * @param req
+     * @param session
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value ="getSubject")
+    @ResponseBody
+    public AjaxListResult<Map<String, Object>> getSubject(HttpServletRequest req, HttpSession session) throws Exception {
+        AjaxListResult<Map<String, Object>> result = new AjaxListResult<Map<String, Object>>();
+        String tenantId= (String)session.getAttribute("tenantId");
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        list = this.smdEmployeeClazzSubjectService.getSubject(tenantId);
+        result.setData(list);
+        return result;
+    }
+
+
+
+
+    /**
+     * 保存职工的任教信息
+     *
+     * @param req
+     * @param session
+     * @return
+     * @throws Exception
+     */
+    @SysLog("保存职工的任教信息")
+    @RequestMapping(value = "saveList", method = RequestMethod.POST)
+    @ResponseBody
+    public AjaxListResult<Map<String, Object>> saveList(HttpServletRequest req, HttpSession session)
+            throws Exception {
+        AjaxListResult<Map<String, Object>> result = new AjaxListResult<Map<String, Object>>();
+        try {
+            Map<String, Object> map = this.getRequestParams(req);
+            String jsonStr = map.get("data").toString();
+            System.out.println("jsonStr: ------------------- " + jsonStr);
+            String employeeId = map.get("employeeId").toString();
+            System.out.println("employeeId ================================= " + employeeId);
+            List<Map<String, Object>> list = JsonTools.parseJSON2List(jsonStr);
+            list.forEach(map1 -> {
+                map1.put("employeeId", employeeId);
+            });
+            boolean bl = this.smdEmployeeClazzSubjectService.saveList(list);
+            if (bl) {
+                result.setCode(0);
+                result.setMsg("保存成功");
+            } else {
+                result.setCode(0);
+                result.setMsg("保存失败");
+            }
+        } catch (Exception e) {
+            result.setCode(101);
+            result.setMsg("保存失败");
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+
+    /**
+     * 根据学科和班级获取任教职工
+     *
+     * @param req
+     * @param session
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "isClazzed", method = RequestMethod.POST)
+    @ResponseBody
+    public AjaxListResult<Map<String, Object>> isClazzed(HttpServletRequest req, HttpSession session) throws Exception {
+        AjaxListResult<Map<String, Object>> result = new AjaxListResult<Map<String, Object>>();
+        try {
+            Map<String, Object> map = this.getRequestParams(req);
+            String jsonStr = map.get("data").toString();
+            String employeeId = map.get("employeeId").toString();
+            System.out.println("employeeId ================================= " + employeeId);
+            List<Map<String, Object>> list = JsonTools.parseJSON2List(jsonStr);
+            list.forEach(map1 -> {
+                map1.put("employee_id", employeeId);
+            });
+            List<Map<String, Object>> empList = new ArrayList<Map<String, Object>>();
+            empList = this.smdEmployeeClazzSubjectService.isClazzed(list);
+            System.out.println("empStr: ---------------------- " + empList);
+            result.setCode(0);
+            result.setData(empList);
+        } catch (Exception e) {
+            result.setCode(101);
+            result.setMsg(e.getMessage());
+        }
+        return result;
+    }
+
+
+    /**
+     * 删除职工的任教信息
+     *
+     * @param req
+     * @return
+     */
+    @SysLog("删除职工的任教信息")
+    @RequestMapping(value = "deletes", method = RequestMethod.GET)
+    public @ResponseBody
+    AjaxListResult<Map<String, Object>> deletes(HttpServletRequest req) {
+        AjaxListResult<Map<String, Object>> result = new AjaxListResult<Map<String, Object>>();
+        try {
+            Map<String, Object> map = getRequestParams(req);
+            String[] disciplineIds = map.get("disciplineId").toString().split(",");
+            System.out.println("disciplineIds============================= " + disciplineIds);
+            this.smdEmployeeClazzSubjectService.deleteBatch(disciplineIds);
+            result.setCode(0);
+            result.setMsg("删除成功!");
+        } catch (Exception e) {
+            result.setCode(101);
+            result.setMsg("删除失败!");
+            e.printStackTrace();
+        }
+        return result;
+    }
+}

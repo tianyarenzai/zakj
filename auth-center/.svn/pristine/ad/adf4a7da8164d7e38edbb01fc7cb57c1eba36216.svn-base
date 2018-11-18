@@ -1,0 +1,11 @@
+//采用正则表达式获取地址栏参数
+function GetQueryString(name) {
+
+	var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+	var url = decodeURI(window.location.search);
+	var r = url.substr(1).match(reg);
+
+	if (r != null)
+		return unescape(r[2]);
+	return null;
+}

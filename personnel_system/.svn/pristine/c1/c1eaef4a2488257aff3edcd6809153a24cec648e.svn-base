@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zakj.personnel.dao.AlyApSevPushMessageDao">
+
+	<select id="queryObject" resultType="com.zakj.personnel.entity.AlyApSevPushMessageEntity">
+		select * from aly_ap_sev_push_message where message_id = #{value}
+	</select>
+
+	<select id="queryList" resultType="java.util.Map">
+		select
+		    message_id,
+			equipment,
+			title,
+			body,
+			send_time,
+			IF (
+			display_type = 0,
+			'消息',
+			'通知'
+			) AS display_type
+		from aly_ap_sev_push_message
+		<where>
+			<if test="send_time != null or end_time != null">
+				and send_time between #{send_time} and #{end_time}
+			</if>
+		</where>
+        <choose>
+			<when test="sortField != null and sortField.trim() != ''">
+				order by ${sortField} ${sortOrder}
+			</when>
+			<otherwise>
+                order by message_id desc
+			</otherwise>
+        </choose>
+		<if test="pageIndex != null and pageSize != null">
+			limit #{pageIndex}, #{pageSize}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from aly_ap_sev_push_message 
+	</select>
+	 
+	<insert id="save" parameterType="com.zakj.personnel.entity.AlyApSevPushMessageEntity">
+		insert into aly_ap_sev_push_message
+		(
+			`message_id`, 
+			`equipment`, 
+			`title`, 
+			`body`, 
+			`send_time`, 
+			`sys_notice_id`, 
+			`request_id`, 
+			`display_type`
+		)
+		values
+		(
+			#{messageId}, 
+			#{equipment}, 
+			#{title}, 
+			#{body}, 
+			#{sendTime}, 
+			#{sysNoticeId}, 
+			#{requestId}, 
+			#{displayType}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="com.zakj.personnel.entity.AlyApSevPushMessageEntity">
+		update aly_ap_sev_push_message 
+		<set>
+			<if test="equipment != null">`equipment` = #{equipment}, </if>
+			<if test="title != null">`title` = #{title}, </if>
+			<if test="body != null">`body` = #{body}, </if>
+			<if test="sendTime != null">`send_time` = #{sendTime}, </if>
+			<if test="sysNoticeId != null">`sys_notice_id` = #{sysNoticeId}, </if>
+			<if test="requestId != null">`request_id` = #{requestId}, </if>
+			<if test="displayType != null">`display_type` = #{displayType}</if>
+		</set>
+		where message_id = #{messageId}
+	</update>
+	
+	<delete id="delete">
+		delete from aly_ap_sev_push_message where message_id = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from aly_ap_sev_push_message where message_id in 
+		<foreach item="messageId" collection="array" open="(" separator="," close=")">
+			#{messageId}
+		</foreach>
+	</delete>
+
+	<select id="getAppInfo" resultType="com.zakj.personnel.entity.AlyApSysPushAppEntity">
+		select * from aly_ap_sys_push_app where tenant_id = #{tenantId}
+	</select>
+
+</mapper>

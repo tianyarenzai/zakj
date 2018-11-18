@@ -1,0 +1,264 @@
+
+    <!DOCTYPE html>
+    <html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>合同附件</title>
+        <link th:href="@{/css/button-skin.css}" rel="stylesheet" type="text/css"/>
+        <script type="text/javascript" th:src="@{/libs/boot.js}"></script>
+        <script type="text/javascript" th:src = "@{/libs/jquery.json-2.4.min.js}"></script>
+        <script type="text/javascript" th:src = "@{/libs/ajaxfileupload.js}"></script>
+    <style type="text/css">
+        html, body {
+            width: 100%;
+            height: 99%;
+            border: 0;
+            margin: 0;
+            padding: 0;
+            overflow: visible;
+        }
+
+        .fileChose {
+            position: relative;
+            left: -60px;
+            opacity: 0;
+        }
+    </style>
+</head>
+<body>
+    <table style="table-layout:fixed;">
+        <tr>
+            <td>
+                <input id="file" name="file" type="file" multiple ="true">
+            </td>
+            <td>
+                <a class="mini-button" iconCls="icon-upload" onclick="imageUpload()">上传</a>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <!--<%&#45;&#45;显示图片区域&#45;&#45;%>-->
+                <div id = "img" style="height: 150px; width: 500px;border:1px solid #DDDDDD">
+                </div>
+            </td>
+        </tr>
+    </table>
+    <form id="form1" method="post">
+        <input id = "employeeId" name="employeeId" class="mini-hidden" th:value = "${employeeId}"/>
+        <input id="contractImgurl" name="contractImgurl" class="mini-hidden"/>
+        <input id = "fileName" name = "fileName" class="mini-hidden"/>
+        <input id = "fileType" name = "fileType" class="mini-hidden"/>
+        <div style="padding-left:20px;padding-bottom:5px;padding-top:5px;">
+            <table style="table-layout:fixed;">
+                <tr style="height: 35px;">
+                    <td style="width:100px;">
+                        合同编号
+                    </td>
+                    <td style="width:190px;">
+                        <input name="number" class="mini-textbox" required="true" emptyText="请输入合同编号" style="width:380px;"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width:80px;">
+                        合同名称:
+                    </td>
+                    <td style="width:190px;">
+                        <input name="contractName" class="mini-textbox" required="true" emptyText="请输入合同名称" style="width:380px;"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td width="65px">合同类型：</td>
+                    <td>
+                        <input id="typeId" name="typeId" class="mini-combobox" valueField="typeId" textField="typeName"
+                               url="../../employee/contracttype/getContractTypes" style="width:380px;" emptyText="请选择合同类型" required="true"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td>生效日期：</td>
+                    <td>
+                        <input id="beginTime" name="beginTime" class="mini-datepicker" style="width: 380px;" required="true"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td>截止日期：</td>
+                    <td>
+                        <input id="endTime" name="endTime" class="mini-datepicker" style="width: 380px;" required="true"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td>提醒日期：</td>
+                    <td>
+                        <input id="remindDate" name="remindDate" class="mini-datepicker" style="width: 380px;" required="true"/>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div style="text-align:center;padding:10px;">
+            <a class="mini-button" iconCls="icon-ok" onclick="onOk">确定</a>
+            <a class="mini-button" iconCls="icon-close" onclick="onCancel">取消</a>
+        </div>
+    </form>
+
+</body>
+<script type="text/javascript">
+    // 多图片上传
+    var photoType = "";
+    var photoName = "";
+    $(document).on('change', '#file', function (event) {
+        var ext = '.jpg.jpeg.gif.bmp.png.';
+        var file = $("#file").val();
+        var start = file.lastIndexOf('.') + 1;
+        f = file.substr(start).toLowerCase();
+
+        if (ext.indexOf('.' + f + '.') == -1) {
+            mini.alert("请选择图片！");
+            return false;
+        }
+        var imgURL = "";
+        var node = this;
+        try {
+            var fileArray = new Array();
+            for(var i = 0; i < node.files.length; i ++){
+                if(node.files && node.files[i]){
+                    console.info("nodeFiles: --------------------------- " +  node.files[i]);
+                    fileArray.push(node.files[i]);
+                }
+            }
+
+            for(var i = 0; i < fileArray.length; i ++){
+                // imgURL = file.getAsDataURL();
+                try {
+                     imgURL += fileArray[i].getAsDataURL() + ";";
+                } catch (e) {
+                    imgURL += window.URL.createObjectURL(fileArray[i]) + ";";
+                }
+            }
+        } catch (e) {
+            if (node.files && node.files.length) {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    imgURL += e.target.result + ";";
+                };
+                for(var i = 0; i < fileArray.length; i ++){
+                    reader.readAsDataURL(fileArray[i]);
+                }
+            }
+        }
+        imgURL = imgURL.substr(0 , imgURL.lastIndexOf(";"));
+        console.info("截取后的imgUrl ------------------------------- " + imgURL);
+        var urls = imgURL.split(";");
+        for(var i = 0; i < urls.length; i ++){
+            console.info("url[i] ------------------------------- " + urls[i]);
+            var img = '<img id="img_page" src=" '+ urls[i] + '" style="width: 120px;height: 150px;"/> &nbsp;&nbsp;';
+            $('#img').append(img);
+        }
+    });
+
+
+
+    // 上传操作
+    function imageUpload(){
+        var file = document.getElementById("file");
+        $.ajaxFileUpload({   //   onefile2
+            url : '../../file/threeFile', //用于文件上传的服务器端请求地址
+            fileElementId : file, //文件上传空间的id属性  <input type="file" id="file" name="file" />
+            dataType : 'json', //返回值类型 一般设置为json
+            success : function(data, status) //服务器成功响应处理函数
+            {
+                console.info("array: ========================= " + data.array);
+                if( data.array.length > 0){
+                    // 1.解析上传后返回的图片路径
+                    var pathUrls = "";
+                    for(var i = 0; i < data.array.length; i++){
+                        var backUrl = data.array[i].substr(0, data.array[i].indexOf("?"));
+                        pathUrls += backUrl + ";";
+                    }
+                    var t = mini.get("contractImgurl");
+                    t.setValue(pathUrls);
+
+                    // 2. 设置文件名至隐藏域
+                    var n = mini.get("fileName");
+                    n.setValue(data.fileNameStr);
+                    // 3.设置文件类型至隐藏域
+                    var t = mini.get("fileType");
+                    t.setValue(data.fileTypeStr);
+                    mini.alert("上传成功！");
+                }
+
+            },
+            error : function(data, status, e)//服务器响应失败处理函数
+            {
+                alert(e);
+                alert("上传失败");
+            }
+        });
+    }
+
+
+
+    // 点击确定
+    function onOk(){
+        saveData();
+    }
+
+    // 保存数据
+    function saveData(){
+        console.info("saveData。。。。。。。。。。。。");
+        var form = new mini.Form("form1");
+        var o = form.getData();
+        form.validate();
+        if (form.isValid() == false)
+            return;
+        var begin = mini.get("beginTime");
+        o.beginTime = begin.getFormValue();
+        console.info("beginTime: -------------------- " +  o.beginTime);
+
+        var end = mini.get("endTime");
+        o.endTime = end.getFormValue();
+        console.info("endTime: ----------------------- " + o.endTime);
+
+        var remind = mini.get("remindDate");
+        o.remindDate = remind.getFormValue();
+        console.info("remindDate -----------------------" +  o.remindDate);
+        var json = mini.encode(o);
+        console.info("json:------------------ " + json);
+        $.ajax({
+            url: "../../employee/contract/save",
+            type: 'post',
+            data: {
+                data: json
+            },
+            cache: false,
+            success: function (text) {
+                if (text.code == 0) {
+                    mini.alert(text.msg);
+                } else if (text.code == 101) {
+                    mini.alert(text.msg);
+                }
+                CloseWindow("save");
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                mini.alert(jqXHR.responseText);
+                CloseWindow();
+            }
+        });
+    }
+
+    // 点击取消
+    function onCancel(){
+        console.info("onCancel ........................... ");
+        CloseWindow("cancel");
+    }
+
+    function CloseWindow(action) {
+        if (action == "close" && form.isChanged()) {
+            if (confirm("数据被修改了，是否先保存？")) {
+                return false;
+            }
+        }
+        if (window.CloseOwnerWindow)
+            return window.CloseOwnerWindow(action);
+        else
+            window.close();
+    }
+</script>
+</html>

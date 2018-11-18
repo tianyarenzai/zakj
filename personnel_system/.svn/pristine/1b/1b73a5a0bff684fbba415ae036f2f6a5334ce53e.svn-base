@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <title>职工信息登记</title>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+    <script type="text/javascript" th:src="@{/libs/boot.js}"></script>
+    <link href="/css/button-skin.css" rel="stylesheet" type="text/css" />
+
+    <script src="https://www.promisejs.org/polyfills/promise-6.1.0.js"></script>
+    <script type="text/javascript" th:src = "@{/libs/jquery.json-2.4.min.js}"></script>
+    <script type="text/javascript" th:src = "@{/libs/ajaxfileupload.js}"></script>
+    <style type="text/css">
+        body {
+            padding: 0;
+            margin: 0;
+            border: 0;
+            height: 100%;
+        }
+        #form1 div table  tr td {
+            font-family: Tahoma, Verdana, 宋体 !important;
+            font-size: 9pt;
+        }
+    </style>
+</head>
+<body>
+<form id="form1" method="post">
+    <input name="employeeState" class="mini-hidden"/>
+    <input name="employeeJob" class="mini-hidden"/>
+    <input name="ddUserId" class="mini-hidden"/>
+    <input name="empSchoolName" class="mini-hidden"/>
+    <input name="employeeId" class="mini-hidden"/>
+    <input name="userId" class="mini-hidden"/>
+    <input name="paymentId" class="mini-hidden"/>
+    <input id="employeeImgurl" name="employeeImgurl" class="mini-hidden"/>
+    <div style="padding-left:20px;padding-bottom:5px;padding-top:5px;">
+        <div style="padding:5px;">
+            <table>
+                <tr style="height: 35px;">
+                    <td style="width:100px;">
+                        姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名：
+                    </td>
+                    <td style="width:100px;">
+                        <input name="employeeName" class="mini-textbox" required="true" emptyText="请输入姓名" style="width:160px;"/>
+                    </td>
+                    <td style="width:80px;">
+                        性&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;别：
+                    </td>
+                    <td style="width:100px;">
+                        <select name="employeeSex" class="mini-radiobuttonlist" style="width:160px;">
+                            <option value="男">男</option>
+                            <option value="女">女</option>
+                        </select>
+                    </td>
+                    <td width="100px">身份证号：</td>
+                    <td>
+                        <input id="employeeIdcard" name="employeeIdcard" class="mini-textbox" required="true" style="width:160px;"/>
+                    </td>
+                  <!--  <%&#45;&#45;上传职工头像&#45;&#45;%>-->
+                    <td rowspan="4" colspan="1" style="position: relative;">
+                        <div id="file_path" style="width: 120px;height: 120px;position: absolute;" onclick="">
+                            <img id="employeePhoto" style="width: 100%;height: 100%;"/>
+                        </div>
+                        <img id="img_page" style="width: 120px;height: 120px;" onclick=""/>
+                        <input type="hidden" id="objectName" name="objectName" value="stuPhoto/photo/"/>
+                        <input type="file" id="file" name="file"/>
+                        <input type="button" iconCls="icon-upload" id="file-button" value="上传"/>
+                        <div class="progress">
+                            <div id="progress-bar" class="progress-bar" role="progressbar" aria-valuenow="60"
+                                 aria-valuemin="0" aria-valuemax="100" style="width: 40%;">
+                                <span class="sr-only"></span>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr style="height: 35px;">
+                    <!--<td style="width:100px;">所属机构:</td>
+                    <td>
+                        <input id="orgId" name="orgId" class="mini-combobox" valueField="org_id" textField="org_name"
+                               url="../auth/org/treeList" onvaluechanged="onGrade"
+                               style="width:160px;" emptyText="请选择所属机构" required="true"/>
+                    </td>-->
+                    <td style="width:100px;">所属部门：</td>
+                    <td>
+                        <input id="employeeDept" name="employeeDept" class="mini-combobox" valueField="orgId"
+                               url = "../../auth/org/getDeptsByOrgId"
+                               textField="orgName" showNullItem="true" emptyText="请选择部门" required="true"/>
+                    </td>
+                    <td style="width:100px;">
+                        职&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;务：
+                    </td>
+                    <td>
+                        <input id="employeeJobId" name="employeeJobId" class="mini-combobox" style="width:160px;"
+                               valueField="employeeJobId" textField="employeeJob"
+                               emptyText="请选择所属职务" required="true" url = "../../personnel/employee/getEmployeeJobByOrgId"/>
+                    </td>
+                    <td style="width:100px;">手机号码：</td>
+                    <td>
+                        <input id="employeePhone" name="employeePhone" class="mini-textbox"
+                               required="true" style="width:160px;"/>
+                    </td>
+                </tr>
+                <tr style="height: 35px;">
+                    <td style="width: 100px;">擅长科目:</td>
+                    <td>
+                        <input id = "subjectId" name="subjectId" class="mini-combobox" style="width: 160px"
+                               valueField="subjectId" textField="subjectName" emptyText="请选择擅长科目"
+                               url="../../employee/schoolsubject/getSchoolSubjects" required="true"/>
+                    </td>
+                    <td style="width: 100px">入职日期</td>
+                    <td>
+                        <input id="inductionTime" name="inductionTime" style="width:160px;" class="mini-datepicker"
+                               emptyText="请选择入职日期" required="true"/>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <br>
+        <fieldset style="border:solid 3px #aaa;padding:5px;">
+            <legend>个人基本信息:</legend>
+            <div style="padding: 5px">
+                <table>
+                    <tr style="height: 35px;">
+                        <td style="width:100px;">籍&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;贯：</td>
+                        <td>
+                            <input name="employeeNativePlace" class="mini-textbox" style="width:160px;"/>
+                        </td>
+                        <td style="width:100px;">民&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;族：</td>
+                        <td>
+                            <input name="employeeNation" class="mini-combobox" style="width:160px;"
+                             url = "../../selects/national.txt" valueField="id" textField="text"/>
+                        </td>
+                        <td style="width:100px;">学&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;历：</td>
+                        <td>
+                            <select name="employeeEdu" class="mini-combobox" url="" style="width:160px;" emptyText="请选择学历">
+                                <option value="初中">初中</option>
+                                <option value="高中">高中</option>
+                                <option value="大专">大专</option>
+                                <option value="本科">本科</option>
+                                <option value="研究生">研究生</option>
+                                <option value="博士">博士</option>
+                                <option value="博士后">博士后</option>
+                            </select>
+                        </td>
+                        <td style="width:100px;">毕业院校：</td>
+                        <td>
+                            <input name="employeeGraduationSchool" class="mini-textbox" style="width:160px;"/>
+                        </td>
+                    </tr>
+                    <tr style="height: 35px;">
+                        <td style="width:100px;">毕业时间：</td>
+                        <td>
+                            <input name="employeeGraduationDate" class="mini-datepicker" emptyText="请选择日期" style="width:160px;"/>
+                        </td>
+                        <td style="width:100px;">健康状况：</td>
+                        <td style="width:190px;">
+                            <select name="employeeHealth" class="mini-radiobuttonlist" style="width:160px;">
+                                <option value="健康">健康</option>
+                                <option value="良好">良好</option>
+                            </select>
+                        </td>
+                        <td style="width:100px;">婚姻状况：</td>
+                        <td style="width:190px;">
+                            <select name="isMarried" class="mini-radiobuttonlist" style="width:160px;">
+                                <option value="已婚">已婚</option>
+                                <option value="未婚">未婚</option>
+                            </select>
+                        </td>
+                        <td style="width:100px;">政治面貌：</td>
+                        <td style="width:190px;">
+                            <select name="employeePolitical" class="mini-radiobuttonlist" style="width:160px;">
+                                <option value="党员">党员</option>
+                                <option value="团员">团员</option>
+                                <option value="群众">群众</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr style="height: 35px;">
+                        <td style="width:100px;">出生日期：</td>
+                        <td>
+                            <input id="employeeBirthday" name="employeeBirthday" style="width:160px;" class="mini-datepicker" emptyText="请选择日期"/>
+                        </td>
+                        <td style="width:100px;">所学专业：</td>
+                        <td>
+                            <input name="employeeMajor" class="mini-textbox" style="width:160px;"/>
+                        </td>
+                        <td style="width:100px;">特&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;长：</td>
+                        <td>
+                            <input name="employeeSkill" class="mini-textbox" style="width:160px;"/>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </fieldset>
+        <fieldset style="border:solid 3px #aaa;padding:5px;">
+            <legend> 工作信息:</legend>
+            <div style="padding:5px;">
+                <table>
+                    <tr style="height: 35px;">
+                        <td style="width:100px;">职工编号：</td>
+                        <td style="width:190px;">
+                            <input name="employeeNo" class="mini-textbox" style="width:160px;"/>
+                        </td>
+                        <td style="width:100px;">职&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;称：</td>
+                        <td>
+                            <input id="employeeTitle" name="employeeTitle" class="mini-combobox" valueField="teacher_title_id"
+                                   textField="teacher_title_name" style="width:150px;"
+                                   url="../../personnel/employee/employeeTitles"/>
+                        </td>
+                        <td style="width:150px;">职称获取时间：</td>
+                        <td>
+                            <input name="employeeTitleDate" class="mini-datepicker" style="width:160px;" emptyText="请选择日期"/>
+                        </td>
+                        <td style="width:100px;">教师资格证：</td>
+                        <td>
+                            <select name="employeeQualification"  emptyText="请选择教师资格证" style="width:160px;" class="mini-combobox">
+                                <option value="幼儿园教师资格证">幼儿园教师资格证</option>
+                                <option value="小学教师资格证">小学教师资格证</option>
+                                <option value="初级中学教师资格证">初级中学教师资格证</option>
+                                <option value="高级中学教师资格证">高级中学教师资格证</option>
+                            </select>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </fieldset>
+        <fieldset style="border:solid 3px #aaa;padding:5px;">
+            <legend> 地址信息:</legend>
+            <div style="padding:5px;">
+                <table>
+                    <tr style="height: 35px;">
+                        <td style="width:100px;">通讯地址：</td>
+                        <td>
+                            <input name="employeeAddr" class="mini-textbox" style="width:160px;"/>
+                        </td>
+                        <td style="width:100px;">家庭住址：</td>
+                        <td>
+                            <input name="employeeAddrHome" class="mini-textbox" style="width:160px;"/>
+                        </td>
+                        <td style="width:100px;">邮&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;编：</td>
+                        <td>
+                            <input name="employeePostcode" class="mini-textbox" style="width:160px;"/>
+                        </td>
+                        <td style="width:100px;">Q&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Q：</td>
+                        <td>
+                            <input name="employeeQq" class="mini-textbox" style="width:160px;"/>
+                        </td>
+                    </tr>
+                    <tr style="height: 35px;">
+                        <td style="width:100px;">微&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;信：</td>
+                        <td>
+                            <input name="employeeWebchat" class="mini-textbox" style="width:160px;"/>
+                        </td>
+                        <td style="width:100px;">电子邮箱：</td>
+                        <td>
+                            <input name="employeeEmail" class="mini-textbox" style="width:160px;"/>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </fieldset>
+    </div>
+    <div style="text-align:center;padding:10px;">
+        <a class="mini-button" iconCls="icon-ok" onclick="onOk">确定</a> <a
+            class="mini-button" iconCls="icon-close" onclick="onCancel">取消</a>
+    </div>
+</form>
+</body>
+
+<script type="text/javascript">
+    mini.parse();
+    function kfg() {
+        var fg = $(".intro").val();
+        var g = "g";
+        var text = Trim(fg, g);
+        $(".intro").val(text);
+    }
+
+    function Trim(str, is_global) {
+        var result;
+        result = str.replace(/(^\s+)|(\s+$)/g, "");
+        if (is_global.toLowerCase() == "g") {
+            result = result.replace(/\s/g, "");
+        }
+        return result;
+    }
+
+
+    //部门职位
+    function onDept(e) {
+        mini.parse();
+        // var orgId = mini.get("orgId");
+        // var id = orgId.getValue();
+        // console.info("id ------------------------ " + id);
+        //
+        // // 设置学位对应的部门
+        // var employeeDept = mini.get("employeeDept");
+        // var url = "../employee/employee/getDepts?orgId=" + id;
+        // employeeDept.setUrl(url);
+
+        // 设置学位对应职务
+        var employeeJob = mini.get("employeeJobId");
+        var joburl = "../../employee/employee/getEmployeeJobByOrgId";
+        employeeJob.setUrl(joburl);
+    }
+
+
+    function SaveData() {
+        var form = new mini.Form("form1");
+        var o = form.getData();
+        form.validate();
+        if (form.isValid() == false)
+            return;
+        var json = mini.encode(o);
+        console.info("json:------------------ " + json);
+        $.ajax({
+            url: "../../employee/employee/save",
+            type: 'post',
+            data: {
+                data: json
+            },
+            cache: false,
+            success: function (text) {
+                if (text.code == 0) {
+                    mini.alert(text.msg);
+                } else if (text == 101) {
+                    mini.alert(text.msg);
+                }
+                CloseWindow("save");
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                mini.alert(jqXHR.responseText);
+                CloseWindow();
+            }
+        });
+    }
+
+
+    function onOk(e) {
+        var employeeIdcard = mini.get("employeeIdcard").getValue();
+        var employeeIdcards = /^(\d{15}$|^\d{18}$|^\d{17}(\d|X|x))$/;
+        if (!employeeIdcards.test(employeeIdcard)) {
+            alert("身份证号码不合法");
+            return false;
+        }
+        onEmployeePhone();
+    }
+
+
+    function onCancel(e) {
+        CloseWindow("cancel");
+    }
+
+
+    mini.parse();
+
+    function onEmployeePhone() {
+        var form = new mini.Form("form1");
+        var o = form.getData();
+        form.validate();
+        if (form.isValid() == false) return;
+        var json = mini.encode([o]);
+        var employeePhone = mini.get("employeePhone").getValue();
+        var employeePhones = /^1\d{10}$/;
+        if (employeePhones.test(employeePhone)) {
+            SaveData();
+        } else {
+            alert("请输入正确的手机号码！");
+        }
+    }
+
+
+    function CloseWindow(action) {
+        if (action == "close" && form.isChanged()) {
+            if (confirm("数据被修改了，是否先保存？")) {
+                return false;
+            }
+        }
+        if (window.CloseOwnerWindow)
+            return window.CloseOwnerWindow(action);
+        else
+            window.close();
+    }
+
+
+    // 上传职工头像
+    $(document).on("change", "#file", function (event) {
+        var node = this;
+        var imgURL = "";
+        try {
+            var file = null;
+            if (node.files && node.files[0]) {
+                file = node.files[0];
+            } else if (node.files && node.files.item(0)) {
+                file = node.files.item(0);
+            }
+            //Firefox 因安全性问题已无法直接通过input[file].value 获取完整的文件路径
+            try {
+                imgURL = file.getAsDataURL();
+            } catch (e) {
+                imgURL = window.URL.createObjectURL(file);
+            }
+        } catch (e) {
+            if (node.files && node.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    imgURL = e.target.result;
+                };
+                reader.readAsDataURL(node.files[0]);
+            }
+        }
+        $("#img_page").attr("src", imgURL);
+        $("#upfile").val(imgURL);
+        if ($("#img_page").attr("src") != undefined) {
+            $("#file_path").hide();
+        } else {
+            $("#file_path").show();
+        }
+    });
+
+
+    // 点击上传
+    $("#file-button").click(function () {
+        uploadFunction();
+        // imageUpload();
+    });
+
+
+    function imageUpload() {
+        var file = document.getElementById("file");
+        $.ajaxFileUpload({   //   onefile2
+            url: '../../file/onefile2', //用于文件上传的服务器端请求地址
+            fileElementId: file, //文件上传空间的id属性  <input type="file" id="file" name="file" />
+            dataType: 'json', //返回值类型 一般设置为json
+            async: true,
+            success: function (data, status) //服务器成功响应处理函数
+            {
+                console.log(JSON.stringify(data));
+                $("#img_page").attr("src", data.map.url);
+                alert("上传成功" + data.map.url);
+                var backUrl = data.map.url;
+                backUrl = backUrl.substr(0, backUrl.indexOf("?"));
+                console.info("backUrl : ---------- " + backUrl);
+                var t = mini.get("employeeImgurl");
+                t.setValue(backUrl);
+            },
+            error: function (data, status, e)//服务器响应失败处理函数
+            {
+                alert(e);
+                alert("上传失败");
+            }
+        });
+    }
+
+
+    //文件上传
+    function uploadFunction() {
+        var file = $("#file").get(0).files[0]; // document.getElementById("file");
+        console.info("file ------------------------- " + file);
+
+        // FormData 对象
+        var form = new FormData();
+        form.append("file", file); // 文件对象
+        console.info("form ------------------------ " + form);
+        var uploadUrl = "../../file/onefile2";//异步上传地址
+        $.ajax({
+            cache: false,
+            type: "POST",
+            url: uploadUrl,
+            contentType: false,
+            processData: false,
+            data: form,
+            xhr: function () { //获取ajaxSettings中的xhr对象，为它的upload属性绑定progress事件的处理函数
+                myXhr = $.ajaxSettings.xhr();
+                console.info("myXhr ------------------------------- " + myXhr);
+                if (progressFunction && myXhr.upload) { //检查进度函数和upload属性是否存在
+                    //绑定progress事件的回调函数
+                    myXhr.upload.addEventListener("progress", progressFunction, false);
+                }
+                return myXhr; //xhr对象返回给jQuery使用
+            },
+            error: function (request) {
+                alert("Connection error");
+            },
+            success: function (data) {
+                console.log(JSON.stringify(data));
+                $("#img_page").attr("src", data.map.url);
+                alert("上传成功" + data.map.url);
+                var backUrl = data.map.url;
+                backUrl = backUrl.substr(0, backUrl.indexOf("?"));
+                console.info("backUrl : ---------- " + backUrl);
+                var t = mini.get("employeeImgurl");
+                t.setValue(backUrl);
+                $("#file-button").attr("disabled", false);
+                $("#file-button").val("上传");
+            }
+        });
+    }
+
+    //进度条控制
+    function progressFunction(evt) {
+        if (evt.lengthComputable) {
+            var completePercent = Math.round(evt.loaded / evt.total * 100) + "%";
+            $("#file-button").val("正在上传,进度：" + completePercent);
+            console.info("上传成功！ " + completePercent);
+        }
+    }
+</script>
+</html>
+
+

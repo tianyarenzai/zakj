@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zakj.personnel.dao.SmdCeRewardDao">
+
+	<resultMap type="java.util.Map" id="Map">
+		<result property="rewardId" column="reward_id"/>
+		<result property="employeeId" column="employee_id"/>
+		<result property="rewardName" column="reward_name"/>
+		<result property="rewardContent" column="reward_content"/>
+		<result property="rewardDate" column="reward_date"/>
+		<result property="rewardUnit" column="reward_unit"/>
+		<result property="rewardUrl" column="reward_url"/>
+		<result property="rewardType" column="reward_type"/>
+		<result property="createUser" column="create_user"/>
+		<result property="createDate" column="create_date"/>
+		<result property="createEmpName" column="create_emp_name"/>
+		<result property="updateTime" column="update_time"/>
+		<result property="state" column="state"/>
+		<result property="rewardAttachment" column="reward_attachment"/>
+		<result property="employeeName" column="employee_name"/>
+	</resultMap>
+
+	<select id="queryObject" resultType="com.zakj.personnel.entity.SmdCeRewardEntity">
+		select
+		  c.*,
+		  e.employee_name
+		from smd_ce_reward c
+		LEFT JOIN smd_employee e on e.employee_id = c.employee_id
+		where reward_id = #{value}
+	</select>
+
+	<select id="queryList" resultMap="Map">
+		SELECT
+		r.*,
+		e.employee_name
+		FROM
+		smd_ce_reward r
+		LEFT JOIN smd_employee e on e.employee_id = r.employee_id
+		<where>
+			<if test="orgId != null and orgId.size != 0">
+				and e.org_id in
+				<foreach item="item" index="index" collection="orgId" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+			<if test="employeeName != null and employeeName.trim() != ''">
+				and e.employee_name LIKE concat('%', #{employeeName},'%')
+			</if>
+		</where>
+        <choose>
+			<when test="sortField != null and sortField.trim() != ''">
+				order by ${sortField} ${sortOrder}
+			</when>
+			<otherwise>
+                order by reward_id desc
+			</otherwise>
+        </choose>
+		<if test="pageIndex != null and pageSize != null">
+			limit #{pageIndex}, #{pageSize}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from
+		smd_ce_reward r
+		LEFT JOIN smd_employee e on e.employee_id = r.employee_id
+		<where>
+			<if test="orgId != null and orgId.size != 0">
+				and e.org_id in
+				<foreach item="item" index="index" collection="orgId" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+			<if test="employeeName != null and employeeName.trim() != ''">
+				and e.employee_name LIKE concat('%', #{employeeName},'%')
+			</if>
+		</where>
+	</select>
+
+	<insert id="saveMap" parameterType="java.util.Map">
+		<selectKey keyProperty="rewardId" resultType="string"
+				   order="BEFORE">
+			select replace(uuid(), '-', '') as id from dual
+		</selectKey>
+		insert into smd_ce_reward
+		(
+		`reward_id`,
+		`employee_id`,
+		`reward_name`,
+		`reward_content`,
+		`reward_date`,
+		`reward_unit`,
+		`reward_url`,
+		`reward_type`,
+		`create_user`,
+		`create_date`,
+		`create_emp_name`,
+		`update_time`,
+		`state`,
+		`reward_attachment`
+		)
+		values
+		(
+		#{rewardId},
+		#{employeeId},
+		#{rewardName},
+		#{rewardContent},
+		#{rewardDate},
+		#{rewardUnit},
+		#{rewardUrl},
+		#{rewardType},
+		#{createUser},
+		#{createDate},
+		#{createEmpName},
+		#{updateTime},
+		#{state},
+		#{rewardAttachment}
+		)
+	</insert>
+
+	<insert id="save" parameterType="com.zakj.personnel.entity.SmdCeRewardEntity">
+		<selectKey keyProperty="rewardId" resultType="string" order="BEFORE">
+			select replace(uuid(), '-', '') as id from dual
+		</selectKey>
+		insert into smd_ce_reward
+		(
+			`reward_id`, 
+			`reward_name`, 
+			`reward_content`, 
+			`reward_date`, 
+			`reward_unit`, 
+			`reward_url`, 
+			`reward_type`, 
+			`create_user`, 
+			`create_date`, 
+			`create_emp_name`, 
+			`update_time`, 
+			`state`
+		)
+		values
+		(
+			#{rewardId}, 
+			#{rewardName}, 
+			#{rewardContent}, 
+			#{rewardDate}, 
+			#{rewardUnit}, 
+			#{rewardUrl}, 
+			#{rewardType}, 
+			#{createUser}, 
+			#{createDate}, 
+			#{createEmpName}, 
+			#{updateTime}, 
+			#{state}
+		)
+	</insert>
+
+	<update id="updateMap"  parameterType="java.util.Map">
+		update smd_ce_reward
+		<set>
+			<if test="employee_id != null">`employee_id` = #{employee_id},</if>
+			<if test="reward_name != null">`reward_name` = #{reward_name}, </if>
+			<if test="reward_content != null">`reward_content` = #{reward_content}, </if>
+			<if test="reward_date != null">`reward_date` = #{reward_date}, </if>
+			<if test="reward_unit != null">`reward_unit` = #{reward_unit}, </if>
+			<if test="reward_url != null">`reward_url` = #{reward_url}, </if>
+			<if test="reward_type != null">`reward_type` = #{reward_type}, </if>
+			<if test="update_time != null">`update_time` = #{update_time}, </if>
+			<if test="reward_attachment != null"> `reward_attachment` = #{reward_attachment}</if>
+		</set>
+		where reward_id = #{reward_id}
+	</update>
+
+	<update id="update" parameterType="com.zakj.personnel.entity.SmdCeRewardEntity">
+		update smd_ce_reward 
+		<set>
+			<if test="rewardName != null">`reward_name` = #{rewardName}, </if>
+			<if test="rewardContent != null">`reward_content` = #{rewardContent}, </if>
+			<if test="rewardDate != null">`reward_date` = #{rewardDate}, </if>
+			<if test="rewardUnit != null">`reward_unit` = #{rewardUnit}, </if>
+			<if test="rewardUrl != null">`reward_url` = #{rewardUrl}, </if>
+			<if test="rewardType != null">`reward_type` = #{rewardType}, </if>
+			<if test="createUser != null">`create_user` = #{createUser}, </if>
+			<if test="createDate != null">`create_date` = #{createDate}, </if>
+			<if test="createEmpName != null">`create_emp_name` = #{createEmpName}, </if>
+			<if test="updateTime != null">`update_time` = #{updateTime}, </if>
+			<if test="state != null">`state` = #{state}</if>
+		</set>
+		where reward_id = #{rewardId}
+	</update>
+	
+	<delete id="delete">
+		delete from smd_ce_reward where reward_id = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from smd_ce_reward where reward_id in 
+		<foreach item="rewardId" collection="array" open="(" separator="," close=")">
+			#{rewardId}
+		</foreach>
+	</delete>
+
+</mapper>

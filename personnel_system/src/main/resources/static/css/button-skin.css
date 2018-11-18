@@ -1,0 +1,45 @@
+.mini-button-primary
+{    
+  color: #27a6d6;
+  background-color: #d7ebf9;
+}
+body a:active.mini-button-primary
+{
+  color: #fff;
+  background-color: #ec971f;
+  border-color: #d58512;   
+}
+.mini-button-success
+{    
+  color: #fff;
+  background-color: #5cb85c;
+  border-color: #4cae4c;
+}
+
+.mini-button-warning
+{    
+  color: #fff;
+  background-color: #f0ad4e;
+  border-color: #eea236;
+}
+
+.mini-button-info
+{    
+  color: #fff;
+  background-color: #5bc0de;
+  border-color: #46b8da;
+}
+.mini-button-danger
+{    
+  color: #fff;
+  background-color: #d9534f;
+  border-color: #d43f3a;
+}
+body a:hover.mini-button-danger
+{
+  color: #fff;
+  background-color: #c9302c;
+  border-color: #ac2925; 
+}
+
+

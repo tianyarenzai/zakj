@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="VcsDirectoryMappings">
+    <mapping directory="" vcs="svn" />
+    <mapping directory="$PROJECT_DIR$/../auth-center" vcs="svn" />
+    <mapping directory="$PROJECT_DIR$/../charge-system" vcs="svn" />
+    <mapping directory="$PROJECT_DIR$/../personnel_system" vcs="svn" />
+    <mapping directory="$PROJECT_DIR$/../school-basic-data" vcs="svn" />
+  </component>
+</project>

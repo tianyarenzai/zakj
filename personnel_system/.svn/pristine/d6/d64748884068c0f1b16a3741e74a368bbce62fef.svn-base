@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <title>选择学科</title>
+
+    <meta name="keywords" content="keyword1,keyword2,keyword3">
+    <meta name="description" content="this is my page">
+    <meta name="content-type" content="text/html; charset=UTF-8">
+    <script type="text/javascript" th:src="@{/libs/boot.js}"></script>
+    <link th:href="@{/css/button-skin.css}" rel="stylesheet" type="text/css"/>
+    <style type="text/css">
+        html, body {
+            width: 100%;
+            height: 99%;
+            border: 0;
+            margin: 0;
+            padding: 0;
+            overflow: visible;
+        }
+
+        form table tr {
+            height: 80px;
+        }
+
+        form table tr input {
+            width: 150px;
+        }
+    </style>
+</head>
+<body>
+<div showCollapseButton="false" style="border:0px;">
+    <div style="width:100%;height:100%;">
+        <div class="mini-toolbar" style="border-bottom:0;padding:0px;">
+            <table style="width:100%;margin-left:0%;">
+                <tr>
+                    <td style="width:50%;text-align:center;">待选人员</td>
+                    <td style="width:50%;text-align:center;">已选人员</td>
+                </tr>
+            </table>
+        </div>
+        <!--	&lt;!&ndash;  onselectionchanged="onEmployeeId" &ndash;&gt;-->
+        <div id="datagrid1" class="mini-datagrid" style="width:50%;height:400px; float:left;line-height: 60px"
+             url="../employee/subject/list"
+             idField="id" allowResize="true" sizeList="[20,30,50,100,200]"
+             multiSelect="true" pageSize="200">
+            <div property="columns">
+                <div type="indexcolumn"></div>
+                <div field="subjectName" width="120" headerAlign="center"
+                     align="center" allowSort="true">学科
+                </div>
+                <div name="action" width="100" renderer="onActionRenderer1"
+                     align="center" headerAlign="center">操作
+                </div>
+            </div>
+        </div>
+        <div id="datagrid2" class="mini-datagrid"
+             style="width:50%;height:400px; float:left;line-height: 60px"
+             url="../employee/schoolsubject/list"
+             idField="id" allowResize="true" sizeList="[20,30,50,100,200]"
+             pageSize="200">
+            <div property="columns">
+                <div type="indexcolumn"></div>
+                &lt;!&ndash;
+                <div type="checkcolumn"></div> &ndash;&gt;
+                <div field="subjectName" width="120" headerAlign="center"
+                     align="center" allowSort="true">学科
+                </div>
+                <div name="action" width="100" renderer="onActionRenderer"
+                     align="center" headerAlign="center">操作
+                </div>
+            </div>
+        </div>
+        <br/> <br/>
+    </div>
+</div>
+</body>
+<script type="text/javascript">
+    mini.parse();
+    var grid = mini.get("datagrid1");
+    var grid2 = mini.get("datagrid2");
+    var tree = mini.get("tree1");
+
+    grid.load({
+        employee_name: "",
+        pageIndex: 0,
+        pageSize: 10,
+        sortField: "",
+        sortOrder: "asc",
+        orgFatherId: "",
+        org_id: "",
+        org_father_id: "",
+        org_category: "",
+        employee_job: "",
+    });
+    grid2.load({
+        employee_name: "",
+        pageIndex: 0,
+        pageSize: 10,
+        sortField: "",
+        sortOrder: "asc",
+        grade_id: "",
+        org_id: ""
+    });
+
+
+    function onEmployeeId(e) {
+        var grid2 = mini.get("datagrid2");
+
+
+        var items = grid.getSelecteds();
+        //根据id属性，来甄别要加入选中的记录
+        var idField = grid.getIdField();
+        //把已选中的数据，用key-value缓存，以便进一步快速匹配
+        var idMaps = {};
+        var selecteds = grid2.getData();
+        for (var i = 0, l = selecteds.length; i < l; i++) {
+            var o = selecteds[i];
+            var id = o.subjectId;
+            idMaps[id] = o;
+        }
+        if (idMaps[e] != null) {
+            mini.alert("已添加")
+        } else {
+            $.ajax({
+                url: "../employee/schoolsubject/save",
+                type: 'post',
+                data: {
+                    subject_id: e
+                },
+                cache: false,
+                success: function (text) {
+                    grid2.reload();
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    alert(jqXHR.responseText);
+                }
+            });
+        }
+    }
+
+
+    function removes(e) {
+        var grid2 = mini.get("datagrid2");
+        var items = grid2.getSelected();
+        //   alert(items.director_id);
+
+        grid2.loading("操作中，请稍后......");
+        $.ajax({
+            contentType: "application/json", //RequestBody请求的类型
+            url: "../employee/schoolsubject/delete",
+            data: {
+                schoolSubjectId: items.schoolSubjectId
+            },
+            dataType: 'json',
+            success: function (text) {
+                grid2.reload();
+            },
+            error: function () {
+            }
+        });
+    }
+
+    function onActionRenderer(e) {
+        var grid = e.sender;
+        var record = e.record;
+        var uid = record.schoolSubjectId;
+        var rowIndex = e.rowIndex;
+
+        var s = '<a  class="mini-button " iconCls="icon-add"  style="width:50px;"  href="javascript:removes(\'' + uid + '\')">删除</a>';
+
+        return s;
+    }
+
+    function onActionRenderer1(e) {
+        var grid = e.sender;
+        var record = e.record;
+        var uid = record.subjectId;
+        var rowIndex = e.rowIndex;
+
+        var s = '<a  class="mini-button " iconCls="icon-add"  style="width:50px;"    href="javascript:onEmployeeId(\'' + uid + '\')"> 选择 </a>';
+
+        return s;
+    }
+
+</script>
+</html>

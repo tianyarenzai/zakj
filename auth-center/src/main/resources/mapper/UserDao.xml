@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zakj.auth.dao.UserDao">
+    <select id="getUserByCondition" resultType="com.zakj.auth.entity.User">
+       SELECT
+            u.user_login AS userLogin,
+            u.user_id AS userId,
+            u.total AS total
+        FROM
+            asd_user_account u
+        WHERE
+            u.user_login = #{loginName}
+        AND u.user_pwd =  #{userPwd}
+
+    </select>
+
+    <select id="getUserList" parameterType="java.util.ArrayList" resultType="java.util.Map">
+        SELECT        u.user_id AS userId,        u.user_login  AS userLogin     FROM
+        asd_user_account u        WHERE
+        u.user_id IN
+        <foreach collection="array" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+    <update id="updateLoginDate"  parameterType="java.util.Map">
+        UPDATE asd_user_account u
+        SET u.last_login_date = #{lastLoginDate},
+         u.total = #{total}
+        WHERE
+            u.user_id = #{userId}
+    </update>
+
+    <insert id="generateAccount" parameterType="java.util.Map">
+        <selectKey keyProperty="userId" resultType="string"
+                   order="BEFORE">
+            select replace(uuid(), '-', '') as id from dual
+        </selectKey>
+        insert into asd_user_account
+        (
+        `user_id`,
+        `user_login`,
+        `user_pwd`,
+        `user_name`,
+        `tenant_id`,
+        `create_time`,
+        `user_role`,
+        `user_sex`,
+        `user_idcar`,
+        `org_id`
+        )
+        values
+        (
+        #{userId},
+        #{userLogin},
+        #{userPwd},
+        #{userName},
+        #{tenantId},
+        #{createTime},
+        #{userRole},
+        #{userSex},
+        #{userIdcar},
+        #{orgId}
+        )
+        <!-- <foreach collection ="list" item="user" separator =",">
+             (
+             #{user.userId},
+             #{user.userLogin},
+             #{user.userPwd},
+             #{user.userName},
+             #{user.tenantId},
+             #{user.createTime},
+             #{user.userRole},
+             #{user.userSex},
+             #{user.userIdcar},
+             #{user.orgId}
+             )
+          </foreach >-->
+
+    </insert>
+
+
+    <select id="getMaxAccount" resultType="string">
+        SELECT
+        user_login AS userLogin
+        FROM
+        asd_user_account AS a
+        WHERE
+        user_login = (
+        SELECT
+        max(b.user_login)
+        FROM
+        asd_user_account AS b
+        WHERE
+        b.user_login = #{accountPrefix})
+    </select>
+
+    <select id="checkLogin" resultType="java.lang.Integer">
+        SELECT count(user_id) FROM  asd_user_account  WHERE user_login=#{0};
+    </select>
+</mapper>

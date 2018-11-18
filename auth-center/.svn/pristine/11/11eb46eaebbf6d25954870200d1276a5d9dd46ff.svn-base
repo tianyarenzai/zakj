@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zakj.auth.dao.OrganizationDao">
+
+    <resultMap type="java.util.Map" id="Map">
+        <result property="orgId" column="org_id"/>
+        <result property="orgName" column="org_name"/>
+        <result property="orgCategory" column="org_category"/>
+        <result property="orgFatherId" column="org_father_id"/>
+        <result property="sort" column="sort"/>
+        <result property="remarks" column="remarks"/>
+        <result property="createUser" column="create_user"/>
+        <result property="createDate" column="create_date"/>
+        <result property="ddId" column="dd_id"/>
+        <result property="xdId" column="xd_id"/>
+        <result property="schoolNumber" column="school_number"/>
+        <result property="tenantId" column="tenant_id"/>
+        <result property="uniqueNum" column="unique_num"/>
+    </resultMap>
+
+
+    <select id="queryList" resultType="java.util.Map">
+        SELECT
+            o.org_id as orgId,
+            o.org_name as orgName,
+            o.org_father_id as orgFatherId,
+            o.org_category as orgCategory,
+            o.school_number as schoolNumber,
+            x.xdName as xdName
+        FROM
+            asd_organization o
+            LEFT JOIN zyk_xd x on x.xdID = o.xd_id
+        WHERE
+            o.org_category IN ('1', '0')
+
+        <if test="tenantId!= null and tenantId.trim() != ''">
+          AND  o.tenant_id=#{tenantId}
+        </if>
+    </select>
+
+    <select id="getDataAuthByEmpId" resultType="java.util.Map">
+        SELECT
+            org_id as orgId,
+            org_name as orgName,
+            org_category as orgCategory,
+            org_father_id as orgFatherId
+        FROM
+            asd_organization o
+        WHERE
+            o.tenant_id = #{tenantId}
+        AND o.org_id IN (
+                        SELECT
+                    a.data_org_id AS 'orgId'
+                FROM
+                    asd_org_data_auth a
+                LEFT JOIN asd_organization o ON o.org_id = a.data_org_id
+                WHERE
+                    a.emp_id = #{employeeId}
+        )
+        UNION
+            SELECT
+                 org_id as orgId,
+                 org_name as orgName,
+                 org_category as orgCategory,
+                 org_father_id as orgFatherId
+            FROM
+                asd_organization
+            WHERE
+                tenant_id = tenant_id
+            AND org_father_id IN (
+                SELECT
+                            a.data_org_id AS 'orgId'
+                        FROM
+                            asd_org_data_auth a
+                        LEFT JOIN asd_organization o ON o.org_id = a.data_org_id
+                        WHERE
+                            a.emp_id = #{employeeId}
+            )
+            AND org_category IN ('2')
+    </select>
+
+    <select id="getTreeListByOrgIds" resultType="java.util.Map">
+      SELECT
+            o.org_id as orgId,
+            o.org_name as orgName,
+            o.org_father_id as orgFatherId,
+            o.org_category as orgCategory,
+            o.school_number as schoolNumber,
+            x.xdName as xdName
+        FROM
+            asd_organization o
+            LEFT JOIN zyk_xd x on x.xdID = o.xd_id
+        WHERE
+            o.org_category IN ('1', '0')
+        AND o.tenant_id = #{tenantId}
+    </select>
+    
+    <select id="getDepts" resultType="java.util.Map">
+        SELECT
+            o.org_id as orgId,
+            o.org_name as orgName
+        FROM
+            asd_organization o
+        <where>
+            <if test="tenantId != null and tenantId != ''">
+               and  o.tenant_id = #{tenantId}
+            </if>
+            and o.org_category = 2
+        </where>
+    </select>
+
+
+
+    <select id="getOrganizationDept" resultType="java.util.Map">
+(
+	SELECT
+		o.org_id AS orgId,
+		o.org_name AS orgName,
+		o.org_father_id AS orgFatherId,
+		o.org_category AS orgCategory
+	FROM
+		asd_organization o
+	WHERE
+		o.org_id =   #{orgId}
+)
+UNION
+	(
+		SELECT
+			o.org_id AS orgId,
+			o.org_name AS orgName,
+			o.org_father_id AS orgFatherId,
+			o.org_category AS orgCategory
+		FROM
+			asd_organization o
+		WHERE
+			o.org_father_id =   #{orgId}
+	        AND o.org_category = 2
+	)
+
+    </select>
+
+    <select id="getOrganizationByTenantId" resultType="java.util.Map">
+        select o.org_id as orgId, o.org_name as  orgName, o.org_father_id as orgFatherId,
+            o.org_category as orgCategory,
+            o.school_number as schoolNumber,
+            x.xdName as xdName, org_id as `value`, org_name as `name`
+        from asd_organization  o     LEFT JOIN zyk_xd x on x.xdID = o.xd_id where tenant_id = #{tenantId}   AND  org_category in ('0','1')
+    </select>
+
+
+
+    <select id="getOrganizationByOrgId" resultType="java.util.Map">
+        SELECT
+            o.org_id AS orgId,
+            o.org_name AS orgName,
+            o.org_father_id AS orgFatherId,
+            o.org_category AS orgCategory,
+            o.school_number AS schoolNumber,
+            x.xdName AS xdName
+        FROM
+            asd_organization o
+        LEFT JOIN zyk_xd x ON x.xdID = o.xd_id
+        WHERE
+            o.org_id = #{orgId}
+    </select>
+    <select id="getOrgTree" resultType="java.util.Map">
+        SELECT
+        o.org_id AS orgId,
+        o.org_name AS orgName ,
+        o.org_father_id AS orgFatherId,
+        o.org_category AS orgCategory
+        FROM
+        asd_organization o
+        WHERE
+        <if test="tenantId!= null and tenantId.trim() != ''">
+            o.tenant_id=#{tenantId}
+        </if>
+        <if test="orgId!= null and orgId.trim() != ''">
+            o.org_id = #{orgId}
+            OR o.org_father_id =  #{orgId}
+            AND o.org_category='2'
+        </if>
+    </select>
+
+    <select id="getOrgNameById" resultType="string">
+         SELECT
+         o.org_name AS orgName
+        FROM
+         asd_organization o
+         where o.org_id = #{orgId}
+    </select>
+
+
+</mapper>

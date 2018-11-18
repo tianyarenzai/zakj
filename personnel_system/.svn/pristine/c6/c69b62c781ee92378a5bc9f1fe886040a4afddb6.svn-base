@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"></meta>
+    <title>学科管理</title>
+    <script type="text/javascript" th:src="@{/libs/boot.js}"></script>
+    <link th:href="@{/css/button-skin.css}" rel="stylesheet" type="text/css"/>
+    <style type="text/css">
+        html, body {
+            width: 100%;
+            height: 99%;
+            border: 0;
+            margin: 0;
+            padding: 0;
+            overflow: visible;
+        }
+    </style>
+</head>
+<body>
+<div style="width:97%;margin-left:1.5%;">
+    <div class="mini-toolbar" style="border-bottom:0;padding:0px; height: 30px">
+        <table style="width:98%;">
+            <tr>
+                <td style="white-space:nowrap;">
+                    <a class="mini-button" iconCls="icon-add" onclick="add()">选择学科</a>
+                    <a class="mini-button" iconCls="icon-remove" onclick="del()">删除</a>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+<div class="mini-fit">
+    <div id="datagrid1" class="mini-datagrid" style="width:97%;height:100%;float:left;margin-left:1.5%;"
+         url="../employee/schoolsubject/list" idField="id"
+         allowResize="true" sizeList="[20,30,50,100]" pageSize="200">
+        <div property="columns">
+            <div type="indexcolumn"></div>
+            <div type="checkcolumn"></div>
+            <div field="subjectName" width="80" headerAlign="center" align="center" allowsort="true">学科名</div>
+            <div field="note" width="50" align="center" headerAlign="center" allowsort="true">备注</div>
+        </div>
+    </div>
+</div>
+</body>
+<script type="text/javascript">
+    mini.parse();
+    var grid = mini.get("datagrid1");
+    grid.load({
+        key: "", //自定义
+        employeeName: "",
+        pageIndex: 0,
+        pageSize: 100,
+        sortField: "",
+        sortOrder: "asc",
+    });
+
+
+    // 点击增加
+    function add() {
+        var grid = mini.get("datagrid1");
+        mini.open({
+            url: "../utils/subjectChoice",
+            title: "添加学科",
+            width: 1000,
+            height: 550,
+            onload: function () {
+            },
+            ondestroy: function (action) {
+                grid.reload();
+            }
+        });
+    }
+
+    // 点击删除
+    function del() {
+
+        var grid2 = mini.get("datagrid1");
+        var items = grid2.getSelected();
+        grid2.loading("操作中，请稍后......");
+        $.ajax({
+            contentType: "application/json", //RequestBody请求的类型
+            url: "../employee/schoolsubject/delete",
+            data: {
+                schoolSubjectId: items.schoolSubjectId
+            },
+            dataType: 'json',
+            success: function (text) {
+                grid2.reload();
+            },
+            error: function () {
+            }
+        });
+    }
+
+
+</script>
+</html>

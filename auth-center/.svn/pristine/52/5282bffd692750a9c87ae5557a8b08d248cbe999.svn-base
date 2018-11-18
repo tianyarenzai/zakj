@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zakj.auth.dao.UserDao">
+    <select id="getUserByCondition" resultType="com.zakj.auth.entity.User">
+       SELECT
+            u.user_login AS userLogin,
+            u.user_id As userId
+        FROM
+            asd_user_account u
+        WHERE
+            u.user_login = #{loginName}
+        AND u.user_pwd =  #{userPwd}
+
+    </select>
+
+
+</mapper>

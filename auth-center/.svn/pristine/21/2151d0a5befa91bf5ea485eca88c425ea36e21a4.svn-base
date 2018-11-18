@@ -1,0 +1,12 @@
+package com.zakj.auth.service;
+
+import com.zakj.auth.entity.User;
+
+import java.util.Map;
+
+/**
+ * Created by 0ops on 2018/6/19.
+ */
+public interface UserService {
+    User login( Map<String, Object> params);
+}

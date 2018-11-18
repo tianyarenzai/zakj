@@ -1,0 +1,121 @@
+﻿
+	<!DOCTYPE html>
+	<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+	<head>
+		<title>班次设置</title>
+		<link th:href="@{/css/button-skin.css}" rel="stylesheet" type="text/css"/>
+		<script type="text/javascript" th:src="@{/libs/boot.js}"></script>
+	<style type="text/css">
+		html,body
+		{
+			width:100%;
+			height:99%;
+			border:0;
+			margin:0;
+			padding:0;
+			overflow:visible;
+		}
+	</style>
+</head>
+<body>
+
+	<form id="form1" method="post">
+		<input name="teacherTitleId" class="mini-hidden" />
+		<input name="createTime" class="mini-hidden" />
+		<input name="orgName" class="mini-hidden" />
+		<input name="createEmployeeName" class="mini-hidden" />
+		<input name="createUser" class="mini-hidden" />
+		<div style="padding-left:20px;padding-bottom:5px;padding-top:30px;">
+			<table style="table-layout:fixed;">
+				<tr>
+					<td colspan="1.5">职称名称:</td>
+					<td colspan="1.5">
+						<input id="teacherTitleName" name="teacherTitleName" class="mini-textbox" emptyText="请输入职称名称"
+						required="true" />
+					</td>
+				</tr>
+			</table>
+			<br />
+			<div style="padding-top:10px; padding-left: 120px;">
+				<a class="mini-button" iconCls="icon-ok" onclick="onOk">确定</a>
+				<a class="mini-button" iconCls="icon-close" onclick="onCancel">取消</a>
+			</div>
+		</div>
+	</form>
+</body>
+<script type="text/javascript">
+	$(document).ready(function() {
+		$("fieldset div").toggle();
+		$("fieldset legend").click(function() {
+			$(this).parent().find("div").toggle();
+		});
+		/* document.getElementById("wz").style.visibility = "hidden";
+		 banciData();*/
+	});
+
+	mini.parse();
+	var form = new mini.Form("form1");
+	function SaveData() {
+		var o = form.getData();
+		var json = mini.decode([o]);
+		console.info(mini.encode(json[0]));
+		if (json[0].attendanceTimeId == '') {
+			json[0].attendanceTimeId = null;
+		}
+		if (json[0].teacherTitleName == '') {
+			mini.alert("请输入职称！！");
+			return;
+		}
+		console.info("json ---------------------------- " +  mini.encode(json[0]));
+		$.ajax({
+			url : "../../employee/employeeTitle/save",
+			type : 'post',
+			data : {
+				data : mini.encode(json[0])
+			},
+			cache : false,
+			success : function(text) {
+                if (text.code == 0) {
+                    mini.alert(text.msg);
+                } else if (text == 101) {
+                    mini.alert(text.msg);
+                }
+				CloseWindow("save");
+			},
+			error : function(jqXHR, textStatus, errorThrown) {
+				mini.alert(jqXHR.responseText);
+				CloseWindow();
+			}
+		});
+	}
+
+	
+	function GetData() {
+		var o = form.getData();
+		return o;
+	}
+	function CloseWindow(action) {
+		if (action == "close" && form.isChanged()) {
+			if (confirm("数据被修改了，是否先保存？")) {
+				return false;
+			}
+		}
+		if (window.CloseOwnerWindow)
+			return window.CloseOwnerWindow(action);
+		else
+			window.close();
+	}
+	function onOk(e) {
+		SaveData();
+	}
+	function onCancel(e) {
+		CloseWindow("cancel");
+	}
+</script>
+
+</html>
+
+
+
+
+

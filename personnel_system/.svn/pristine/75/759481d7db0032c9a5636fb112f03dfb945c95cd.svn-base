@@ -1,0 +1,661 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zakj.personnel.dao.SmdEmployeeDao">
+
+	<resultMap type="com.zakj.personnel.entity.SmdEmployeeEntity" id="smdEmployeeMap">
+		<result property="employeeDisable" column="employee_disable"/>
+		<result property="employeeId" column="employee_id"/>
+		<result property="userId" column="user_id"/>
+		<result property="employeeName" column="employee_name"/>
+		<result property="employeeSex" column="employee_sex"/>
+		<result property="employeeBirthday" column="employee_birthday"/>
+		<result property="isMarried" column="is_married"/>
+		<result property="employeeNation" column="employee_nation"/>
+		<result property="employeeNativePlace" column="employee_native_place"/>
+		<result property="employeeIdcard" column="employee_idcard"/>
+		<result property="employeeMajor" column="employee_major"/>
+		<result property="employeePolitical" column="employee_political"/>
+		<result property="employeeEdu" column="employee_edu"/>
+		<result property="employeeGraduationSchool" column="employee_graduation_school"/>
+		<result property="employeeGraduationDate" column="employee_graduation_date"/>
+		<result property="employeeJob" column="employee_job"/>
+		<result property="employeeTitle" column="employee_title"/>
+		<result property="employeeTitleDate" column="employee_title_date"/>
+		<result property="isTecherQualification" column="is_techer_qualification"/>
+		<result property="employeeQualification" column="employee_qualification"/>
+		<result property="employeeSubject" column="employee_subject"/>
+		<result property="employeeHealth" column="employee_health"/>
+		<result property="employeePhone" column="employee_phone"/>
+		<result property="employeeAddr" column="employee_addr"/>
+		<result property="employeePostcode" column="employee_postcode"/>
+		<result property="employeeAddrHome" column="employee_addr_home"/>
+		<result property="employeeQq" column="employee_qq"/>
+		<result property="employeeWebchat" column="employee_webchat"/>
+		<result property="employeeEmail" column="employee_email"/>
+		<result property="employeeSkill" column="employee_skill"/>
+		<result property="employeeImgurl" column="employee_imgurl"/>
+		<result property="employeeImgurlTech" column="employee_imgurl_tech"/>
+		<result property="employeeImgurlEdu" column="employee_imgurl_edu"/>
+		<result property="createUser" column="create_user"/>
+		<result property="createTime" column="create_time"/>
+		<result property="createDept" column="create_dept"/>
+		<result property="gradeId" column="grade_id"/>
+		<result property="employeeNo" column="employee_no"/>
+		<result property="employeeIsDirector" column="employee_is_director"/>
+		<result property="employeeDept" column="employee_dept"/>
+		<result property="employeeSchool" column="employee_school"/>
+		<result property="clazzId" column="clazz_id"/>
+		<result property="orgId" column="org_id"/>
+		<result property="employeeFormalId" column="employee_formal_id"/>
+		<result property="employeeDepartureId" column="employee_departure_id"/>
+		<result property="parttimeDept" column="parttime_dept"/>
+		<result property="parttimeJob" column="parttime_job"/>
+		<result property="employeeJobId" column="employee_job_id"/>
+		<result property="employeeState" column="employee_state"/>
+		<result property="parttimeOrgId" column="parttime_org_id"/>
+		<result property="parttimeClazzId" column="parttime_clazz_id"/>
+		<result property="ddUserId" column="dd_user_id"/>
+		<result property="employeeDeptName" column="employee_dept_name"/>
+		<result property="province" column="province"/>
+		<result property="city" column="city"/>
+		<result property="county" column="county"/>
+		<result property="paragraph" column="paragraph"/>
+		<result property="employeeParent" column="employee_parent"/>
+		<result property="employeeParentPhone" column="employee_parent_phone"/>
+		<result property="inductionTime" column="induction_time"/>
+		<result property="subjectId" column="subject_id"/>
+		<result property="tenantId" column="tenant_id"/>
+		<result property="sysState" column="sys_state"/>
+	</resultMap>
+
+	<select id="queryObject" resultType="com.zakj.personnel.entity.SmdEmployeeEntity">
+		select * from smd_employee where employee_id = #{employeeId}
+	</select>
+
+	<select id="queryList" resultMap="smdEmployeeMap">
+		SELECT
+		e.*, s.employee_job AS employee_job
+-- 		e.employee_id,
+-- 		e.employee_name,
+-- 		e.employee_sex,
+-- 		e.employee_state,
+-- 		e.employee_nation,
+-- 		e.employee_no,
+-- 		e.employee_political,
+-- 		e.is_married,
+-- 		e.employee_dept,
+-- 		e.employee_edu,
+-- 		e.employee_major,
+-- 		e.employee_graduation_school,
+-- 		e.employee_graduation_date,
+-- 		e.is_techer_qualification,
+-- 		e.employee_title_date,
+-- 		e.employee_title,
+-- 		e.employee_qualification,
+-- 		e.employee_birthday,
+-- 		e.employee_skill,
+-- 		e.employee_health,
+-- 		e.employee_phone,
+-- 		e.employee_qq,
+-- 		e.employee_webchat,
+-- 		e.employee_idcard,
+-- 		e.employee_native_place,
+-- 		e.employee_postcode,
+-- 		e.employee_email,
+-- 		e.employee_addr,
+-- 		e.create_time,
+-- 		s.employee_job AS employee_job
+		FROM
+		smd_employee e
+		LEFT JOIN smd_employee_job s ON s.employee_job_id = e.employee_job_id
+		<where>
+			<if test="orgId != '' and orgId != null ">
+				and  e.org_id = #{orgId}
+			</if>
+			<if test="employeeDept != '' and employeeDept != null ">
+				and  e.employee_dept = #{employeeDept}
+			</if>
+			<if test="employeeName != '' and employeeName != null ">
+				and  e.employee_name like concat('%', #{employeeName} ,'%')
+			</if>
+			<if test="employeeJob != '' and employeeJob != null">
+				and e.employee_job_id = #{employeeJob}
+			</if>
+            and e.sys_state = 0
+		</where>
+		<choose>
+			<when test="sortField != null and sortField.trim() != ''">
+				order by ${sortField} ${sortOrder}
+			</when>
+			<otherwise>
+                order by employee_id desc
+			</otherwise>
+        </choose>
+		<if test="pageIndex != null and pageSize != null">
+			limit #{pageIndex}, #{pageSize}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from smd_employee e
+		left join smd_employee_job s on s.employee_job_id = e.employee_job_id
+		<where>
+			<if test="orgId != '' and orgId != null ">
+				and  e.org_id = #{orgId}
+			</if>
+			<if test="employeeDept != '' and employeeDept != null ">
+				and  e.employee_dept = #{employeeDept}
+			</if>
+			<if test="employeeName != '' and employeeName != null ">
+				and  e.employee_name like concat('%', #{employeeName} ,'%')
+			</if>
+			<if test="employeeJob != '' and employeeJob != null">
+				and e.employee_job_id = #{employeeJob}
+			</if>
+            and e.sys_state = 0
+		</where>
+	</select>
+	 
+	<insert id="save" parameterType="com.zakj.personnel.entity.SmdEmployeeEntity">
+		<selectKey keyProperty="employeeId" resultType="string"
+				   order="BEFORE">
+			select replace(uuid(), '-', '') as id from dual
+		</selectKey>
+		insert into smd_employee
+		(
+			`employee_disable`, 
+			`employee_id`, 
+			`user_id`, 
+			`employee_name`, 
+			`employee_sex`, 
+			`employee_birthday`, 
+			`is_married`, 
+			`employee_nation`, 
+			`employee_native_place`, 
+			`employee_idcard`, 
+			`employee_major`, 
+			`employee_political`, 
+			`employee_edu`, 
+			`employee_graduation_school`, 
+			`employee_graduation_date`, 
+			`employee_job`, 
+			`employee_title`, 
+			`employee_title_date`, 
+			`is_techer_qualification`, 
+			`employee_qualification`, 
+			`employee_subject`, 
+			`employee_health`, 
+			`employee_phone`, 
+			`employee_addr`, 
+			`employee_postcode`, 
+			`employee_addr_home`, 
+			`employee_qq`, 
+			`employee_webchat`, 
+			`employee_email`, 
+			`employee_skill`, 
+			`employee_imgurl`, 
+			`employee_imgurl_tech`, 
+			`employee_imgurl_edu`, 
+			`create_user`, 
+			`create_time`, 
+			`create_dept`, 
+			`grade_id`, 
+			`employee_no`, 
+			`employee_is_director`, 
+			`employee_dept`, 
+			`employee_school`, 
+			`clazz_id`, 
+			`org_id`, 
+			`employee_formal_id`, 
+			`employee_departure_id`, 
+			`parttime_dept`, 
+			`parttime_job`, 
+			`employee_job_id`, 
+			`employee_state`, 
+			`parttime_org_id`, 
+			`parttime_clazz_id`, 
+			`dd_user_id`, 
+			`employee_dept_name`, 
+			`province`, 
+			`city`, 
+			`county`, 
+			`paragraph`, 
+			`employee_parent`, 
+			`employee_parent_phone`, 
+			`induction_time`,
+			`subject_id`,
+			`tenant_id`,
+		    `import_excel_flag`
+		)
+		values
+		(
+			#{employeeDisable}, 
+			#{employeeId}, 
+			#{userId}, 
+			#{employeeName}, 
+			#{employeeSex}, 
+			#{employeeBirthday}, 
+			#{isMarried}, 
+			#{employeeNation}, 
+			#{employeeNativePlace}, 
+			#{employeeIdcard}, 
+			#{employeeMajor}, 
+			#{employeePolitical}, 
+			#{employeeEdu}, 
+			#{employeeGraduationSchool}, 
+			#{employeeGraduationDate}, 
+			#{employeeJob}, 
+			#{employeeTitle}, 
+			#{employeeTitleDate}, 
+			#{isTecherQualification}, 
+			#{employeeQualification}, 
+			#{employeeSubject}, 
+			#{employeeHealth}, 
+			#{employeePhone}, 
+			#{employeeAddr}, 
+			#{employeePostcode}, 
+			#{employeeAddrHome}, 
+			#{employeeQq}, 
+			#{employeeWebchat}, 
+			#{employeeEmail}, 
+			#{employeeSkill}, 
+			#{employeeImgurl}, 
+			#{employeeImgurlTech}, 
+			#{employeeImgurlEdu}, 
+			#{createUser}, 
+			#{createTime}, 
+			#{createDept}, 
+			#{gradeId}, 
+			#{employeeNo}, 
+			#{employeeIsDirector}, 
+			#{employeeDept}, 
+			#{employeeSchool}, 
+			#{clazzId}, 
+			#{orgId}, 
+			#{employeeFormalId}, 
+			#{employeeDepartureId}, 
+			#{parttimeDept}, 
+			#{parttimeJob}, 
+			#{employeeJobId}, 
+			#{employeeState}, 
+			#{parttimeOrgId}, 
+			#{parttimeClazzId}, 
+			#{ddUserId}, 
+			#{employeeDeptName}, 
+			#{province}, 
+			#{city}, 
+			#{county}, 
+			#{paragraph}, 
+			#{employeeParent}, 
+			#{employeeParentPhone}, 
+			#{inductionTime},
+			#{subjectId},
+			#{tenantId},
+		    #{importExcelFlag}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="com.zakj.personnel.entity.SmdEmployeeEntity">
+		update smd_employee 
+		<set>
+			<if test="employeeDisable != null">`employee_disable` = #{employeeDisable}, </if>
+			<if test="userId != null">`user_id` = #{userId}, </if>
+			<if test="employeeName != null">`employee_name` = #{employeeName}, </if>
+			<if test="employeeSex != null">`employee_sex` = #{employeeSex}, </if>
+			<if test="employeeBirthday != null">`employee_birthday` = #{employeeBirthday}, </if>
+			<if test="isMarried != null">`is_married` = #{isMarried}, </if>
+			<if test="employeeNation != null">`employee_nation` = #{employeeNation}, </if>
+			<if test="employeeNativePlace != null">`employee_native_place` = #{employeeNativePlace}, </if>
+			<if test="employeeIdcard != null">`employee_idcard` = #{employeeIdcard}, </if>
+			<if test="employeeMajor != null">`employee_major` = #{employeeMajor}, </if>
+			<if test="employeePolitical != null">`employee_political` = #{employeePolitical}, </if>
+			<if test="employeeEdu != null">`employee_edu` = #{employeeEdu}, </if>
+			<if test="employeeGraduationSchool != null">`employee_graduation_school` = #{employeeGraduationSchool}, </if>
+			<if test="employeeGraduationDate != null">`employee_graduation_date` = #{employeeGraduationDate}, </if>
+			<if test="employeeJob != null">`employee_job` = #{employeeJob}, </if>
+			<if test="employeeTitle != null">`employee_title` = #{employeeTitle}, </if>
+			<if test="employeeTitleDate != null">`employee_title_date` = #{employeeTitleDate}, </if>
+			<if test="isTecherQualification != null">`is_techer_qualification` = #{isTecherQualification}, </if>
+			<if test="employeeQualification != null">`employee_qualification` = #{employeeQualification}, </if>
+			<if test="employeeSubject != null">`employee_subject` = #{employeeSubject}, </if>
+			<if test="employeeHealth != null">`employee_health` = #{employeeHealth}, </if>
+			<if test="employeePhone != null">`employee_phone` = #{employeePhone}, </if>
+			<if test="employeeAddr != null">`employee_addr` = #{employeeAddr}, </if>
+			<if test="employeePostcode != null">`employee_postcode` = #{employeePostcode}, </if>
+			<if test="employeeAddrHome != null">`employee_addr_home` = #{employeeAddrHome}, </if>
+			<if test="employeeQq != null">`employee_qq` = #{employeeQq}, </if>
+			<if test="employeeWebchat != null">`employee_webchat` = #{employeeWebchat}, </if>
+			<if test="employeeEmail != null">`employee_email` = #{employeeEmail}, </if>
+			<if test="employeeSkill != null">`employee_skill` = #{employeeSkill}, </if>
+			<if test="employeeImgurl != null">`employee_imgurl` = #{employeeImgurl}, </if>
+			<if test="employeeImgurlTech != null">`employee_imgurl_tech` = #{employeeImgurlTech}, </if>
+			<if test="employeeImgurlEdu != null">`employee_imgurl_edu` = #{employeeImgurlEdu}, </if>
+			<if test="createUser != null">`create_user` = #{createUser}, </if>
+			<if test="createTime != null">`create_time` = #{createTime}, </if>
+			<if test="createDept != null">`create_dept` = #{createDept}, </if>
+			<if test="gradeId != null">`grade_id` = #{gradeId}, </if>
+			<if test="employeeNo != null">`employee_no` = #{employeeNo}, </if>
+			<if test="employeeIsDirector != null">`employee_is_director` = #{employeeIsDirector}, </if>
+			<if test="employeeDept != null">`employee_dept` = #{employeeDept}, </if>
+			<if test="employeeSchool != null">`employee_school` = #{employeeSchool}, </if>
+			<if test="clazzId != null">`clazz_id` = #{clazzId}, </if>
+			<if test="orgId != null">`org_id` = #{orgId}, </if>
+			<if test="employeeFormalId != null">`employee_formal_id` = #{employeeFormalId}, </if>
+			<if test="employeeDepartureId != null">`employee_departure_id` = #{employeeDepartureId}, </if>
+			<if test="parttimeDept != null">`parttime_dept` = #{parttimeDept}, </if>
+			<if test="parttimeJob != null">`parttime_job` = #{parttimeJob}, </if>
+			<if test="employeeJobId != null">`employee_job_id` = #{employeeJobId}, </if>
+			<if test="employeeState != null">`employee_state` = #{employeeState}, </if>
+			<if test="parttimeOrgId != null">`parttime_org_id` = #{parttimeOrgId}, </if>
+			<if test="parttimeClazzId != null">`parttime_clazz_id` = #{parttimeClazzId}, </if>
+			<if test="ddUserId != null">`dd_user_id` = #{ddUserId}, </if>
+			<if test="employeeDeptName != null">`employee_dept_name` = #{employeeDeptName}, </if>
+			<if test="province != null">`province` = #{province}, </if>
+			<if test="city != null">`city` = #{city}, </if>
+			<if test="county != null">`county` = #{county}, </if>
+			<if test="paragraph != null">`paragraph` = #{paragraph}, </if>
+			<if test="employeeParent != null">`employee_parent` = #{employeeParent}, </if>
+			<if test="employeeParentPhone != null">`employee_parent_phone` = #{employeeParentPhone}, </if>
+			<if test="inductionTime != null">`induction_time` = #{inductionTime}, </if>
+			<if test="subjectId != null">`subject_id` = #{subjectId},</if>
+			<if test="tenantId != null">`tenant_id` = #{tenantId},</if>
+			<if test="importExcelFlag != null">`import_excel_flag` = #{importExcelFlag}</if>
+		</set>
+		where employee_id = #{employeeId}
+	</update>
+	
+	<delete id="delete">
+		delete from smd_employee where employee_id = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from smd_employee where employee_id in 
+		<foreach item="employeeId" collection="array" open="(" separator="," close=")">
+			#{employeeId}
+		</foreach>
+	</delete>
+
+	<update id="updateEmployeeState">
+		 update smd_employee set sys_state = 1 where employee_id = #{employeeId}
+	</update>
+
+	<update id="updateEmpFormal">
+		update smd_employee set employee_state = 2 where employee_id = #{employeeId}
+	</update>
+
+	<select id="getEmployeeTitles" resultType="java.util.Map">
+		select teacher_title_id, teacher_title_name from smd_employee_teacher_title
+	</select>
+
+	<select id="getChangedJobsTotal" resultType="long">
+		  select count(*) from smd_employee_job_record
+	</select>
+
+	<select id="getEmployeeJobs" resultType="java.util.Map">
+		select j.employee_job_id, j.employee_job from smd_employee_job j
+			left join smd_employee e on e.employee_job_id = j.employee_job_id
+	</select>
+
+	<select id="getEmployeeJobCombobox" resultType="java.util.Map">
+		select employee_job_id as employeeJobId, employee_job as employeeJob from smd_employee_job where tenant_id = #{tenantId}
+	</select>
+	
+	<select id="getEmployeeJobByOrgId" resultType="java.util.Map">
+		select employee_job_id as employeeJobId, employee_job as employeeJob from smd_employee_job where job_school = #{orgId} and tenant_id = #{tenantId}
+	</select>
+
+	<select id="getLeaveEmpList" resultMap="smdEmployeeMap">
+		select e.*, s.employee_job as employee_job from smd_employee e
+		left join smd_employee_job s on s.employee_job_id = e.employee_job_id
+		<where>
+			 and e.employee_state = 3
+			<if test="employeeName != '' and employeeName != null ">
+				and  e.employee_name like concat('%',#{employeeName},'%')
+			</if>
+		</where>
+		<choose>
+			<when test="sortField != null and sortField.trim() != ''">
+				order by ${sortField} ${sortOrder}
+			</when>
+			<otherwise>
+				order by employee_id desc
+			</otherwise>
+		</choose>
+		<if test="pageIndex != null and pageSize != null">
+			limit #{pageIndex}, #{pageSize}
+		</if>
+	</select>
+
+	<select id="getLeaveEmpTotal" resultType="int">
+		select count(*) from smd_employee e
+		left join smd_employee_job s on s.employee_job_id = e.employee_job_id
+		<where>
+			and e.employee_state = 3
+			<if test="employeeName != '' and employeeName != null ">
+				and  e.employee_name = #{employee_name}
+			</if>
+		</where>
+	</select>
+
+	<select id="getHeadTeacherTeachClazzs" resultType="java.util.Map">
+		SELECT
+		e.org_id as orgId,
+		e.employee_id as employeeId,
+		e.employee_name as employeeName,
+		e.clazz_id as clazzId,
+		(
+		SELECT
+		concat(
+		r1.grade_year_name,
+		y1.sys_clazz_name
+		)
+		FROM
+		smd_employee emp
+		LEFT JOIN smd_sm_clazz cla ON emp.clazz_id = cla.clazz_id
+		LEFT JOIN smd_sm_grade gr ON gr.grade_id = cla.grade_id
+		LEFT JOIN smd_sm_sys_clazz y1 ON y1.sys_clazz_id = cla.sys_clazz_id
+		LEFT JOIN smd_sm_gy_grade_year r1 ON r1.grade_year_id = gr.grade_year_id
+		WHERE
+		1 = 1
+		AND emp.employee_id = e.employee_id
+		) gradeName,
+		GROUP_CONCAT(
+		r.grade_year_name,
+		y.sys_clazz_name
+		) AS clazz,
+		t.subject_name as subjectName
+		FROM
+		smd_employee e
+		LEFT JOIN smd_employee_clazz_subject s ON s.employee_id = e.employee_id
+		LEFT JOIN smd_sm_clazz c ON c.clazz_id = s.clazz_id
+		LEFT JOIN smd_sm_grade g ON g.grade_id = c.grade_id
+		LEFT JOIN smd_sm_sys_clazz y ON y.sys_clazz_id = c.sys_clazz_id
+		LEFT JOIN smd_sm_gy_grade_year r ON r.grade_year_id = g.grade_year_id
+		LEFT JOIN smd_ss_school_subject u ON u.school_subject_id = e.subject_id
+		LEFT JOIN smd_ss_subject t on t.subject_id = u.subject_id
+        <where>
+            <if test="orgId != null and orgId != ''">
+               and  e.org_id = #{orgId}
+            </if>
+            <if test="employeeName != null and employeeName != ''">
+               and e.employee_name like concat('%', #{employeeName} ,'%')
+            </if>
+            <if test="gradeId != null and gradeId != ''">
+                and e.grade_id =  #{gradeId}
+            </if>
+            <if test="clazzId != null and clazzId != ''">
+                and e.clazz_id = #{clazzId}
+            </if>
+			<if test="subjectId != null and subjectId != ''">
+				and e.subject_id = #{subjectId}
+			</if>
+        </where>
+		GROUP BY
+		e.employee_id
+        <choose>
+            <when test="sortField != null and sortField.trim() != ''">
+                order by ${sortField} ${sortOrder}
+            </when>
+            <otherwise>
+                order by e.employee_id desc
+            </otherwise>
+        </choose>
+        <if test="pageIndex != null and pageSize != null">
+            limit #{pageIndex}, #{pageSize}
+        </if>
+	</select>
+
+	<select id="getHeadTeacherTeachClazzTotal" resultType="long">
+		SELECT
+		 COUNT(*)
+		FROM
+		smd_employee e
+		LEFT JOIN smd_employee_clazz_subject s ON s.employee_id = e.employee_id
+		LEFT JOIN smd_sm_clazz c ON c.clazz_id = s.clazz_id
+		LEFT JOIN smd_sm_grade g ON g.grade_id = c.grade_id
+		LEFT JOIN smd_sm_sys_clazz y ON y.sys_clazz_id = c.sys_clazz_id
+		LEFT JOIN smd_sm_gy_grade_year r ON r.grade_year_id = g.grade_year_id
+		LEFT JOIN smd_ss_subject u on u.subject_id = e.subject_id
+		<where>
+			<if test="orgId != null and orgId != ''">
+				and  e.org_id = #{orgId}
+			</if>
+			<if test="employeeName != null and employeeName != ''">
+				and e.employee_name like concat('%', #{employeeName} ,'%')
+			</if>
+			<if test="gradeId != null and gradeId != ''">
+				and e.grade_id =  #{gradeId}
+			</if>
+			<if test="clazzId != null and clazzId != ''">
+				and e.clazz_id = #{clazzId}
+			</if>
+			<if test="subjectId != null and subjectId != ''">
+				and e.subject_id = #{subjectId}
+			</if>
+		</where>
+	</select>
+
+	<select id="getExportData" resultType="java.util.Map">
+		SELECT
+			e.province as province,
+			e.city as city,
+			e.county  as county,
+			s.employee_job AS employee_job,
+			e.paragraph as paragraph,
+			e.employee_name as employee_name,
+			e.employee_sex as employee_sex,
+			e.employee_phone as employee_phone,
+			e.employee_idcard as employee_idcard,
+			e.employee_parent as employee_parent,
+			e.employee_parent_phone as employee_parent_phone,
+			e.employee_edu as employee_edu,
+			e.employee_dept as employee_dept,
+			e.org_id as org_id,
+			e.employee_school as employee_school,
+			y.grade_year_name as grade_year_name,
+			d.sys_clazz_name as sys_claxx_name,
+			j.subject_name as subject_name
+		FROM
+			smd_employee e
+			LEFT JOIN smd_employee_job s ON s.employee_job_id = e.employee_job_id
+			LEFT JOIN smd_sm_grade g on g.grade_id = e.grade_id
+			LEFT JOIN smd_sm_gy_grade_year y on y.grade_year_id = g.grade_year_id
+			LEFT JOIN smd_sm_clazz c on c.clazz_id = e.clazz_id
+			LEFT JOIN smd_sm_sys_clazz d on d.sys_clazz_id = c.sys_clazz_id
+			LEFT JOIN smd_ss_subject j on j.subject_id = e.subject_id
+		<where>
+			<if test="orgId != '' and orgId != null ">
+				and  e.org_id = #{orgId}
+			</if>
+			<if test="employeeDept != '' and employeeDept != null ">
+				and  e.employee_dept = #{employeeDept}
+			</if>
+			<if test="employeeName != '' and employeeName != null ">
+				and  e.employee_name like concat('%', #{employeeName} ,'%')
+			</if>
+			<if test="employeeJob != '' and employeeJob != null">
+				and e.employee_job_id = #{employeeJob}
+			</if>
+		</where>
+		<choose>
+			<when test="sortField != null and sortField.trim() != ''">
+				order by ${sortField} ${sortOrder}
+			</when>
+			<otherwise>
+				order by employee_id desc
+			</otherwise>
+		</choose>
+		<if test="pageIndex != null and pageSize != null">
+			limit #{pageIndex}, #{pageSize}
+		</if>
+	</select>
+	
+	<update id="updateResume" parameterType="com.zakj.personnel.entity.SmdEmployeeEntity">
+		update smd_employee
+		<set>
+			<if test="employeeImgurlEdu != null">`employee_imgurl_edu` = #{employeeImgurlEdu} </if>
+		</set>
+		where employee_id = #{employeeId}
+	</update>
+
+	<select id="getEmployeeResumeUrl" resultType="com.zakj.personnel.entity.SmdEmployeeEntity">
+		  select employee_name,employee_imgurl_edu from smd_employee where employee_id = #{employeeId}
+	</select>
+
+	<update id="setHeaderTeacher" parameterType="com.zakj.personnel.entity.SmdEmployeeEntity">
+		update smd_employee set clazz_id = #{clazzId}, org_id = #{orgId}, grade_id = #{gradeId} where employee_id = #{employeeId}
+	</update>
+
+	<select id="isExitWhichClazz" resultType="com.zakj.personnel.entity.SmdEmployeeEntity">
+		select e.employee_name, concat(r.grade_year_name,s.sys_clazz_name) as teachClazz from smd_employee e
+			LEFT JOIN smd_sm_grade g on g.grade_id = e.grade_id
+			LEFT JOIN smd_sm_gy_grade_year r on r.grade_year_id = g.grade_year_id
+			LEFT JOIN smd_sm_clazz c on c.clazz_id = e.clazz_id
+			left join smd_sm_sys_clazz s on s.sys_clazz_id = c.sys_clazz_id
+			where e.employee_id = #{employeeId}
+	</select>
+
+	<select id="isExistEmpName" resultType="com.zakj.personnel.entity.SmdEmployeeEntity">
+		select * from smd_employee where employee_name = #{employeeName}
+	</select>
+
+	<select id="isEmpIdCard" resultType="com.zakj.personnel.entity.SmdEmployeeEntity">
+		select * from smd_employee where employee_idcard = #{employeeIdCard}
+	</select>
+
+	<select id="isExistEmpPhone" resultType="com.zakj.personnel.entity.SmdEmployeeEntity">
+		select * from smd_employee where employee_phone = #{employeePhone}
+	</select>
+
+	<select id="getEmployeeByJobIds"   resultType="java.util.Map">
+		SELECT
+			*
+		FROM
+			smd_employee e
+		WHERE
+			e.employee_job_id IN
+			<foreach collection="array" index="ids" item="ids" open="(" separator="," close=")">
+				#{ids}
+			</foreach>
+	</select>
+
+    <select id="login" resultType="java.util.Map">
+    SELECT
+        a.user_id,
+        a.clazz_id,
+        a.tenant_id,
+        a.employee_id,
+        a.employee_name,
+        a.employee_school,
+        a.employee_job,
+        a.employee_job_id,
+        a.employee_dept,
+        a.employee_disable,
+        a.org_id
+    FROM
+    smd_employee a
+    WHERE
+    a.user_id = #{userId}
+    </select>
+</mapper>

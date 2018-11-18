@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<html>
+<head>
+    <meta charset="utf-8" name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"></meta>
+    <title>奖惩管理</title>
+    <script type="text/javascript" th:src="@{/libs/boot.js}"></script>
+    <link href="/css/button-skin.css" rel="stylesheet" type="text/css"/>
+    <style type="text/css">
+        html, body {
+            width: 100%;
+            height: 98%;
+            border: 0;
+            margin: 0;
+            padding: 0;
+            overflow: visible;
+        }
+    </style>
+</head>
+<body>
+<div style="width:98%;margin-left:1%;margin-top:15px;">
+    <div class="mini-toolbar" style="border-bottom:0;padding:0px; height: 30px">
+        <table style="width:98%;">
+            <tr>
+                <td style="white-space:nowrap;">
+                    <a class="mini-button" iconCls="icon-add" onclick="add()">新增</a>
+                    <a class="mini-button" iconCls="icon-remove" onclick="del()">删除</a>
+                    <a class="mini-button" iconCls="icon-edit" onclick="edit()">编辑</a>
+                    <!-- <input id="orgId" name="orgId" class="mini-combobox"                               valueField="orgId" textField="orgName"                               url="../auth/org/getOrganizations" style="width:180px;"                               emptyText="请选择学校" onvaluechanged="orgId(e)"/>
+                   --> <input id="employeeName" name="employee_name" class="mini-textbox" emptyText="请输入姓名"/>
+                    <a class="mini-button" iconCls="icon-search" onclick="search()">查询</a>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+<!--  <%&#45;&#45;奖惩列表&#45;&#45;%>-->
+<div class="mini-fit">
+    <div id="datagrid1" class="mini-datagrid" style="width:98%;height:100%;float:left;margin-left:1%;"
+         url="../employee/reward/list" idField="id"
+         allowResize="true" sizeList="[20,30,50,100]" pageSize="200">
+        <div property="columns">
+            <div type="indexcolumn"></div>
+            <div type="checkcolumn"></div>
+            <div field="employeeName" width="80" headerAlign="center" align="center" allowsort="true">姓名
+            </div>
+            <div field="rewardType" width="80" align="center"
+                 headerAlign="center" allowsort="true" renderer="formatType">奖惩类别
+            </div>
+            <div field="rewardName" width="80" align="center"
+                 headerAlign="center" allowsort="true">奖惩记录
+            </div>
+            <div field="rewardDate" width="80" align="center"
+                 headerAlign="center" allowsort="true">日期
+            </div>
+            <div field="rewardContent" width="80" headerAlign="center"
+                 align="center" allowSort="true">奖惩内容
+            </div>
+            <div field="createEmpName" width="80" headerAlign="center"
+                 align="center" allowSort="true">记录人
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script type="text/javascript">
+    mini.parse();
+    var grid = mini.get("datagrid1");
+
+    grid.load({
+        type: 0,
+        pageIndex: 0,
+        pageSize: 100,
+        sortField: "",
+        sortOrder: "asc",
+        employeeName: "",
+    });
+
+    // 类型转换
+    function formatType(e) {
+        var value = e.value;
+        if (value == 0) {
+            return "奖励";
+        }
+        return "惩罚";
+    }
+
+
+    // 点击增加
+    function add() {
+        var grid = mini.get("datagrid1");
+        mini.open({
+            url: "../employee/reward/add",
+            title: "添加奖惩记录",
+            width: 800,
+            height: 400,
+            onload: function () {
+                var iframe = this.getIFrameEl();
+            },
+            ondestroy: function (action) {
+                grid.reload();
+            }
+        });
+    }
+
+
+    // 点击删除
+    function del() {
+        var grid = mini.get("datagrid1");
+        var row = grid.getSelected();
+        if (row) {
+            mini.confirm("确定删除记录？", "确定？", function (action) {
+                if (action == "ok") {
+                    $.ajax({
+                        url: "../employee/reward/delete?rewardId=" + row.rewardId,
+                        success: function (text) {
+                            if (text.code == 0) {
+                                mini.alert(text.msg);
+                            } else if (text == 101) {
+                                mini.alert(text.msg);
+                            }
+                            grid.reload();
+                        },
+                        error: function () {
+                        }
+                    });
+                } else {
+                    mini.alert("不删除!");
+                }
+            });
+        }
+        else {
+            mini.alert("请选择一条信息！");
+        }
+    }
+
+
+    // 点击修改
+    function edit() {
+        var grid = mini.get("datagrid1");
+        var row = grid.getSelected();
+        if (row) {
+            mini.open({
+                url: "../employee/reward/edit?rewardId=" + row.rewardId,
+                title: "编辑奖惩记录",
+                width: 800,
+                height: 400,
+                onload: function () {
+                },
+                ondestroy: function (action) {
+                    grid.reload();
+                }
+            });
+        } else {
+            mini.alert("请选中一条记录!");
+        }
+    }
+
+    // 搜索
+    function search() {
+        console.info("search");
+        var employeeName = mini.get("employeeName").getValue();
+        grid.load({
+            employeeName: employeeName,
+            type: 1,
+            pageIndex: 0,
+            pageSize: 100,
+            sortField: "",
+            sortOrder: "asc"
+        });
+    }
+</script>
+</html>

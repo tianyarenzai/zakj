@@ -1,0 +1,219 @@
+package com.zakj.personnel.service;
+
+import com.zakj.personnel.entity.SmdEmployeeEntity;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * InnoDB free: 6144 kB; (`user_id`) REFER `renren_fast/asd_user_account`(`user_id`
+ * 
+ * @author chenshun
+ * @email sunlightcs@gmail.com
+ * @date 2018-02-24 11:47:53
+ */
+public interface SmdEmployeeService {
+
+	/**
+	 * 获取职工信息
+	 * @param employeeId
+	 * @return
+	 */
+	SmdEmployeeEntity queryObject(String employeeId);
+
+	/**
+	 * 获取职工信息列表
+	 * @param map
+	 * @return
+	 */
+	List<Map<String, Object>> queryList(Map<String, Object> map);
+
+	/**
+	 * 获取职工信息列表总数
+	 * @param map
+	 * @return
+	 */
+	int queryTotal(Map<String, Object> map);
+
+	/**
+	 * 保存职工信息
+	 * @param smdEmployee
+	 */
+	void save(SmdEmployeeEntity smdEmployee);
+
+	/**
+	 * 更新职工信息
+	 * @param smdEmployee
+	 */
+	void update(SmdEmployeeEntity smdEmployee);
+
+	/**
+	 * 删除职工信息
+	 * @param employeeId
+	 */
+	void delete(String employeeId);
+
+	/**
+	 * 批量删除职工信息
+	 * @param employeeIds
+	 */
+	void deleteBatch(String[] employeeIds);
+
+	/**
+	 * 更新职工状态
+	 * @param employeeId
+	 */
+	void updateEmpState(String employeeId);
+
+	/**
+	 *获取职称信息
+	 * @return
+	 */
+	List<Map<String,Object>> getEmployeeTitles();
+
+	/**
+	 * 获取职位变更记录总数
+	 * @param map
+	 * @return
+	 */
+	long getChangedJobsTotal(Map<String, Object> map);
+
+	/**
+	 * 获取职工职位
+	 * @return
+	 */
+    List<Map<String,Object>> getEmployeeJobs();
+
+	/**
+	 * 获取企业下的所有职务
+	 *
+     * @param tenantId
+     * @return
+	 */
+	List<Map<String,Object>> getEmployeeJobCombobox(String tenantId);
+
+	/**
+	 * 获取离职员工列表信息
+	 * @param map
+	 * @return
+	 */
+    List<Map<String,Object>> getLeaveEmpList(Map<String, Object> map);
+
+	/**
+	 * 获取离职员工列表信息数量
+	 * @param map
+	 * @return
+	 */
+	int getLeaveEmpTotal(Map<String, Object> map);
+
+	/**
+	 * 获取班主任及代课管理信息记录数
+	 * @param map
+	 * @return
+	 */
+    long getHeadTeacherTeachClazzTotal(Map<String, Object> map);
+
+	/**
+	 * 获取班主任及代课管理信息
+	 * @param map
+	 * @return
+	 */
+	List<Map<String,Object>> getHeadTeacherTeachClazzs(Map<String, Object> map);
+
+	/**
+	 * 导出excel
+	 * @param map
+	 * @param request
+	 * @param response
+	 * @throws Exception
+	 */
+    void exportExcel(Map<String, Object> map, HttpServletRequest request, HttpServletResponse response) throws Exception;
+
+	/**
+	 * 更新简历路径
+	 * @param entity
+	 */
+    void updateResume(SmdEmployeeEntity entity);
+
+	/**
+	 * 获取到职工简历的路径
+	 * @param employeeId
+	 * @return
+	 */
+	SmdEmployeeEntity getEmployeeResumeUrl(String employeeId);
+
+	/**
+	 * 获取学校下的职务信息
+	 * @param orgId
+	 * @param tenantId
+	 * @return
+	 */
+    List<Map<String,Object>> getEmployeeJobByOrgId(String orgId, String tenantId);
+
+
+	/**
+	 * 设置班主任
+	 * @param entity
+	 */
+	void setHeaderTeacher(SmdEmployeeEntity entity);
+
+
+	/**
+	 * 查找当前员工是否已是某班的班主任
+	 * @param employeeId
+	 * @return
+	 */
+    SmdEmployeeEntity isExitWhichClazz(String employeeId);
+
+	/**
+	 * 导出excel模板
+	 * @param map
+	 * @param request
+	 * @param response
+	 */
+    void exportExcelTemplate(Map<String, Object> map, HttpServletRequest request, HttpServletResponse response) throws Exception;
+
+	/**
+	 * 导入职工数据保存到数据库
+	 * @param list
+	 */
+	void saveBatch(List<SmdEmployeeEntity> list);
+
+	/**
+	 * 判断职工是否存在
+	 * @param employeeName
+	 * @return
+	 */
+    List<SmdEmployeeEntity> isExistEmpName(String employeeName);
+
+	/**
+	 * 判断职工身份证号码是否存在
+	 * @param employeeIdCard
+	 * @return
+	 */
+	List<SmdEmployeeEntity> isExistEmpIdCard(String employeeIdCard);
+
+	/**
+	 * 判断职工手机号码是否存在
+	 * @param employeePhone
+	 * @return
+	 */
+	List<SmdEmployeeEntity> isExistEmpPhone(String employeePhone);
+
+	/**
+	 * 通过职务Ids查找职工信息
+	 * @param ids
+	 * @return
+	 */
+    List<Map<String,Object>> getEmployeeByJobIds(String[] ids);
+
+
+	/**
+	 * 获取登录信息
+	 * @param map1
+	 * @return
+	 */
+    Map<String,Object> login(Map<String, Object> map1);
+}

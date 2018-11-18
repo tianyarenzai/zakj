@@ -1,0 +1,111 @@
+(function($){
+	$.extend({
+		/**
+		 * 按钮权限控制 面向大众
+		 */
+	   	buttonGrant: function(options) {
+	   		var opts = $.extend({},options);
+	   		var div = opts.div;
+	   		$.ajax({
+	   			url : getRootPath()+"/system/empauth!getButtonGrant.action",
+				type : "post",
+				dataType:"json",
+				data : {"params":getWhVal()},
+				success : function(data){
+					if (data != '2'){
+						$.each(data,function(i,val){
+							var tb = "",name = val.name;
+							if (name.indexOf("新增") != -1){
+								tb = "fa-plus";
+							} else if (name.indexOf("编辑") != -1){
+								tb = "fa-edit";
+							} else if (name.indexOf("删除") != -1){
+								tb = "fa-trash-o";
+							} else if (name.indexOf("导入") != -1) {
+								tb = "fa-upload";
+							} else if (name.indexOf("导出") != -1 || name.indexOf("下载") != -1){
+								tb = "fa-download";
+							} else if (name.indexOf("重置") != -1) {
+								tb = "fa-mail-reply";
+							} else if (name.indexOf("查询") != -1) {
+								tb = "fa-search";
+							} else {
+								tb = "fa-save";
+							}
+							var input = $("<a class=\"button1\" href=\"javascript:;\" onclick=\""+val.url+"\"><span class=\"tp fa "+tb+" fa-fw\"></span>"+name+"</a>");
+							$(div).append(input);
+						});
+					} else {
+						alert("按钮权限加载失败");
+					}
+				},
+				error : function(){
+					alert("网络错误,按钮权限失败");
+				}
+	   		});
+	    },
+	    /**
+		 * 按钮权限控制 面向内部人员
+		 */
+		buttonGrantAdmin: function(options) {
+	   		var opts = $.extend({},options);
+	   		var div = opts.div;
+	   		var tbdiv = opts.tbdiv;
+	   		$.ajax({
+	   			url : getRootPath()+"/admin/roleApplication!getButtonGrant.action",
+				type : "post",
+				dataType:"json",
+				data : {"params":getWhVal()},
+				success : function(data){
+					if (data != '2'){
+						$.each(data,function(i,val){
+							var tb = "",name = val.name;
+							if (name.indexOf("新增") != -1){
+								tb = "fa-plus";
+							} else if (name.indexOf("编辑") != -1){
+								tb = "fa-edit";
+							} else if (name.indexOf("删除") != -1){
+								tb = "fa-trash-o";
+							} else if (name.indexOf("导入") != -1) {
+								tb = "fa-upload";
+							} else if (name.indexOf("重置") != -1) {
+								tb = "fa-mail-reply";
+							} else {
+								tb = "fa-save";
+							}
+							var input = $("<a class=\"button1\" href=\"javascript:;\" onclick=\""+val.url+"\"><span class=\"tp fa "+tb+" fa-fw\"></span>"+name+"</a>");
+							//判断有么有特别的需要放在别的地方的按钮
+							/**if (null != tbdiv){
+								if (tbdiv[0].val == name){
+									$(tbdiv[0].div).append(input);
+									return true;
+								}
+							}*/
+							$(div).append(input);
+						});
+					} else {
+						alert("按钮权限加载失败");
+					}
+				},
+				error : function(){
+					alert("网络错误,按钮权限失败");
+				}
+	   		});
+	    }
+	});
+})(jQuery);
+
+/**
+ * 获取地址栏的参数值 
+ * @params name(key)  alert(GetQueryString("参数名1"));
+ */
+function getUrlParams(name){
+	var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
+    var r = window.location.search.substr(1).match(reg);
+    if(r!=null)return  unescape(r[2]); return null;
+}
+
+/**获取问号后面的所有的值*/
+function getWhVal() { 
+	return window.location.search.substring(1);
+} 

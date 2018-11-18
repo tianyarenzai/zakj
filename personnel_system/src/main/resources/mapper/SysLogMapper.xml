@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zakj.security.dao.SysLogDao">
+
+	<select id="queryObject" resultType="com.zakj.security.entity.SysLogEntity">
+		select * from smd_sm_sys_log where id = #{value}
+	</select>
+
+	<select id="queryList" resultType="com.zakj.security.entity.SysLogEntity">
+		select * from smd_sm_sys_log
+		<where>
+			<if test="username != null and username.trim() != ''">
+			and	`username` like concat('%',#{username},'%') 
+			</if>
+			<if test="params != null and params.trim() != ''">
+			and 	`params` like concat('%',#{params},'%') 
+			</if>
+			
+			 <if test=" start_month != null and    start_month.trim() != ''">
+				and create_date  &gt;#{start_month} 
+			</if>
+			<if test=" end_month != null and    end_month.trim() != ''">
+				and create_date  &lt;#{end_month} 
+			</if>
+			 
+		</where>
+<choose>
+			<when test="sortField != null and sortField.trim() != ''">
+				order by ${sortField} ${sortOrder}
+			</when>
+			<otherwise>
+			order by id desc 
+			</otherwise>
+		</choose>
+			<if test="pageIndex != null and pageSize != null">
+			limit #{pageIndex}, #{pageSize}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from smd_sm_sys_log
+		<where>
+		<if test="username != null and username.trim() != ''">
+					and `username` like concat('%',#{username},'%') 
+			</if>
+			<if test="params != null and params.trim() != ''">
+				and 	`params` like concat('%',#{params},'%') 
+			</if>
+			 <if test=" start_month != null and    start_month.trim() != ''">
+				and create_date  &gt;#{start_month} 
+			</if>
+			<if test=" end_month != null and    end_month.trim() != ''">
+				and create_date  &lt;#{end_month} 
+			</if>
+			<!-- <if test="username != null and key.trim() != ''">
+				`username` like concat('%',#{key},'%') or `operation` like concat('%',#{key},'%')
+			</if> -->
+		</where>
+	</select>
+	
+	
+	 
+	<insert id="save" parameterType="com.zakj.security.entity.SysLogEntity" useGeneratedKeys="true" keyProperty="id">
+		
+	 INSERT INTO smd_sm_sys_log (
+`username`,
+`operation`,
+`method`,
+`params`,
+`time`,
+`ip`,
+`create_date`,
+`user_id`,
+`emp_id`,
+`access_address`,
+`tenant_id`,
+`org_id`
+)
+		values (
+#{username},
+#{operation},
+#{method},
+#{params},
+#{time},
+#{ip},
+#{createDate},
+#{userId},
+#{empId},
+#{accessAddress},
+#{tenantId},
+#{orgId}
+
+)
+		
+	</insert>
+	 
+	<insert id="saveLog" parameterType="com.zakj.security.entity.SysLogEntity" useGeneratedKeys="true" keyProperty="id">
+
+			 INSERT INTO smd_sm_sys_log (
+
+`username`,
+`operation`,
+`method`,
+`params`,
+`time`,
+`ip`,
+`create_date`,
+`user_id`,
+`emp_id`,
+`access_address`,
+`tenant_id`,
+`org_id`
+)
+		values (
+
+#{username},
+#{operation},
+#{method},
+#{params},
+#{time},
+#{ip},
+#{createDate},
+#{userId},
+#{empId},
+#{accessAddress},
+#{tenantId},
+#{orgId}
+
+)
+	</insert>
+	 
+	<update id="update" parameterType="com.zakj.security.entity.SysLogEntity">
+		update smd_sm_sys_log
+		<set>
+			<if test="username != null">`username` = #{username}, </if>
+			<if test="operation != null">`operation` = #{operation}, </if>
+			<if test="method != null">`method` = #{method}, </if>
+			<if test="params != null">`params` = #{params}, </if>
+			<if test="ip != null">`ip` = #{ip} </if>
+		</set>
+		where id = #{id}
+	</update>
+	
+	<delete id="delete">
+		delete from smd_sm_sys_log where id = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from smd_sm_sys_log where id in
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+</mapper>

@@ -1,0 +1,80 @@
+package com.zakj.personnel.service.impl;
+
+import com.zakj.personnel.dao.SmdCeRemindDao;
+import com.zakj.personnel.entity.SmdCeRemindEntity;
+import com.zakj.personnel.service.SmdCeRemindService;
+import com.zakj.utils.HttpContextUtils;
+import com.zakj.utils.RestTemplateUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * 提醒Service接口
+ *
+ * @author zhangxia
+ * @email zhangxia_rgcdlb@163.com
+ * @date 2018-03-11 17:04:24
+ */
+
+@Service("smdCeRemindService")
+public class SmdCeRemindServiceImpl implements SmdCeRemindService {
+	@Autowired
+	private SmdCeRemindDao smdCeRemindDao;
+	
+	@Override
+	public SmdCeRemindEntity queryObject(String remindId){
+		return smdCeRemindDao.queryObject(remindId);
+	}
+	
+	@Override
+	public List<Map<String,Object>> queryList(Map<String, Object> map){
+		return smdCeRemindDao.queryList(map);
+	}
+	
+	@Override
+	public int queryTotal(Map<String, Object> map){
+		return smdCeRemindDao.queryTotal(map);
+	}
+	
+	@Override
+	public void save(SmdCeRemindEntity smdCeRemind){
+		smdCeRemindDao.save(smdCeRemind);
+	}
+	
+	@Override
+	public void update(SmdCeRemindEntity smdCeRemind){
+		smdCeRemindDao.update(smdCeRemind);
+	}
+	
+	@Override
+	public void delete(String remindId){
+		smdCeRemindDao.delete(remindId);
+	}
+	
+	@Override
+	public void deleteBatch(String[] remindIds){
+		smdCeRemindDao.deleteBatch(remindIds);
+	}
+
+
+
+	@Override
+	public String messageRemindOper(String userId, String content, String tenantId) {
+		String jsonStr = null;
+		try {
+			String url = "http://localhost/message/message/messageRemindOper?userId=" + userId +"&content="+ content +"&tenantId="+ tenantId;
+			HttpServletRequest req = HttpContextUtils.getHttpServletRequest();
+			Map<String, Object> params = new HashMap<String, Object>();
+			jsonStr = RestTemplateUtil.post(req, url, params);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return jsonStr;
+	}
+
+}

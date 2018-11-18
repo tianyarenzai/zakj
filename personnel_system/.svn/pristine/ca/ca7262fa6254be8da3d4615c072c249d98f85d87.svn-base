@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zakj.personnel.dao.SmdEmployeeClazzSubjectDao">
+
+	<resultMap type="com.zakj.personnel.entity.SmdEmployeeClazzSubjectEntity" id="smdEmployeeClazzSubjectMap">
+		<result property="disciplineId" column="discipline_id"/>
+		<result property="employeeId" column="employee_id"/>
+		<result property="xkId" column="xk_id"/>
+		<result property="clazzId" column="clazz_id"/>
+		<result property="sysGradeId" column="sys_grade_id"/>
+		<result property="gradeId" column="grade_id"/>
+		<result property="subjectName" column="subject_name"/>
+		<result property="sysClazzName" column="sys_clazz_name"/>
+		<result property="gradeYearName" column="grade_year_name"/>
+		<result property="subjectId" column="subject_id"/>
+	</resultMap>
+
+	<select id="queryObject" resultType="com.zakj.personnel.entity.SmdEmployeeClazzSubjectEntity">
+		select * from smd_employee_clazz_subject where discipline_id = #{value}
+	</select>
+
+	<select id="queryList" resultMap="smdEmployeeClazzSubjectMap">
+		SELECT
+		s.*, c.grade_id,
+		h.subject_id,
+		b.subject_name,
+		y.sys_clazz_name,
+		r.grade_year_name
+		FROM
+		smd_employee_clazz_subject s
+		LEFT JOIN smd_ss_school_subject h on h.school_subject_id = s.xk_id
+		LEFT JOIN smd_ss_subject b on b.subject_id = h.subject_id
+		LEFT JOIN smd_sm_clazz c ON c.clazz_id = s.clazz_id
+		LEFT JOIN smd_sm_grade g ON g.grade_id = c.grade_id
+		LEFT JOIN smd_sm_sys_clazz y ON y.sys_clazz_id = c.sys_clazz_id
+		LEFT JOIN smd_sm_gy_grade_year r ON r.grade_year_id = g.grade_year_id
+			where employee_id = #{employeeId}
+		   and g.org_id = #{orgId}
+        <choose>
+			<when test="sortField != null and sortField.trim() != ''">
+				order by ${sortField} ${sortOrder}
+			</when>
+			<otherwise>
+                order by discipline_id desc
+			</otherwise>
+        </choose>
+		<if test="pageIndex != null and pageSize != null">
+			limit #{pageIndex}, #{pageSize}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) FROM
+		smd_employee_clazz_subject s
+			LEFT JOIN smd_sm_clazz c ON c.clazz_id=s.clazz_id
+			LEFT JOIN smd_sm_grade g ON g.grade_id=c.grade_id
+			LEFT JOIN smd_sm_sys_clazz y ON y.sys_clazz_id=c.sys_clazz_id
+			LEFT JOIN smd_sm_gy_grade_year r ON r.grade_year_id=g.grade_year_id
+			where employee_id = #{employeeId}
+			  and g.org_id = #{orgId}
+	</select>
+	 
+	<insert id="save" parameterType="com.zakj.personnel.entity.SmdEmployeeClazzSubjectEntity">
+		<selectKey keyProperty="disciplineId" resultType="string"
+				   order="BEFORE">
+			select replace(uuid(), '-', '') as id from dual
+		</selectKey>
+		insert into smd_employee_clazz_subject
+		(
+			`discipline_id`, 
+			`employee_id`, 
+			`xk_id`, 
+			`clazz_id`, 
+			`sys_grade_id`
+		)
+		values
+		(
+			#{disciplineId}, 
+			#{employeeId}, 
+			#{xkId}, 
+			#{clazzId}, 
+			#{sysGradeId}
+		)
+	</insert>
+
+	<insert id="saveMap" parameterType="java.util.Map">
+		<selectKey keyProperty="disciplineId" resultType="string"
+				   order="BEFORE">
+			select replace(uuid(), '-', '') as id from dual
+		</selectKey>
+		insert into smd_employee_clazz_subject
+		(
+			`discipline_id`,
+			`employee_id`,
+			`xk_id`,
+			`clazz_id`,
+			`sys_grade_id`
+		)
+		values
+		(
+			#{disciplineId},
+			#{employeeId},
+			#{xkId},
+			#{clazzId},
+			#{sysGradeId}
+		)
+	</insert>
+
+	 
+	<update id="update" parameterType="com.zakj.personnel.entity.SmdEmployeeClazzSubjectEntity">
+		update smd_employee_clazz_subject 
+		<set>
+			<if test="employeeId != null">`employee_id` = #{employeeId}, </if>
+			<if test="xkId != null">`xk_id` = #{xkId}, </if>
+			<if test="clazzId != null">`clazz_id` = #{clazzId}, </if>
+			<if test="sysGradeId != null">`sys_grade_id` = #{sysGradeId}</if>
+		</set>
+		where discipline_id = #{disciplineId}
+	</update>
+
+	<update id="updateMap" parameterType="java.util.Map">
+		update smd_employee_clazz_subject
+		<set>
+			<if test="employee_id != null">`employee_id` = #{employeeId}, </if>
+			<if test="xk_id != null">`xk_id` = #{xkId}, </if>
+			<if test="clazz_id != null">`clazz_id` = #{clazzId}, </if>
+			<if test="sys_grade_id != null">`sys_grade_id` = #{sysGradeId}</if>
+		</set>
+		where discipline_id = #{disciplineId}
+	</update>
+	
+	<delete id="delete">
+		delete from smd_employee_clazz_subject where discipline_id = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from smd_employee_clazz_subject where discipline_id in 
+		<foreach item="disciplineId" collection="array" open="(" separator="," close=")">
+			#{disciplineId}
+		</foreach>
+	</delete>
+
+	<select id="getGrades" resultType ="java.util.Map">
+		select g.grade_id, r.grade_year_name from smd_sm_grade g
+			LEFT JOIN smd_sm_gy_grade_year r ON r.grade_year_id=g.grade_year_id
+		where g.org_id = #{orgId}
+	</select>
+
+	<select id="getClazzs" resultType="java.util.Map">
+		select c.clazz_id, y.sys_clazz_name from smd_sm_clazz c
+		LEFT JOIN smd_sm_sys_clazz y ON y.sys_clazz_id=c.sys_clazz_id where grade_id = #{gradeId}
+	</select>
+
+	<select id="isClazzed" resultType="java.util.Map">
+	  	select e.employee_name from smd_employee_clazz_subject  s
+		LEFT JOIN smd_employee e on e.employee_id = s.employee_id
+		where s.xk_id = #{xkId} AND s.clazz_id = #{clazzId}
+	</select>
+
+	<update id="updateEmpClazzSubjet" parameterType="java.util.Map">
+		update smd_employee_clazz_subject
+		<set>
+			<if test="employeeId != null">`employee_id` = #{employeeId} </if>
+		</set>
+		where xk_id = #{xkId} and clazz_id = #{clazzId}
+	</update>
+
+	<select id="getSubject" resultType="java.util.Map">
+		select subject_id, subject_name from smd_ss_subject where tenant_id = #{tenantId}
+	</select>
+
+
+</mapper>

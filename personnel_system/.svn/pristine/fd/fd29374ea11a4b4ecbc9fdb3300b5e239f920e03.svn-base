@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zakj.personnel.dao.SmdSsSchoolSubjectDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="java.util.Map" id="Map">
+        <result property="schoolSubjectId" column="school_subject_id"/>
+        <result property="tenantId" column="tenant_id"/>
+        <result property="orgId" column="org_id"/>
+        <result property="subjectId" column="subject_id"/>
+		<result property="subjectName" column="subject_name"/>
+		<result property="note" column="note"/>
+    </resultMap>
+
+	<select id="queryObject" resultType="com.zakj.personnel.entity.SmdSsSchoolSubjectEntity">
+		select * from smd_ss_school_subject where school_subject_id = #{value}
+	</select>
+
+	<select id="queryList" resultMap="Map">
+		select t.*,s.subject_name, s.note from smd_ss_school_subject  t
+		LEFT JOIN smd_ss_subject s ON s.subject_id=t.subject_id
+		<where>
+			<if test=" tenantId!= null and tenantId.trim() != ''">
+				AND t.tenant_id =#{tenantId}
+			</if>
+			<if test="orgId != null and orgId != ''">
+				and t.org_id = #{orgId}
+			</if>
+			AND t.sys_state=0
+		</where>
+		<choose>
+			<when test="sortField != null and sortField.trim() != ''">
+				order by ${sortField} ${sortOrder}
+			</when>
+			<otherwise>
+				order by t.school_subject_id desc
+			</otherwise>
+		</choose>
+		<if test="pageIndex != null and pageSize != null">
+			limit #{pageIndex}, #{pageSize}
+		</if>
+	</select>
+ 	<select id="queryTotal" resultType="int">
+		select count(*)  from smd_ss_school_subject  t LEFT JOIN smd_ss_subject s ON s.subject_id=t.subject_id
+		<where>
+			<if test=" tenantId!= null and tenantId.trim() != ''">
+				AND t.tenant_id =#{tenantId}
+			</if>
+			<if test="orgId != null and orgId != ''">
+				and t.org_id = #{orgId}
+			</if>
+			AND t.sys_state=0
+		</where>
+	</select>
+	 
+	<insert id="save" parameterType="com.zakj.personnel.entity.SmdSsSchoolSubjectEntity">
+		<selectKey keyProperty="schoolSubjectId" resultType="string"
+				   order="BEFORE">
+			select replace(uuid(), '-', '') as id from dual
+		</selectKey>
+		insert into smd_ss_school_subject
+		(
+			`school_subject_id`, 
+			`tenant_id`, 
+			`org_id`, 
+			`subject_id`
+		)
+		values
+		(
+			#{schoolSubjectId}, 
+			#{tenantId}, 
+			#{orgId}, 
+			#{subjectId}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="com.zakj.personnel.entity.SmdSsSchoolSubjectEntity">
+		update smd_ss_school_subject 
+		<set>
+			<if test="tenantId != null">`tenant_id` = #{tenantId}, </if>
+			<if test="orgId != null">`org_id` = #{orgId}, </if>
+			<if test="subjectId != null">`subject_id` = #{subjectId}</if>
+		</set>
+		where school_subject_id = #{schoolSubjectId}
+	</update>
+	
+	<delete id="delete">
+		 UPDATE  `smd_ss_school_subject` s SET s.sys_state=1 WHERE s.school_subject_id = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+        UPDATE  `smd_ss_school_subject` s SET s.sys_state=1 WHERE s.school_subject_id  in
+		<foreach item="schoolSubjectId" collection="array" open="(" separator="," close=")">
+			#{schoolSubjectId}
+		</foreach>
+	</delete>
+
+	<select id="getSchoolSubjects" resultMap="Map">
+        SELECT
+            t.school_subject_id,
+            s.subject_id,
+            s.subject_name
+        FROM
+            smd_ss_school_subject t
+        LEFT JOIN smd_ss_subject s ON s.subject_id = t.subject_id
+        WHERE
+            t.org_id = #{orgId} AND t.sys_state=0
+	</select>
+
+</mapper>

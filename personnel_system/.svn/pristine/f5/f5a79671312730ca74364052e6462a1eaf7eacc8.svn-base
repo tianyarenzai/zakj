@@ -1,0 +1,171 @@
+package com.zakj.personnel.controller;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.ModelAndView;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
+@Controller
+@RequestMapping("/utils")
+public class UtilsController {
+
+
+    /**
+     * 进入人员管理页面
+     * @param model
+     * @param request
+     * @param response
+     * @return
+     */
+    @RequestMapping("/employee")
+    public String employee(Model model, HttpServletRequest request, HttpServletResponse response) {
+        return "employee/personnel";
+    }
+
+    /**
+     * 进入职称管理页面
+     * @param model
+     * @param request
+     * @param response
+     * @return
+     */
+    @RequestMapping("/employeeTitle")
+    public String employeeTitle(Model model, HttpServletRequest request, HttpServletResponse response) {
+        return "employee/basic_emp_teacher_title_list";
+    }
+
+    /**
+     * 离职管理
+     * @param model
+     * @param request
+     * @param response
+     * @return
+     */
+    @RequestMapping("/leaveEmployee")
+    public String leaveEmployee(Model model, HttpServletRequest request, HttpServletResponse response) {
+        return "employee/empLeaveManage";
+    }
+
+    /**
+     * 班主任及代课管理页面
+     * @param model
+     * @param request
+     * @param response
+     * @return
+     */
+    @RequestMapping("/headTeacher")
+    public String headTeacher(Model model, HttpServletRequest request, HttpServletResponse response) {
+        return "employee/headTeacherAndSubstitution";
+    }
+
+    /**
+     * 合同管理页面
+     * @param model
+     * @param request
+     * @param response
+     * @return
+     */
+    @RequestMapping("/contract")
+    public String contract(Model model, HttpServletRequest request, HttpServletResponse response) {
+        return "employee/contractManage";
+    }
+
+    /**
+     * 学科页面
+     * @param model
+     * @param request
+     * @param response
+     * @return
+     */
+    @RequestMapping("/subject")
+    public String subject(Model model, HttpServletRequest request, HttpServletResponse response) {
+        return "employee/subject";
+    }
+
+
+    /**
+     * 奖惩页面
+     * @param model
+     * @param request
+     * @param response
+     * @return
+     */
+    @RequestMapping("/reward")
+    public String reward(Model model, HttpServletRequest request, HttpServletResponse response) {
+        return "employee/reward";
+    }
+
+    @RequestMapping("/log")
+    public String log(Model model, HttpServletRequest request, HttpServletResponse response) {
+        return "sys/log_list";
+    }
+
+    /**
+     * 职务页面
+     * @param model
+     * @param request
+     * @param response
+     * @return
+     */
+    @RequestMapping("/employeeJob")
+    public String employeeJob(Model model, HttpServletRequest request, HttpServletResponse response) {
+        return "employee/employeeJobList";
+    }
+
+    /**
+     * 学校学科
+     * @param model
+     * @param request
+     * @param response
+     * @return
+     */
+    @RequestMapping("/schoolSubject")
+    public String schoolSubject(Model model, HttpServletRequest request, HttpServletResponse response) {
+        return "employee/school_subject";
+    }
+
+    /**
+     * 科目选择
+     * @return
+     */
+    @RequestMapping("/subjectChoice")
+    public String subjectChoice() {
+        return "employee/school_subject_choice";
+    }
+
+
+
+    @RequestMapping("/uploadTest")
+    public String uploadTest(Model model, HttpServletRequest request, HttpServletResponse response) {
+        return "employee/upload1";
+    }
+
+
+    @RequestMapping("/appUpload")
+    public String appUpload(Model model, HttpServletRequest request, HttpServletResponse response) {
+        return "employee/upload1";
+    }
+
+
+    /**
+     *
+     * 职工通讯录
+     * @param model
+     * @param request
+     * @param response
+     * @return
+     */
+    @RequestMapping("/empContacts")
+    public String empContacts(Model model, HttpServletRequest request, HttpServletResponse response) {
+        return "contacts/empContacts";
+    }
+}

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zakj.auth.dao.ApplicationDao">
+    <select id="getAuthByUserId" resultType="java.util.Map">
+        SELECT DISTINCT
+        c.application_id AS  moduleId,
+        c.application_parent_id AS parentId,
+        c.application_name AS modelName,
+        c.application_url AS moduleUrl ,
+        c.application_icon AS moduleIcon,
+        c.application_type AS moduletype,
+        c.is_enable AS isEnable,
+        e.application_name AS parentName,
+        e.application_url AS parentUrl
+        FROM
+        (
+        SELECT
+        *
+        FROM
+        asd_user_role_auth
+        WHERE
+        account_id =  #{userId}
+        UNION
+        SELECT
+        *
+        FROM
+        asd_user_role_many_auth
+        WHERE
+        account_id =  #{userId}
+        ) a
+
+        LEFT JOIN asd_role_application_auth b ON a.role_id = b.role_id
+        LEFT JOIN (SELECT
+        *
+        FROM
+        pmd_application
+        WHERE
+        application_khd_type = '2'
+        ) c ON b.application_id = c.application_id
+        LEFT JOIN pmd_application e ON e.application_id = c.application_parent_id
+        LEFT JOIN asd_role d ON a.role_id = d.role_id
+        WHERE
+        b. STATUS = '0'
+        AND d.is_enable = '1'
+        AND c.is_enable = '1'
+
+         <if test="parentId!= null and parentId.trim() != ''">
+             AND c.application_parent_id = #{parentId}
+         </if>
+        <if test="moduleType != null and moduleType.trim() != ''">
+            AND c.application_type =#{moduleType}
+            <if test="moduleType = '3'">
+                OR c.application_type = '2'
+                OR c.application_type = '1'
+            </if>
+        </if>
+
+        ORDER BY
+        c.order_num
+
+    </select>
+
+
+</mapper>

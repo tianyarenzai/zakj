@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <title>职工管理</title>
+    <script type="text/javascript" th:src="@{/libs/boot.js}"></script>
+    <link th:href="@{/css/button-skin.css}" rel="stylesheet" type="text/css"/>
+    <style type="text/css">
+        html, body {
+            width: 100%;
+            height: 99%;
+            border: 0;
+            margin: 0;
+            padding: 0;
+            overflow: visible;
+        }
+    </style>
+</head>
+<body>
+<div id="layout1" class="mini-layout" style="width:100%;height:100%;">
+
+    <div title="center" region="center" bodyStyle="overflow:hidden;" style="border:0;">
+        <!--Splitter-->
+        <div class="mini-splitter" style="width:100%;height:100%;" borderStyle="border:0;">
+            <div size="180" maxSize="250" minSize="100" showCollapseButton="true" style="border-width:1px;">
+                <!--Tree-->
+                <ul id="tree1" class="mini-tree"
+                    url="../auth/org/treeList" style="width:100%;height:100%;"
+                    showTreeIcon="true" textField="orgName" idField="orgId"
+                    parentField="orgFatherId" resultAsTree="false"
+                    showCheckBox="false" checkRecursive="false" allowSelect="true"
+                    expandOnLoad="true" onnodeselect="onNodeSelect">
+                </ul>
+            </div>
+            <div showCollapseButton="false" style="border:0px;">
+                <!--datagrid-->
+                <div style="width:100%;height:100%;">
+                    <div class="mini-toolbar" style="padding:2px;border-top:0;border-left:0;border-right:0;">
+                        <a class="mini-button" iconCls="icon-add" onclick="add()">新增</a>
+                        <a class="mini-button" iconCls="icon-remove" onclick="remove()">删除</a>
+                        <a class="mini-button" iconCls="icon-filter" onclick="onDept()">调岗</a>
+                        <a class="mini-button" iconCls="icon-no" onclick="onDeparture()">离职</a>
+                        <a class="mini-button" iconCls="icon-ok" onclick="onformal()">转正</a>
+                        <a class="mini-button" iconCls="icon-folder" onclick="exportExcel()">导出</a>
+                        <a class="mini-button" iconCls="icon-addfolder" onclick="importExcel()">导入</a>
+                        <!--<a class="mini-button" iconCls="icon-goto" onclick="synchronousData()">同步数据</a>-->
+                        &nbsp;&nbsp;&nbsp;&nbsp;
+                        <input id="employeeJob" name="employeeJob" class="mini-combobox" emptyText="请选择职务"
+                               style="width:100px;" valueField="employeeJobId" textField="employeeJob"
+                               url="../personnel/employee/getEmployeeJobByOrgId"/>
+                        &nbsp;&nbsp;
+                        <input id="employeeName" name="employeeName" class="mini-textbox" emptyText="请输入姓名"
+                               style="width:100px;" onenter="onKeyEnter"/>
+                        <a class="mini-button" iconCls="icon-search" onclick="search()">查询</a>
+                    </div>
+
+                    <div id="datagrid1" class="mini-datagrid" style="width:100%;height:95%; line-height: 60px"
+                         url="../personnel/employee/list" idField="id"
+                         allowResize="true" sizeList="[20,30,50,100,200]" pageSize="200">
+                        <div property="columns">
+                            <div type="indexcolumn"></div>
+                            <div type="checkcolumn"></div>
+                            <div field="employeeName" width="80" headerAlign="center"
+                                 align="center" allowsort="true" renderer="onActionRenderer">姓名
+                            </div>
+                            <div field="employeeSex" width="50" align="center"
+                                 headerAlign="center" allowsort="true">性别
+                            </div>
+                            <div field="employeeState" width="80" align="center"
+                                 headerAlign="center" allowsort="true" renderer="onMarriedRenderer">职位状态
+                            </div>
+                            <div field="employeeNation" width="80" align="center"
+                                 headerAlign="center" allowsort="true">民族
+                            </div>
+                            <div field="employeeNo" width="80" align="center"
+                                 headerAlign="center" allowsort="true">职工编号
+                            </div>
+                            <div field="inductionTime" width="80" align="center"
+                                 headerAlign="center" allowsort="true" renderer="onBirthdayRenderer">入职日期
+                            </div>
+                            <div field="employeePolitical" width="80" headerAlign="center"
+                                 align="center" allowSort="true">政治面貌
+                            </div>
+                            <div field="isMarried" width="80" headerAlign="center"
+                                 align="center" allowSort="true">婚姻状况
+                            </div>
+                            <div field="employeeJob" width="100" align="center"
+                                 headerAlign="center">职务
+                            </div>
+                            <div field="employeeEdu" width="80" headerAlign="center"
+                                 align="center" allowSort="true">学历
+                            </div>
+                            <div field="employeeMajor" width="80" headerAlign="center"
+                                 align="center" allowSort="true">所学专业
+                            </div>
+                            <div field="employeeGraduationSchool" width="80"
+                                 headerAlign="center" align="center" allowSort="true">毕业学校
+                            </div>
+                            <div field="employeeGraduationDate" width="80" headerAlign="center"
+                                 align="center" allowSort="true" renderer="onBirthdayRenderer">毕业时间
+                            </div>
+
+                            <div field="isTecherQualification" width="100" headerAlign="center"
+                                 align="center" allowSort="true" renderer="isHas">是否有教师资格证
+                            </div>
+                            <div field="employeeTitleDate" width="100" headerAlign="center"
+                                 align="center" allowSort="true" renderer="onBirthdayRenderer">职称获取时间
+                            </div>
+                            <div field="employeeTitle" width="100" headerAlign="center"
+                                 align="center" allowSort="true">职称
+                            </div>
+                            <div field="employeeQualification" width="100" align="center"
+                                 headerAlign="center">教师资格证
+                            </div>
+                            <div field="employeeBirthday" width="100" align="center"
+                                 headerAlign="center">出生日期
+                            </div>
+                            <div field="employeeSkill" width="80" align="center"
+                                 headerAlign="center">特长
+                            </div>
+                            <div field="employeeHealth" width="80" align="center"
+                                 headerAlign="center">健康状况
+                            </div>
+                            <div field="employeePhone" width="100" align="center"
+                                 headerAlign="center">手机号码
+                            </div>
+                            <div field="employeeQq" width="100" align="center"
+                                 headerAlign="center">QQ号码
+                            </div>
+                            <div field="employeeWebchat" width="100" align="center"
+                                 headerAlign="center">微信号码
+                            </div>
+                            <div field="employee_idcard" width="100" align="center"
+                                 headerAlign="center">身份证号码
+                            </div>
+                            <div field="employee_native_place" width="80" align="center"
+                                 headerAlign="center">籍贯
+                            </div>
+                            <div field="employeePostcode" width="80" align="center"
+                                 headerAlign="center">邮编
+                            </div>
+                            <div field="employeeEmail" width="100" align="center"
+                                 headerAlign="center">电子邮箱
+                            </div>
+                            <div field="employeeAddr" width="100" align="center"
+                                 headerAlign="center">通讯地址
+                            </div>
+                            <div field="createTime" width="80" headerAlign="center"
+                                 align="center" dateFormat="yyyy-MM-dd" allowSort="true">录入日期
+                            </div>
+                            <div field="exisitIncident" width="100" headerAlign="center"
+                                 align="center" renderer="setIncidentStatus">是否存在简历
+                            </div>
+                            <div field="attachment" width="150" headerAlign="center"
+                                 align="center" renderer="attachFmat">附件
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script type="text/javascript">
+    mini.parse();
+    var grid = mini.get("datagrid1");
+    var tree = mini.get("tree1");
+
+    grid.load({
+        key: "", //自定义
+        employeeName: "",
+        pageIndex: 0,
+        pageSize: 100,
+        sortField: "",
+        sortOrder: "asc",
+        orgFatherId: "",
+        orgId: "",
+        orgName: "",
+        employeeSchool: "",
+        tada: "",
+        orgCategory: "",
+        employeeJob: "",
+        type: 0
+    });
+    grid.frozenColumns(0, 4);
+
+
+    // 点击树节点
+    var node;
+
+    function onNodeSelect(e) {
+        node = e.node;
+        var employeeName = mini.get("employeeName").getValue();
+        console.info("employeeName ------------------------- " + employeeName);
+        var employeeJob = mini.get("employeeJob").getValue();
+        console.info("employee_job -------------------------" + employeeJob);
+        grid.load({
+            key: "", //自定义
+            employeeName: employeeName,
+            pageIndex: 0,
+            pageSize: 100,
+            sortField: "",
+            sortOrder: "asc",
+            orgFatherId: node.orgFatherId,
+            orgId: node.orgId,
+            orgName: node.orgName,
+            employeeSchool: "",
+            tada: "",
+            employeeJob: employeeJob,
+            orgCategory: node.orgCategory,
+            type: 1
+        });
+    }
+
+
+    // 搜索
+    function search() {
+        var employeeName = mini.get("employeeName").getValue();
+        console.info("employeeName ------------------------- " + employeeName);
+        var employeeJob = mini.get("employeeJob").getValue();
+        console.info("employee_job -------------------------" + employeeJob);
+        if (node == null) {
+            mini.alert("请先选择学校或部门!");
+            return false;
+        }
+        grid.load({
+            key: "", //自定义
+            employeeName: employeeName,
+            pageIndex: 0,
+            pageSize: 100,
+            sortField: "",
+            sortOrder: "asc",
+            orgFatherId: node.orgFatherId,
+            orgId: node.orgId,
+            orgName: node.orgName,
+            employeeSchool: "",
+            tada: "",
+            employeeJob: employeeJob,
+            orgCategory: node.orgCategory,
+            type: 1
+        });
+    }
+
+    //时间格式
+    function onBirthdayRenderer(e) {
+        var value = e.value;
+        if (value)
+            return mini.formatDate(value, 'yyyy-MM-dd');
+        return "";
+    }
+
+    function onMarriedRenderer(e) {
+        if (e.value == 1) {
+            return "试用";
+        } else if (e.value == 2) {
+            return "正式";
+        } else if (e.value == 3) {
+            return "离职";
+        }
+    }
+
+    function onMarried(e) {
+        if (e.value == 1)
+            return "已婚";
+        else
+            return "未婚";
+    }
+
+    function isHas(e) {
+        if (e.value == 1) {
+            return "有";
+        } else {
+            return "无";
+        }
+    }
+
+    function setIncidentStatus(e) {
+        if (e.value == 0) {
+            return "不存在";
+        } else {
+            return "存在";
+        }
+    }
+
+    // 点击姓名
+    function onActionRenderer(e) {
+        var record = e.record;
+        var uid = record.employeeId;
+        var name = record.employeeName;
+
+        var s = '<a class="Delete_Button" style="color: #2254ff;" onclick="javascript:edit(\''
+            + uid + '\')">' + name + '</a>';
+        return s;
+    }
+
+    // 增加弹出页面
+    function add() {
+        var grid = mini.get("datagrid1");
+        if (node == null) {
+            mini.alert("请先选择部门!");
+            return false;
+        }
+        mini.open({
+            url: "../personnel/employee/add?orgId=" + node.orgFatherId + "&employeeDept=" + node.orgId,
+            title: "添加职工",
+            width: 1110,
+            height: 640,
+            onload: function () {
+                var iframe = this.getIFrameEl();
+            },
+            ondestroy: function (action) {
+                grid.reload();
+            }
+        });
+    }
+
+
+    // 删除人员信息
+    function remove() {
+        var grid = mini.get("datagrid1");
+        var row = grid.getSelected();
+        if (row) {
+            mini.confirm("确定删除记录？", "确定？", function (action) {
+                    if (action == "ok") {
+                        $.ajax({
+                            url: "../personnel/employee/delete?employeeId=" + row.employeeId,
+                            success: function (text) {
+                                if (text.code == 0) {
+                                    mini.alert(text.msg);
+                                } else if (text == 101) {
+                                    mini.alert(text.msg);
+                                }
+                                grid.reload();
+                            },
+                            error: function () {
+                            }
+                        });
+                    } else {
+                        mini.alert("不删除!");
+                    }
+                }
+            );
+        } else {
+            mini.alert("请选择一条信息！");
+        }
+    }
+
+
+    // 编辑人员弹出页面
+    function edit() {
+        var grid = mini.get("datagrid1");
+        var row = grid.getSelected();
+        if (row) {
+            mini.open({
+                url: "../personnel/employee/employeeInfo?employeeId=" + row.employeeId,
+                title: "编辑职工信息",
+                width: 1110,
+                height: 640,
+                onload: function () {
+                },
+                ondestroy: function (action) {
+                    grid.reload();
+                }
+            });
+        } else {
+            mini.alert("请选中一个职工");
+        }
+    }
+
+
+    // 点击任教
+    function onTeach() {
+        var grid = mini.get("datagrid1");
+        var row = grid.getSelected();
+        if (row) {
+            mini.open({
+                url: "../personnel/employee/onTeach?employeeId=" + row.employeeId + "&orgId=" + row.orgId,
+                title: "任教调整",
+                width: 900,
+                height: 400,
+                onload: function () {
+                },
+                ondestroy: function (action) {
+                    grid.reload();
+                }
+            });
+        } else {
+            mini.alert("请选中一个职工");
+        }
+    }
+
+
+    //岗位调整
+    function onDept() {
+        var grid = mini.get("datagrid1");
+        var row = grid.getSelected();
+        if (row) {
+            mini.open({
+                url: "../personnel/employee/onDept?employeeId=" + row.employeeId
+                + "&employeeName=" + encodeURIComponent(encodeURIComponent(row.employeeName)),
+                title: "职工岗位调整",
+                width: 1100,
+                height: 450,
+                onload: function () {
+                },
+                ondestroy: function (action) {
+                    grid.reload();
+                }
+            });
+        } else {
+            mini.alert("请选中一条记录");
+        }
+    }
+
+
+    // 离职操作
+    function onDeparture() {
+        var row = grid.getSelected();
+        if (row) {
+            console.info("employee_no ---------------------------- " + row.employeeNo);
+            var employee_no = "";
+            if (row.employee_no == undefined) {
+                row.employee_no = employee_no;
+            }
+            mini.confirm("确定要离职么？", "确定？", function (action) {
+                    if (action == "ok") {
+                        mini.open({
+                            url: "../personnel/employee/onDeparture?employeeId=" + row.employeeId +
+                            "&employeeName=" + encodeURIComponent(encodeURIComponent(row.employeeName)) +
+                            "&employeeJob= " + encodeURIComponent(encodeURIComponent(row.employeeJob)) +
+                            "&inductionTime=" + row.inductionTime,
+                            title: "职工离职信息",
+                            width: 600,
+                            height: 400,
+                            onload: function () {
+                            },
+                            ondestroy: function (action) {
+                                grid.reload();
+                            }
+                        });
+                    }
+                }
+            );
+        } else {
+            mini.alert("请选中一条记录");
+        }
+    }
+
+    //职工转正
+    function onformal() {
+        var row = grid.getSelected();
+        if (row) {
+            var state = row.employeeState;
+            if (state == '2') {
+                mini.alert(row.employeeName + '员工已转正了!!!');
+                return;
+            }
+            mini.open({
+                url: "../personnel/employee/onFormal?employeeId=" + row.employeeId +
+                "&inductionTime=" + row.inductionTime,
+                title: "职工转正信息",
+                width: 600,
+                height: 430,
+                onload: function () {
+                },
+                ondestroy: function (action) {
+                    grid.reload();
+                }
+            });
+        } else {
+            mini.alert("请选中一条记录");
+        }
+    }
+
+
+    //导出职工模板
+    function exportExcel() {
+        console.info("node--------------------------------- " + node);
+        console.info("node.orgId  ============================= " + node.orgId);
+        if (node.orgId == null) {
+            mini.alert("请点击左侧树机构再进行导出！！！");
+            return;
+        }
+        var param = "?&orgFatherId=" + node.orgFatherId + "&orgCategory=" + node.orgCategory + "&orgId=" + node.orgId + "&pageIndex=" + grid.pageIndex + "&pageSize=" + grid.pageSize;
+        var actionName = "../personnel/employee/exportExcel" + param;
+        var form = $("<form>"); //定义一个form表单
+        form.attr('style', 'display:none'); //在form表单中添加查询参数
+        form.attr('target', '');
+        form.attr('method', 'post');
+        form.attr('action', actionName);
+        $('body').append(form); //将表单放置在web中
+        form.submit(); //表单提交
+    }
+
+
+    // 导入Excel文件
+    function importExcel() {
+        console.info("import------------------------");
+        var grid = mini.get("datagrid1");
+        if (node.orgId) {
+            mini.open({
+                url: "../personnel/employee/excel?&orgFatherId=" + node.orgFatherId + "&orgCategory=" + node.orgCategory + "&orgId=" + node.orgId,
+                title: "导入职工信息",
+                width: 1000,
+                height: 580,
+                onload: function () {
+                },
+                ondestroy: function (action) {
+                    grid.reload();
+                }
+            });
+        } else {
+            mini.alert("请选择部门！");
+        }
+    }
+
+
+    // 附件操作
+    function attachFmat(e) {
+        var record = e.record;
+        var uid = record.employeeId;
+        var s = '<a class="mini-button" iconCls="icon-upload" onclick="javascript:uploadFile(\''
+            + uid + '\')"> 上传简历</a> &nbsp;&nbsp;';
+        if (record.exisitIncident == 1) {
+            var path = record.employeeImgurlEdu;
+            s += '<a class="mini-button" href=" '+ path + ' ">下载简历</a>'
+        }
+        return s;
+    }
+
+
+    // 附件上传
+    function uploadFile(uid) {
+        console.info("uid -------------------------- " + uid);
+        mini.open({
+            url: "../personnel/employee/uploadResume?employeeId=" + uid,
+            title: "简历上传",
+            width: 400,
+            height: 200,
+            onload: function () {
+            },
+            ondestroy: function (action) {
+                grid.reload();
+            }
+        });
+    }
+
+
+    // 下载简历
+    // function dowloadFile(uid) {
+    //     console.info("uid: --------------------- " + uid);
+    //     $.ajax({
+    //         type: "post",
+    //         url: "../personnel/employee/dowloadFile",
+    //         data: {"employeeId": uid},
+    //         dataType: 'json',
+    //         success: function (data) {
+    //             console.info("data: ----------------------  " + data);
+    //             if (data.code == 0) {
+    //                 mini.alert(data.msg);
+    //             } else if (data.code == 101) {
+    //                 mini.alert(data.msg);
+    //             }
+    //         },
+    //         error: function () {
+    //         }
+    //     });
+    // }
+
+
+    // 同步数据
+    function synchronousData() {
+        console.info("同步数据");
+        var orgId = node.orgFatherId;
+        var deptId = node.orgId;
+        var ddId = node.ddId;
+        console.info("orgId ---------------------- " + orgId);
+        console.info("deptId ---------------------- " + deptId);
+        console.info("ddId -------------------------- " + ddId);
+        $.ajax({
+            type: 'post',
+            url: '../../personnel/employee/synchronousData',
+            data: {
+                'orgId': orgId,
+                'deptId': deptId,
+                'ddId': ddId
+            },
+            dataType: 'json',
+            success: function (data) {
+                if (data.code == 0) {
+                    mini.alert(data.msg);
+                } else if (data.code == 101) {
+                    mini.alert(data.msg);
+                }
+            },
+            error: function () {
+            }
+        });
+    }
+
+
+</script>
+</html>

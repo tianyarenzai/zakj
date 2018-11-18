@@ -1,0 +1,15 @@
+
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Field orderService in com.wechart.demo.controller.PayController required a bean of type 'com.wechart.demo.service.OrderService' that could not be found.
+
+
+Action:
+
+Consider defining a bean of type 'com.wechart.demo.service.OrderService' in your configuration.
+

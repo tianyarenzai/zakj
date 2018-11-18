@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zakj.personnel.dao.SmdEmployeeTeacherTitleDao">
+
+	<resultMap type="java.util.Map" id="Map">
+		<result property="teacherTitleId" column="teacher_title_id"/>
+		<result property="teacherTitleName" column="teacher_title_name"/>
+		<result property="createTime" column="create_time"/>
+		<result property="createUserId" column="create_user_id"/>
+		<result property="createUserName" column="create_user_name"/>
+		<result property="orgId" column="org_id"/>
+		<result property="orgName" column="org_name"/>
+		<result property="tenantId" column="tenant_id"/>
+	</resultMap>
+
+	<select id="queryObject" resultType="com.zakj.personnel.entity.SmdEmployeeTeacherTitleEntity">
+		select * from smd_employee_teacher_title where teacher_title_id = #{value}
+     </select>
+
+	<select id="queryList" resultMap="Map">
+		select * from smd_employee_teacher_title
+		<where>
+			<if test="orgId != null and orgId != ''">
+				and org_id = #{orgId}
+			</if>
+		</where>
+        <choose>
+			<when test="sortField != null and sortField.trim() != ''">
+				order by ${sortField} ${sortOrder}
+			</when>
+			<otherwise>
+                order by teacher_title_id desc
+			</otherwise>
+        </choose>
+		<if test="pageIndex != null and pageSize != null">
+			limit #{pageIndex}, #{pageSize}
+		</if>
+	</select>
+
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from smd_employee_teacher_title
+		<where>
+			<if test="orgId != null and orgId != ''">
+				and org_id = #{orgId}
+			</if>
+		</where>
+	</select>
+
+	<insert id="save" parameterType="com.zakj.personnel.entity.SmdEmployeeTeacherTitleEntity">
+		<selectKey keyProperty="teacherTitleId" resultType="string"
+				   order="BEFORE">
+			select replace(uuid(), '-', '') as id from dual
+		</selectKey>
+		insert into smd_employee_teacher_title
+		(
+			`teacher_title_id`,
+			`teacher_title_name`,
+			`create_time`,
+			`create_user_id`,
+			`create_user_name`,
+			`org_id`,
+			`org_name`,
+			`tenant_id`
+		)
+		values
+		(
+			#{teacherTitleId},
+			#{teacherTitleName},
+			#{createTime},
+			#{createUserId},
+			#{createUserName},
+			#{orgId},
+			#{orgName},
+			#{tenantId}
+		)
+	</insert>
+
+	<update id="update" parameterType="com.zakj.personnel.entity.SmdEmployeeTeacherTitleEntity">
+		update smd_employee_teacher_title
+		<set>
+			<if test="teacherTitleName != null">`teacher_title_name` = #{teacherTitleName}, </if>
+			<if test="createTime != null">`create_time` = #{createTime}, </if>
+			<if test="createUserId != null">`create_user_id` = #{createUserId}, </if>
+			<if test="createUserName != null">`create_user_name` = #{createUserName}, </if>
+			<if test="orgId != null">`org_id` = #{orgId}, </if>
+			<if test="orgName != null">`org_name` = #{orgName}, </if>
+			<if test="tenantId != null">`tenant_id` = #{tenantId}</if>
+		</set>
+		where teacher_title_id = #{teacherTitleId}
+	</update>
+
+	<delete id="delete">
+		delete from smd_employee_teacher_title where teacher_title_id = #{value}
+	</delete>
+
+	<delete id="deleteBatch">
+		delete from smd_employee_teacher_title where teacher_title_id in
+		<foreach item="teacherTitleId" collection="array" open="(" separator="," close=")">
+			#{teacherTitleId}
+		</foreach>
+	</delete>
+
+</mapper>

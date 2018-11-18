@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zakj.personnel.dao.SmdSsSubjectDao">
+
+	<resultMap type="java.util.Map" id="Map">
+		<result property="subjectId" column="subject_id"/>
+		<result property="subjectName" column="subject_name"/>
+		<result property="note" column="note"/>
+		<result property="tenantId" column="tenant_id"/>
+		<result property="orgId" column="org_id"/>
+		<result property="subjectDisplayOrder" column="subject_display_order"/>
+	</resultMap>
+
+
+	<select id="queryObject" resultType="com.zakj.personnel.entity.SmdSsSubjectEntity">
+		select * from smd_ss_subject where subject_id = #{value}
+	</select>
+
+	<select id="queryList" resultMap="Map">
+		select * from smd_ss_subject
+        <choose>
+            <when test="sortField != null and sortField.trim() != ''">
+                order by ${sortField} ${sortOrder}
+            </when>
+			<otherwise>
+                order by subject_id desc
+			</otherwise>
+        </choose>
+        <if test="pageIndex != null and pageSize != null">
+            limit #{pageIndex}, #{pageSize}
+        </if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from smd_ss_subject 
+	</select>
+	 
+	<insert id="save" parameterType="com.zakj.personnel.entity.SmdSsSubjectEntity">
+        <selectKey keyProperty="subjectId" resultType="string"
+                   order="BEFORE">
+            select replace(uuid(), '-', '') as id from dual
+        </selectKey>
+		insert into smd_ss_subject
+		(
+			`subject_id`, 
+			`subject_name`, 
+			`note`, 
+			`tenant_id`, 
+			`org_id`
+		)
+		values
+		(
+			#{subjectId}, 
+			#{subjectName}, 
+			#{note}, 
+			#{tenantId}, 
+			#{orgId}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="com.zakj.personnel.entity.SmdSsSubjectEntity">
+		update smd_ss_subject 
+		<set>
+			<if test="subjectName != null">`subject_name` = #{subjectName}, </if>
+			<if test="note != null">`note` = #{note}, </if>
+			<if test="tenantId != null">`tenant_id` = #{tenantId}, </if>
+			<if test="orgId != null">`org_id` = #{orgId}</if>
+		</set>
+		where subject_id = #{subjectId}
+	</update>
+	
+	<delete id="delete">
+		delete from smd_ss_subject where subject_id = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from smd_ss_subject where subject_id in 
+		<foreach item="subjectId" collection="array" open="(" separator="," close=")">
+			#{subjectId}
+		</foreach>
+	</delete>
+
+</mapper>

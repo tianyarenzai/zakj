@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zakj.personnel.dao.SmdCeRemindDao">
+	<select id="queryObject" resultType="com.zakj.personnel.entity.SmdCeRemindEntity">
+		select * from smd_ce_remind where remind_id = #{value}
+	</select>
+
+	<select id="queryList" resultType="java.util.Map">
+		select * from smd_ce_remind
+        <choose>
+			<when test="sortField != null and sortField.trim() != ''">
+				order by ${sortField} ${sortOrder}
+			</when>
+			<otherwise>
+                order by remind_id desc
+			</otherwise>
+        </choose>
+		<if test="pageIndex != null and pageSize != null">
+			limit #{pageIndex}, #{pageSize}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from smd_ce_remind 
+	</select>
+	 
+	<insert id="save" parameterType="com.zakj.personnel.entity.SmdCeRemindEntity">
+		<selectKey keyProperty="remindId" resultType="string" order="BEFORE">
+			select replace(uuid(), '-', '') as id from dual
+		</selectKey>
+		insert into smd_ce_remind
+		(
+			`remind_id`, 
+			`remind_time`, 
+			`remind_type`, 
+			`content`,
+			`contract_id`,
+			`tenant_id`,
+			`org_id`, 
+			`create_user`, 
+			`create_date`, 
+			`create_emp_id`, 
+			`create_emp_name`, 
+			`update_time`, 
+			`state`
+		)
+		values
+		(
+			#{remindId}, 
+			#{remindTime}, 
+			#{remindType}, 
+			#{content},
+		    #{contractId},
+			#{tenantId}, 
+			#{orgId}, 
+			#{createUser}, 
+			#{createDate}, 
+			#{createEmpId}, 
+			#{createEmpName}, 
+			#{updateTime}, 
+			#{state}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="com.zakj.personnel.entity.SmdCeRemindEntity">
+		update smd_ce_remind 
+		<set>
+			<if test="remindTime != null">`remind_time` = #{remindTime}, </if>
+			<if test="remindType != null">`remind_type` = #{remindType}, </if>
+			<if test="content != null">`content` = #{content}, </if>
+			<if test="tenantId != null">`tenant_id` = #{tenantId}, </if>
+			<if test="orgId != null">`org_id` = #{orgId}, </if>
+			<if test="createUser != null">`create_user` = #{createUser}, </if>
+			<if test="createDate != null">`create_date` = #{createDate}, </if>
+			<if test="createEmpId != null">`create_emp_id` = #{createEmpId}, </if>
+			<if test="createEmpName != null">`create_emp_name` = #{createEmpName}, </if>
+			<if test="updateTime != null">`update_time` = #{updateTime}, </if>
+			<if test="state != null">`state` = #{state}</if>
+		</set>
+		where remind_id = #{remindId}
+	</update>
+	
+	<delete id="delete">
+		delete from smd_ce_remind where remind_id = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from smd_ce_remind where remind_id in 
+		<foreach item="remindId" collection="array" open="(" separator="," close=")">
+			#{remindId}
+		</foreach>
+	</delete>
+
+</mapper>

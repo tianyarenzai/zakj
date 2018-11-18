@@ -1,0 +1,96 @@
+
+	<!DOCTYPE html>
+	<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+	<head>
+		<title>树形联动</title>
+		<link th:href="@{/css/button-skin.css}" rel="stylesheet" type="text/css"/>
+		<link th:href="@{/css/style.css}" rel="stylesheet" type="text/css"/>
+		<script type="text/javascript" th:src="@{/libs/boot.js}"></script>
+	<style type="text/css">
+		html, body {
+			width: 100%;
+			height: 99%;
+			border: 0;
+			margin: 0;
+			padding: 0;
+			overflow: visible;
+		}
+	</style>
+</head>
+<body>
+	<div id="usual1" class="usual">
+		<div class="itab">
+			<ul>
+				<li><a iconCls="icon-save" onclick="onJob()">岗位调整</a></li>
+				<li><a iconCls="icon-save" onclick="onJobRecord()" class="selected">岗位变更信息</a></li>
+			</ul>
+		</div>
+		<div id="tab1" class="tabson" style=" width: 97%;margin-left:1.5%;">
+				<input id = "employeeId" name="employeeId" class="mini-hidden" th:value="${employeeId}" />
+				<input id = "orgId" name = "orgId" class="mini-hidden" th:value="${orgId}"/>
+				<input id = "employeeName" name="employeeName" class="mini-hidden" th:value="${employeeName}" />
+			<div style="width:100%;">
+				<div id="datagrid" class="mini-datagrid" style="width:1000px;height:300px;float:left;margin-left:1.5%;"
+					 url="../../employee/smdemployeejobrecord/getChangedJobs"
+					idField="id" allowResize="true" sizeList="[10,20,30,50,100]" pageSize="20">
+					<div property="columns">
+						<div type="indexcolumn"></div>
+						<div field="employee_name" width="30" align="center" headerAlign="center">员工姓名</div>
+						<div field="employee_dept_name" width="30" align="center" headerAlign="center">任职部门</div>
+						<div field="employee_job_name" width="30" align="center" headerAlign="center">任职职位</div>
+						<div field="creator_time" width="30" align="center" headerAlign="center">创建时间</div>
+						<div field="creator_user_name" width="30" align="center" headerAlign="center">创建人</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+<script language="javascript">
+	mini.parse();
+	var grid = mini.get("datagrid");
+    var employeeId = mini.get("employeeId").getValue();
+
+	grid.load({
+		key : "", //自定义
+		pageIndex : 0,
+		pageSize : 20,
+		sortField : "",
+		sortOrder : "asc",
+		tada : "",
+		employeeId : employeeId,
+	});
+
+
+	function onBirthdayRenderer(e) {
+		var value = e.value;
+		if (value)
+			return mini.formatDate(value, 'yyyy-MM-dd');
+		return "";
+	}
+
+	function CloseWindow(action) {
+		if (window.CloseOwnerWindow)
+			return window.CloseOwnerWindow(action);
+		else
+			window.close();
+	}
+
+	//调岗
+	function onJob() {
+		var employeeId = mini.get("employeeId").getValue();
+		var employeeName = mini.get("employeeName").getValue();
+		mini.open({
+            url: "../personnel/employee/onDept?employeeId=" + employeeId
+              + "&employeeName=" + encodeURIComponent(encodeURIComponent(employeeName)),
+			title : "岗位调整",
+			width : 1100,
+			height : 450,
+			onload : function() {
+			},
+		});
+		CloseWindow();
+	}
+</script>
+</html>
+

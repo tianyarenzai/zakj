@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <title>职工信息登记</title>
+    <meta charset="utf-8" name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"></meta>
+    <script type="text/javascript" th:src="@{/libs/boot.js}"></script>
+    <link href="/css/button-skin.css" rel="stylesheet" type="text/css" />
+    <style type="text/css">
+        html, body {
+            width: 100%;
+            height: 99%;
+            border: 0;
+            margin: 0;
+            padding: 0;
+            overflow: visible;
+        }
+    </style>
+</head>
+<body style="background:#edf6fa;text-align: center;height:100%;">
+<input name="employeeId" id="employeeId" class="mini-hidden" th:value="${employeeId}"/>
+<input name="orgId" id="orgId" class="mini-hidden" th:value="${orgId}"/>
+<div style="width:800px;">
+    <div class="mini-toolbar" style="border-bottom:0;padding:0px;">
+        <table style="width:100%;">
+            <tr>
+                <td style="width:100%;">
+                    <a class="mini-button" iconCls="icon-edit" onclick="editRow()" plain="true">编辑</a><span
+                        class="separator"></span>
+                    <a class="mini-button" iconCls="icon-add" onclick="addRow()" plain="true">增加</a>
+                    <a class="mini-button" iconCls="icon-remove" onclick="removeRow()" plain="true">删除</a>
+                    <span class="separator"></span>
+                    <a class="mini-button" iconCls="icon-save" onclick="saveData()" plain="true">保存</a>
+                </td>
+                <td style="white-space:nowrap;">
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+<div id="datagrid1" class="mini-datagrid" style="width:800px;height:280px;"
+     url="../../employee/smdemployeeclazzsubject/list"
+     multiSelect="true" idField="id">
+    <div property="columns">
+        <div type="checkcolumn"></div>
+        <div field="xkId" displayField="subjectName" width="150" headerAlign="center">学科
+            <input property="editor" class="mini-combobox" style="width:100%;"
+                   valueField="schoolSubjectId" textField="subjectName" onvaluechanged = "onGrade"
+                   url="../../employee/schoolsubject/getSchoolSubjects"/>
+        </div>
+        <div name = "sysGradeId" field="sysGradeId" displayField="gradeYearName" width="150" headerAlign="center">年级
+            <input property="editor" class="mini-combobox" style="width:100%;"
+                   valueField="gradeId" textField="gradeYearName" onvaluechanged="onGradeChanged"/>
+        </div>
+        <div name = "clazzId" field="clazzId" displayField="sysClazzName" width="150" headerAlign="center">班级
+            <input property="editor" class="mini-combobox" style="width:100%;"
+                   valueField="clazzId" textField="sysClazzName"/>
+        </div>
+    </div>
+</div>
+</body>
+
+<script type="text/javascript">
+    //------End-----
+    mini.parse();
+
+    var employeeId = document.getElementById("employeeId").value;
+    console.info("employeeId: -------------- " + employeeId);
+
+    var orgId = document.getElementById("orgId").value;
+    console.info("orgId :--------------------------- " + orgId);
+
+    var grid = mini.get("datagrid1");
+
+    grid.load({
+        pageIndex: 0,
+        pageSize: 12,
+        sortField: "",
+        sortOrder: "asc",
+        employeeId: employeeId,
+        orgId: orgId
+    });
+
+    function onGrade(e){
+        var combo = e.sender;
+        var row = grid.getEditorOwnerRow(combo);
+        var editor = grid.getCellEditor("sysGradeId", row); // 其grade_id是编辑列的name属性
+        var url = "../../student/grade/getGradesByOrgId?orgId=" + orgId;
+        editor.setUrl(url);
+    }
+
+    // 获取当前年级的所有班级
+    function onGradeChanged(e) {
+        var combo = e.sender;
+        var row = grid.getEditorOwnerRow(combo);
+        var editor = grid.getCellEditor("clazzId", row);
+        var id = combo.getValue();
+        console.info("id---------------------------- " + id);
+        var url = "../../student/clazz/getClazzsByGradeId?gradeId=" + id;
+        editor.setUrl(url);
+        editor.setValue("");
+    }
+
+    function editRow() {
+        var rows = grid.getSelecteds();
+        if (rows.length > 0) {
+            for (var i = 0, l = rows.length; i < l; i++) {
+                var row = rows[i];
+                grid.beginEditRow(row);
+            }
+        }
+    }
+
+    function addRow() {
+        var newRow = {name: "New Row"};
+        grid.addRow(newRow, 0);
+        grid.beginEditRow(newRow);
+    }
+
+    function removeRow() {
+        var rows = grid.getSelecteds();
+        if (rows.length > 0) {
+            grid.removeRows(rows, true);
+        }
+    }
+
+    // 判断该班的学科是否被其它职工任教
+    function isClazzed(json, employeeId) {
+        console.info("json--------------------- " + json);
+        console.info("employeeId ----------------------- " + employeeId);
+        $.ajax({
+            type: "post",
+            url: "../../employee/smdemployeeclazzsubject/isClazzed",
+            ansync:false,
+            data: {data:json,
+                   employeeId: employeeId},
+            success: function (data) {
+                if (data.code == 0) {
+                    if(data.data != null){
+                        if (confirm("该班以上学科已有任教老师" + data.data + ",您确认要替换任教老师么?")) {
+                            updateClazzInfo(json, employeeId);
+                        }
+                    }
+                } else if (data.code == 101) {
+                    mini.alert(data.msg);
+                }
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                alert(jqXHR.responseText);
+            }
+        });
+    }
+
+
+    function updateClazzInfo(json, employeeId){
+        grid.loading("保存中，请稍后......");
+        $.ajax({
+            url: "../../employee/smdemployeeclazzsubject/saveList",
+            data: {
+                data: json,
+                employeeId: employeeId
+            },
+            type: "post",
+            success: function (text) {
+                grid.reload();
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                alert(jqXHR.responseText);
+            }
+        });
+    }
+
+
+    // 保存职工任教信息
+    function saveData() {
+        grid.commitEdit();
+        var data = grid.getChanges();
+        var json = mini.encode(data);
+        // 1.先判断该班的学科是否被其它职工任教
+        if(isClazzed(json, employeeId)){
+            // 2.如果确认要替换任教老师，就将当前班级学科的任教老师修改为当前职工
+            updateClazzInfo(json, employeeId);
+        }
+    }
+
+
+    // 删除职工任教信息
+    function removeRow() {
+        var rows = grid.getSelecteds();
+        if (rows.length > 0) {
+            grid.removeRows(rows, true);
+            var ids = [];
+            for (var i = 0, l = rows.length; i < l; i++) {
+                var r = rows[i];
+                ids.push(r.discipline_id);
+            }
+            var id = ids.join(',');
+            console.info("id ------------------------- " + id);
+            grid.loading("操作中，请稍后......");
+            $.ajax({
+                url : "../../employee/smdemployeeclazzsubject/deletes?disciplineId=" + id,
+                success : function(text) {
+                    grid.reload();
+                },
+                error : function() {
+                }
+            });
+        }
+    }
+
+
+    //“职位”combo的url在cellbeginedit的时候，根据前面值自动设置
+    grid.on("cellbeginedit", function (e) {
+        if (e.field == "clazz_id") {
+            var editor = e.editor;
+            var id = e.record.grade_id;
+            var url = "../../employee/smdemployeeclazzsubject/getClazzs?gradeId=" + id;
+            editor.setUrl(url);
+        }
+    });
+</script>
+</html>
+
+

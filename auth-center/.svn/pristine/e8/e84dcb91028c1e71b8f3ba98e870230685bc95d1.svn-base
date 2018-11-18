@@ -1,0 +1,37 @@
+function getRootPath() {
+	var host = window.location.host;
+	var pathName = window.location.pathname;
+	var projectName = pathName
+			.substring(0, pathName.substr(1).indexOf("/") + 1);
+	return "http://" + host + projectName;
+}
+function addValue(value1, value2) {
+	if (value1 == "") {
+		value1 = "0";
+	}
+	if (value2 == "") {
+		value2 = "0";
+	}
+	var temp1 = 0;
+	var temp2 = 0;
+	if (value1.indexOf(".") != -1) {
+		temp1 = value1.length - value1.indexOf(".") - 1;
+	}
+	if (value2.indexOf(".") != -1) {
+		temp2 = value2.length - value2.indexOf(".") - 1;
+	}
+	var temp = 0;
+	if (temp1 > temp2) {
+		temp = (parseFloat(value1) + parseFloat(value2)).toFixed(temp1);
+	} else {
+		temp = (parseFloat(value1) + parseFloat(value2)).toFixed(temp2);
+	}
+	return temp;
+}
+function NewDate(str) {
+	str = str.split("-");
+	var date = new Date();
+	date.setUTCFullYear(str[0], str[1] - 1, str[2]);
+	date.setUTCHours(0, 0, 0, 0);
+	return date;
+};

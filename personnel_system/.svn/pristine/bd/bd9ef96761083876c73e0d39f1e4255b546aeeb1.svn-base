@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <title>职工通讯录</title>
+    <script type="text/javascript" th:src="@{/libs/boot.js}"></script>
+    <link th:href="@{/css/button-skin.css}" rel="stylesheet" type="text/css"/>
+    <style type="text/css">
+        html, body {
+            width: 100%;
+            height: 99%;
+            border: 0;
+            margin: 0;
+            padding: 0;
+            overflow: visible;
+        }
+    </style>
+</head>
+<body>
+<div id="layout1" class="mini-layout" style="width:100%;height:100%;">
+    <div title="center" region="center" bodyStyle="overflow:hidden;" style="border:0;">
+        <!--Splitter-->
+        <div class="mini-splitter" style="width:100%;height:100%;" borderStyle="border:0;">
+            <div size="180" maxSize="250" minSize="100" showCollapseButton="true" style="border-width:1px;">
+                <!--Tree-->
+                <ul id="tree1" class="mini-tree"
+                    url="../auth/org/treeList" style="width:100%;height:100%;"
+                    showTreeIcon="true" textField="orgName" idField="orgId"
+                    parentField="orgFatherId" resultAsTree="false"
+                    showCheckBox="false" checkRecursive="false" allowSelect="true"
+                    expandOnLoad="true" onnodeselect="onNodeSelect">
+                </ul>
+            </div>
+            <div showCollapseButton="false" style="border:0px;">
+                <!--datagrid-->
+                <div style="width:100%;height:100%;">
+                    <div id="datagrid1" class="mini-datagrid" style="width:100%;height:100%; line-height: 60px"
+                         url="../personnel/employee/list" idField="id"
+                         allowResize="true" sizeList="[20,30,50,100,200]" pageSize="200">
+                        <div property="columns">
+                            <div type="indexcolumn"></div>
+                            <div type="checkcolumn"></div>
+                            <div field="employeeName" width="80" headerAlign="center"
+                                 align="center" allowsort="true">姓名
+                            </div>
+                            <div field="employeeNo" width="80" align="center"
+                                 headerAlign="center" allowsort="true">职工编号
+                            </div>
+                            <div field="employeeJob" width="100" headerAlign="center"
+                                 align="center" allowSort="true">职务
+                            </div>
+                            <div field="employeePhone" width="100" align="center"
+                                 headerAlign="center">手机号码
+                            </div>
+
+                            <div field="employeeEmail" width="100" align="center"
+                                 headerAlign="center">电子邮箱
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script type="text/javascript">
+    mini.parse();
+    var grid = mini.get("datagrid1");
+    var tree = mini.get("tree1");
+
+    grid.load({
+        key: "", //自定义
+        employeeName: "",
+        pageIndex: 0,
+        pageSize: 200,
+        sortField: "",
+        sortOrder: "asc",
+        orgFatherId: "",
+        orgId: "",
+        orgName: "",
+        employeeSchool: "",
+        tada: "",
+        orgCategory: "",
+        employeeJob: ""
+    });
+    grid.frozenColumns(0, 4);
+
+
+    // 点击树节点
+    var node;
+    function onNodeSelect(e) {
+        node = e.node;
+        grid.load({
+            key: "", //自定义
+            employeeName: "",
+            pageIndex: 0,
+            pageSize: 20,
+            sortField: "",
+            sortOrder: "asc",
+            orgFatherId: node.orgFatherId,
+            orgId: node.orgId,
+            orgName: node.orgName,
+            employeeSchool: "",
+            tada: "",
+            employeeJob: "",
+            orgCategory: node.orgCategory
+        });
+    }
+</script>
+</html>

@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"></meta>
+    <title>设置班主任</title>
+    <script type="text/javascript" th:src="@{/libs/boot.js}"></script>
+    <link href="/css/button-skin.css" rel="stylesheet" type="text/css" />
+    <style type="text/css">
+        html, body {
+            width: 100%;
+            height: 99%;
+            border: 0;
+            margin: 0;
+            padding: 0;
+            overflow: visible;
+        }
+    </style>
+</head>
+<body>
+<form id = "form1" method="post">
+    <input name="employeeId" id = "employeeId" class="mini-hidden" th:value="${employeeId}"/>
+    <input name="orgId" id = "orgId" class="mini-hidden" th:value="${orgId}"/>
+    <div style="width:97%;margin-left:1.5%;">
+        <table>
+            <tr>
+                <td>年级:</td>
+                <td>
+                    <input id="gradeId" name="gradeId" style="width:180px;"
+                           class="mini-combobox" onvaluechanged="onGrade(e)"
+                           valueField="gradeId" textField="gradeYearName"
+                           showNullItem="true" emptyText="请选择年级" />
+                </td>
+            </tr>
+            <tr>
+                <td>班级：</td>
+                <td>
+                    <input id="clazzId"  name="clazzId" onclick="onClazz(e)"
+                           class="mini-combobox" valueField="clazzId" style="width:180px;"
+                           textField="sysClazzName" emptyText="请选择班级" />
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div style="padding:10px;margin-left: 10%">
+        <a class="mini-button" onclick="onOk" iconCls="icon-ok">确定</a>
+        <a class="mini-button" onclick="onCancel" iconCls="icon-close">取消</a>
+    </div>
+</form>
+</body>
+<script type="text/javascript">
+    mini.parse();
+
+    // 改变学校列表的值
+/*    function orgId(e) {
+        var gradeId = mini.get("gradeId");
+        var url = "<%=request.getContextPath()%>/student/grade/gradeYearName?org_id="+e.value;
+        gradeId.setUrl(url);
+        mini.get("clazzId").setValue("");
+    }*/
+
+    var orgId = mini.get("orgId").getValue();
+    var gradeId = mini.get("gradeId");
+    var url = "../../student/grade/getGradesByOrgId?orgId="+ orgId;
+    gradeId.setUrl(url);
+
+    //班级联动
+    function onClazz() {
+        var gradeId = mini.get("gradeId").getValue();
+        var clazz = mini.get("clazzId");
+        var url = "../../student/clazz/getClazzsByGradeId?gradeId=" + gradeId;
+        clazz.setUrl(url);
+    }
+
+    function onGrade(e) {
+        mini.get("clazzId").setValue("");
+    }
+
+
+    // 点击确定
+    function onOk(){
+        saveData();
+    }
+
+    // 保存数据
+    function saveData(){
+        console.info("saveData。。。。。。。。。。。。");
+        var form = new mini.Form("form1");
+        var o = form.getData();
+        form.validate();
+        if (form.isValid() == false)
+            return;
+        var json = mini.encode(o);
+        console.info("json:------------------ " + json);
+        $.ajax({
+            url: "../../personnel/employee/setHeaderTeacher",
+            type: 'post',
+            data: {
+                data: json
+            },
+            cache: false,
+            success: function (text) {
+                if (text.code == 0) {
+                    mini.alert(text.msg);
+                } else if (text == 101) {
+                    mini.alert(text.msg);
+                } else {
+                    mini.alert(text.msg);
+                }
+                CloseWindow("save");
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                mini.alert(jqXHR.responseText);
+                CloseWindow();
+            }
+        });
+    }
+
+    // 点击取消
+    function onCancel(){
+        console.info("onCancel ........................... ");
+        CloseWindow("cancel");
+    }
+
+    function CloseWindow(action) {
+        if (action == "close" && form.isChanged()) {
+            if (confirm("数据被修改了，是否先保存？")) {
+                return false;
+            }
+        }
+        if (window.CloseOwnerWindow)
+            return window.CloseOwnerWindow(action);
+        else
+            window.close();
+    }
+
+</script>
+</html>

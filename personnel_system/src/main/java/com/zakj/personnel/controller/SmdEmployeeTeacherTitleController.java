@@ -1,0 +1,203 @@
+package com.zakj.personnel.controller;
+
+import com.zakj.client.OrganizationFeignClient;
+import com.zakj.personnel.entity.SmdEmployeeTeacherTitleEntity;
+import com.zakj.personnel.service.SmdEmployeeTeacherTitleService;
+import com.zakj.security.aspect.SysLog;
+import com.zakj.security.common.beans.AjaxListResult;
+import com.zakj.security.controller.BaseController;
+import com.zakj.utils.R;
+import net.sf.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.util.*;
+
+
+/**
+ * 职称表; InnoDB free: 5120 kB
+ *
+ * @author zhangxia
+ * @email zhangxia_rgcdlb@163.com
+ * @date 2018-02-26 14:40:06
+ */
+@RestController
+@RequestMapping("/employee/employeeTitle")
+public class SmdEmployeeTeacherTitleController extends BaseController {
+
+    @Autowired
+    private SmdEmployeeTeacherTitleService smdEmployeeTeacherTitleService;
+
+
+    @Autowired
+    private OrganizationFeignClient organizationFeignClient;
+
+    /**
+     * 获取职信息列表
+     */
+    @RequestMapping("list")
+    public AjaxListResult<Map<String, Object>> list(HttpServletRequest req, HttpSession session)
+            throws Exception {
+        AjaxListResult<Map<String, Object>> data = new AjaxListResult<Map<String, Object>>();
+        List<Map<String, Object>> list = null;
+        try {
+            Map<String, Object> params = this.getRequestParams(req);
+            String orgId = (String) session.getAttribute("orgId");
+            params.put("orgId", orgId);
+            list = this.smdEmployeeTeacherTitleService.queryList(params);
+            data.setData(list);
+            data.setTotal(this.smdEmployeeTeacherTitleService.queryTotal(params));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return data;
+    }
+
+
+    /**
+     * 进入增加页面
+     *
+     * @param model
+     * @param request
+     * @param response
+     * @return
+     */
+    @RequestMapping("/add")
+    public ModelAndView addNew(Model model, HttpServletRequest request, HttpServletResponse response) {
+        mav.setViewName("employee/basic_emp_teacher_title_add");
+        return mav;
+    }
+
+
+    /**
+     * 获取职称信息
+     *
+     * @param model
+     * @param request
+     * @param response
+     * @return
+     */
+    @RequestMapping("/employeeTitleInfo")
+    public ModelAndView employeeInfo(Model model, HttpServletRequest request, HttpServletResponse response) {
+        Map<String, Object> map = this.getRequestParams(request);
+        String employeeId = map.get("teacherTitleId").toString();
+        System.out.println("employeeId: ------------------- " + employeeId);
+        SmdEmployeeTeacherTitleEntity empTitle = smdEmployeeTeacherTitleService.queryObject(employeeId);
+        System.out.println("teacherTitleName: --------------------- " + empTitle.getTeacherTitleName());
+        mav.addObject("empTitle", empTitle);
+        mav.setViewName("employee/basic_emp_teacher_title_edit");
+        return mav;
+    }
+
+
+    /**
+     * 新增人员信息
+     *
+     * @param req
+     * @param session
+     * @return
+     * @throws Exception
+     */
+    @SysLog("保存职称信息")
+    @RequestMapping("save")
+    public AjaxListResult<Map<String, Object>> save(HttpServletRequest req, HttpSession session)
+            throws Exception {
+        System.out.println(" 新增数据-----------------------------  ");
+        AjaxListResult<Map<String, Object>> data = new AjaxListResult<Map<String, Object>>();
+        try {
+            Map<String, Object> map = this.getRequestParams(req);
+            String json = map.get("data").toString();
+            JSONObject jsonObject = JSONObject.fromObject(json);
+            SmdEmployeeTeacherTitleEntity employeeTitle = (SmdEmployeeTeacherTitleEntity) JSONObject.toBean(jsonObject, SmdEmployeeTeacherTitleEntity.class);
+            System.out.println("employee: " + employeeTitle.getTeacherTitleName());
+            String tenantId = (String) session.getAttribute("tenantId");
+            employeeTitle.setTenantId(tenantId);
+            String orgId = (String) session.getAttribute("orgId");
+            employeeTitle.setOrgId(orgId);
+            String employeeId = (String) session.getAttribute("employeeId");
+            employeeTitle.setCreateUserId(employeeId);
+            String employeeName = (String) session.getAttribute("employeeName");
+            System.out.println("employeeName ----------------------------------" + employeeName);
+            employeeTitle.setCreateUserName(employeeName);
+            employeeTitle.setCreateTime(new Date());
+            this.smdEmployeeTeacherTitleService.save(employeeTitle);
+            data.setCode(0);
+            data.setMsg("保存成功");
+        } catch (Exception e) {
+            data.setCode(101);
+            data.setMsg("保存失败");
+            e.printStackTrace();
+        }
+        return data;
+    }
+
+
+    /**
+     * 编辑保存职称信息
+     *
+     * @param req
+     * @param session
+     * @return
+     * @throws Exception
+     */
+    @SysLog("编辑保存职称信息")
+    @RequestMapping("update")
+    public AjaxListResult<Map<String, Object>> update(HttpServletRequest req, HttpSession session)
+            throws Exception {
+        System.out.println("保存编辑后的数据 ---------------------------");
+        AjaxListResult<Map<String, Object>> data = new AjaxListResult<Map<String, Object>>();
+        try {
+            Map<String, Object> map = this.getRequestParams(req);
+            String json = map.get("data").toString();
+            System.out.println("json ---------------------------- " + json);
+            JSONObject jsonObject = JSONObject.fromObject(json);
+            SmdEmployeeTeacherTitleEntity employeeTitle = (SmdEmployeeTeacherTitleEntity) JSONObject.
+                    toBean(jsonObject, SmdEmployeeTeacherTitleEntity.class);
+            this.smdEmployeeTeacherTitleService.update(employeeTitle);
+            data.setCode(0);
+            data.setMsg("保存成功");
+        } catch (Exception e) {
+            data.setCode(101);
+            data.setMsg("保存失败");
+            e.printStackTrace();
+        }
+        return data;
+    }
+
+
+    /**
+     * 删除职称信息
+     *
+     * @param req
+     * @param session
+     * @return
+     * @throws Exception
+     */
+    @SysLog("删除职称信息")
+    @RequestMapping(value = "delete", method = RequestMethod.GET)
+    public AjaxListResult<Map<String, Object>> dele(HttpServletRequest req, HttpSession session)
+            throws Exception {
+        AjaxListResult<Map<String, Object>> data = new AjaxListResult<Map<String, Object>>();
+        try {
+            Map<String, Object> map = this.getRequestParams(req);
+            String teacherTitleId = map.get("teacherTitleId").toString();
+            this.smdEmployeeTeacherTitleService.delete(teacherTitleId);
+            data.setCode(0);
+            data.setMsg("操作成功");
+        } catch (Exception e) {
+            data.setCode(101);
+            data.setMsg("操作失败");
+            e.printStackTrace();
+        }
+        return data;
+    }
+}
+

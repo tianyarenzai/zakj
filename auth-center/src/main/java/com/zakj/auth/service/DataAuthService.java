@@ -1,0 +1,23 @@
+package com.zakj.auth.service;
+
+import java.util.List;
+import java.util.Map;
+
+/**
+ * Created by 0ops on 2018/6/8.
+ */
+public interface DataAuthService {
+    List<Map<String, Object>> queryList(Map<String, Object> map);
+    /**
+     * 获取生的账号信息
+     * @param params
+     * @return
+     */
+    Map<String,Object> getStudentUserByUserId(Map<String, Object> params);
+    /**
+     * 获取数据权限
+     * @param params
+     * @return
+     */
+    List<Map<String,Object>> queryDataAuth(Map<String, Object> params);
+}

@@ -1,0 +1,15 @@
+package com.zakj.auth.dao;
+
+import com.zakj.auth.entity.User;
+import org.apache.ibatis.annotations.Mapper;
+
+import java.util.Map;
+
+/**
+ * Created by 0ops on 2018/6/19.
+ */
+@Mapper
+public interface UserDao extends BaseDao<User>{
+    User getUserByCondition(Map<String, Object> params);
+
+}

@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <title>增加职务</title>
+    <link th:href="@{/css/button-skin.css}" rel="stylesheet" type="text/css"/>
+    <script type="text/javascript" th:src="@{/libs/boot.js}"></script>
+
+    <style type="text/css">
+        html, body {
+            font-size: 12px;
+            padding: 0;
+            margin: 0;
+            border: 0;
+            height: 100%;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body style="overflow-y:scroll;overflow:scroll;">
+<form id="form1" method="post">
+    <table style="table-layout:fixed;">
+        <tr style="height: 35px;">
+            <td style="width:100px;">
+                职工职务：
+            </td>
+            <td style="width:190px;">
+                <input name="employeeJob" class="mini-textbox" required="true" emptyText="请输入职工职务"
+                       style="width:190px;"/>
+            </td>
+        </tr>
+        <tr style="height: 35px;">
+            <td style="width:100px;">
+                拼音简写：
+            </td>
+            <td style="width:190px;">
+                <input name="jobLogo" class="mini-textbox" required="true" emptyText="请输入职务拼音简写"
+                       style="width:190px;"/>
+            </td>
+        </tr>
+<!--        <tr style="height: 35px;">
+            <td style="width:100px;">
+                人数：
+            </td>
+            <td style="width:190px;">
+                <input name="numberPeople" class="mini-textbox" required="true" emptyText="请输入职务人数或不限人数"
+                       style="width:190px;"/>
+            </td>
+        </tr>-->
+        <tr>
+            <td style="width:80px;">
+                学校:
+            </td>
+            <td style="width:190px;">
+                <input id="jobSchool" name="jobSchool" class="mini-combobox" valueField="orgId"
+                       textField="orgName" style="width:190px;"  required="true"
+                       url="../../auth/org/getOrganizations"/>
+            </td>
+        </tr>
+        <tr>
+            <td width="65px">备注：</td>
+            <td>
+                <input id="employeeJobNote" name="employeeJobNote" class="mini-textarea"
+                       style="width:190px;" required="true"/>
+            </td>
+        </tr>
+    </table>
+    <div style="margin-left: 25%; margin-top: 5%">
+        <a class="mini-button" iconCls="icon-ok" onclick="onOk()">确定</a>
+        <a class="mini-button" iconCls="icon-close" onclick="onCancel">关闭</a>
+    </div>
+</form>
+</body>
+<script type="text/javascript">
+    mini.parse();
+    var form = new mini.Form("form1");
+
+    function onOk() {
+        SaveData();
+    }
+
+
+    function SaveData() {
+        var form = new mini.Form("form1");
+        var o = form.getData();
+        o.schoolName = mini.get("jobSchool").getText();
+        console.info("schoolName -------------" + o.schoolName);
+        form.validate();
+        if (form.isValid() == false)
+            return;
+        var json = mini.encode(o);
+        $.ajax({
+            contentType: "application/json",//RequestBody请求的类型
+            url: "../../employee/employeeJob/save",
+            type: 'post',
+            data: json,
+            dataType: 'json',
+            success: function (text) {
+                if (text.code == 0) {
+                    mini.alert(text.msg);
+                } else if (text.code == 101) {
+                    mini.alert(text.msg);
+                }
+                CloseWindow("save");
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                alert(jqXHR.responseText);
+                CloseWindow();
+            }
+        });
+    }
+
+
+    function GetData() {
+        var o = form.getData();
+        return o;
+    }
+
+    function CloseWindow(action) {
+        if (action == "close" && form.isChanged()) {
+            if (confirm("数据被修改了，是否先保存？")) {
+                return false;
+            }
+        }
+        if (window.CloseOwnerWindow)
+            return window.CloseOwnerWindow(action);
+        else
+            window.close();
+    }
+
+    function onCancel(e) {
+        CloseWindow("cancel");
+    }
+</script>
+
+</html>
+
+
+
+
+

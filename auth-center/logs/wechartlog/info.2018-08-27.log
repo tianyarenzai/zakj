@@ -1,0 +1,23 @@
+Starting WechartPayDemoApplication on K1WXPO0L91G15PO with PID 21000 (D:\workspace\wechart-pay-demo\target\classes started by Administrator in D:\workspace\zakj\auth-center)
+Running with Spring Boot v2.0.4.RELEASE, Spring v5.0.8.RELEASE
+No active profile set, falling back to default profiles: default
+Refreshing org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext@55f616cf: startup date [Mon Aug 27 20:58:24 CST 2018]; root of context hierarchy
+Multiple Spring Data modules found, entering strict repository configuration mode!
+JSR-330 'javax.inject.Inject' annotation found and supported for autowiring
+Tomcat initialized with port(s): 8080 (http)
+Initializing ProtocolHandler ["http-nio-8080"]
+Starting service [Tomcat]
+Starting Servlet Engine: Apache Tomcat/8.5.32
+The APR based Apache Tomcat Native library which allows optimal performance in production environments was not found on the java.library.path: [C:\Program Files\Java\jdk1.8.0_121\bin;C:\Windows\Sun\Java\bin;C:\Windows\system32;C:\Windows;C:\ProgramData\Oracle\Java\javapath;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Program Files (x86)\ATI Technologies\ATI.ACE\Core-Static;C:\Program Files\Java\jdk1.7.0_45\bin;C:\Program Files\Java\jre7\bin;C:\Program Files\Apache Software Foundation\Tomcat 7.0\bin;C:\Program Files\Java\jdk1.8.0_121\bin;C:\Program Files\Java\jre1.8.0_121\bin;D:\NodeJS\;D:\NodeJS\node_global;C:\Program Files\Bandizip\;C:\Users\Administrator\AppData\Roaming\npm;D:\Docker Toolbox;.]
+Initializing Spring embedded WebApplicationContext
+Root WebApplicationContext: initialization completed in 7672 ms
+Servlet dispatcherServlet mapped to [/]
+Mapping filter: 'characterEncodingFilter' to: [/*]
+Mapping filter: 'hiddenHttpMethodFilter' to: [/*]
+Mapping filter: 'httpPutFormContentFilter' to: [/*]
+Mapping filter: 'requestContextFilter' to: [/*]
+Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'payController': Unsatisfied dependency expressed through field 'orderService'; nested exception is org.springframework.beans.factory.NoSuchBeanDefinitionException: No qualifying bean of type 'com.wechart.demo.service.OrderService' available: expected at least 1 bean which qualifies as autowire candidate. Dependency annotations: {@org.springframework.beans.factory.annotation.Autowired(required=true)}
+Stopping service [Tomcat]
+
+
+Error starting ApplicationContext. To display the conditions report re-run your application with 'debug' enabled.

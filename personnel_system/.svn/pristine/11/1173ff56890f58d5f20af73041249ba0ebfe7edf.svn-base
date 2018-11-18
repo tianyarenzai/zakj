@@ -1,0 +1,110 @@
+package com.zakj.personnel.service.impl;
+
+import com.zakj.personnel.dao.SmdEmployeeClazzSubjectDao;
+import com.zakj.personnel.entity.SmdEmployeeClazzSubjectEntity;
+import com.zakj.personnel.service.SmdEmployeeClazzSubjectService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * 奖惩Service接口
+ *
+ * @author zhangxia
+ * @email zhangxia_rgcdlb@163.com
+ * @date 2018-03-11 17:04:24
+ */
+@Service("smdEmployeeClazzSubjectService")
+public class SmdEmployeeClazzSubjectServiceImpl implements SmdEmployeeClazzSubjectService {
+	@Autowired
+	private SmdEmployeeClazzSubjectDao smdEmployeeClazzSubjectDao;
+	
+	@Override
+	public SmdEmployeeClazzSubjectEntity queryObject(String disciplineId){
+		return smdEmployeeClazzSubjectDao.queryObject(disciplineId);
+	}
+	
+	@Override
+	public List<Map<String, Object>> queryList(Map<String, Object> map){
+		return smdEmployeeClazzSubjectDao.queryList(map);
+	}
+	
+	@Override
+	public int queryTotal(Map<String, Object> map){
+		return smdEmployeeClazzSubjectDao.queryTotal(map);
+	}
+	
+	@Override
+	public void save(SmdEmployeeClazzSubjectEntity smdEmployeeClazzSubject){
+		smdEmployeeClazzSubjectDao.save(smdEmployeeClazzSubject);
+	}
+	
+	@Override
+	public void update(SmdEmployeeClazzSubjectEntity smdEmployeeClazzSubject){
+		smdEmployeeClazzSubjectDao.update(smdEmployeeClazzSubject);
+	}
+	
+	@Override
+	public void delete(String disciplineId){
+		smdEmployeeClazzSubjectDao.delete(disciplineId);
+	}
+	
+	@Override
+	public void deleteBatch(String[] disciplineIds){
+		smdEmployeeClazzSubjectDao.deleteBatch(disciplineIds);
+	}
+
+	@Override
+	public List<Map<String, Object>> getGrades(String orgId) {
+		return smdEmployeeClazzSubjectDao.getGrades(orgId);
+	}
+
+	@Override
+	public List<Map<String, Object>> getClazzs(String gradeId) {
+		return smdEmployeeClazzSubjectDao.getClazzs(gradeId);
+	}
+
+	@Override
+	@Transactional(rollbackFor=Exception.class)
+	public boolean saveList(List<Map<String, Object>> list) {
+		// 保存职工的任教信息
+		// 1.替换当前班级学科的任教老师
+		// 2.保存当前职工的任教信息
+		boolean bl = false;
+		list.forEach(map ->{
+			if (map.containsKey("disciplineId")) {
+				// TODO
+				this.smdEmployeeClazzSubjectDao.updateEmpClazzSubjet(map);
+				this.smdEmployeeClazzSubjectDao.updateMap(map);
+			} else {
+				// TODO
+				this.smdEmployeeClazzSubjectDao.updateEmpClazzSubjet(map);
+				this.smdEmployeeClazzSubjectDao.saveMap(map);
+			}
+		});
+		bl =true;
+		return bl;
+	}
+
+
+	@Override
+	public List<Map<String, Object>> isClazzed(List<Map<String, Object>> list) {
+		// 判断任教信息班级的学科是否已有职工任教
+		List<Map<String, Object>> empList = new ArrayList<Map<String, Object>>();
+		list.forEach(map -> {
+			Map<String, Object> empMap = this.smdEmployeeClazzSubjectDao.isClazzed(map);
+			empList.add(empMap);
+		});
+		return empList;
+	}
+
+	@Override
+	public List<Map<String, Object>> getSubject(String tenantId) {
+		return smdEmployeeClazzSubjectDao.getSubject(tenantId);
+	}
+
+}

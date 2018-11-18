@@ -1,0 +1,59 @@
+package com.zakj.personnel.controller;
+
+import com.zakj.personnel.entity.SmdEmployeeEntity;
+import com.zakj.personnel.service.SmdEmployeeService;
+import com.zakj.security.controller.BaseController;
+import org.apache.commons.io.IOUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.FileInputStream;
+import java.io.OutputStream;
+
+/**
+ * 在线预览
+ */
+@Controller
+@RequestMapping("/employee/onlinePreview")
+public class OnlinePreviewController extends BaseController {
+    String wordFile = "d:/Eclipse格式化代码文档.docx";
+    String pdfFile = "d:/Eclipse格式化代码文档.pdf";
+
+    @Autowired
+    private SmdEmployeeService smdEmployeeService;
+
+    /**
+     * 预览（将doc转PDF在线预览）
+     * @param response
+     */
+    @RequestMapping("displayPDF")
+    public void displayPDF(HttpServletRequest request, HttpServletResponse response) {
+        try {
+            HttpSession session = request.getSession();
+            String empId = (String)session.getAttribute("empId");
+            System.out.println("empId -----------------------------------------------  " + empId);
+            SmdEmployeeEntity entity = smdEmployeeService.getEmployeeResumeUrl(empId);
+            String eduUrl = entity.getEmployeeImgurlEdu();
+            System.out.println("eduUrl: ----------------------------- " + eduUrl);
+            String pdfUrl = eduUrl.substring(0, eduUrl.lastIndexOf("."));
+            pdfUrl = pdfUrl + ".pdf";
+            System.out.println("pdfUrl ------------------------------- " + pdfUrl);
+//            String targetFile = pptToPDF2.convert2PDF(eduUrl, pdfUrl);
+//            FileInputStream fileInputStream = new FileInputStream(targetFile);
+            response.setHeader("Content-Disposition", "attachment;fileName=test.pdf");
+            response.setContentType("multipart/form-data");
+            OutputStream outputStream = response.getOutputStream();
+//            IOUtils.write(IOUtils.toByteArray(fileInputStream), outputStream);
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
+
+
+}

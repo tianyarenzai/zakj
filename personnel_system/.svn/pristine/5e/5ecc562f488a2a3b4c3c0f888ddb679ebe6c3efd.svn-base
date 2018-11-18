@@ -1,0 +1,45 @@
+package com.zakj.personnel.controller;
+
+import com.zakj.personnel.service.SmdEmployeeService;
+import com.zakj.security.common.beans.AjaxListResult;
+import com.zakj.security.controller.BaseController;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import java.util.List;
+import java.util.Map;
+
+ /*
+    * @author zhangxia
+    * @email zhangxia_rgcdlb@163.com
+    * @date 2018-03-11 17:04:24
+    */
+@Controller
+@RequestMapping("/employee/headTeacher")
+public class HeadTeacherAndSubsitutionController extends BaseController {
+
+    @Autowired
+    private SmdEmployeeService smdEmployeeService;
+
+
+    /**
+     * 获取班主任及代课管理信息
+     * @param request
+     * @param session
+     * @return
+     */
+    @RequestMapping("getHeadTeacherTeachClazzs")
+    @ResponseBody
+    public AjaxListResult<Map<String, Object>> getHeadTeacherTeachClazzs(HttpServletRequest request, HttpSession session) {
+        AjaxListResult<Map<String, Object>> result = new AjaxListResult<Map<String, Object>>();
+        Map<String, Object> map = this.getRequestParams(request);
+        List<Map<String, Object>> list = smdEmployeeService.getHeadTeacherTeachClazzs(map);
+        result.setData(list);
+        result.setTotal(smdEmployeeService.getHeadTeacherTeachClazzTotal(map));
+        return result;
+    }
+}

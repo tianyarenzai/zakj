@@ -1,0 +1,115 @@
+﻿    <!DOCTYPE html>
+    <html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>导出</title>
+        <link th:href="@{/css/button-skin.css}" rel="stylesheet" type="text/css"/>
+        <script type="text/javascript" th:src="@{/libs/boot.js}"></script>
+        <script type="text/javascript" th:src="@{/libs/ajaxfileupload.js}"></script>
+    <style type="text/css">
+        table {
+            border: 2px solid red;
+        }
+
+        table tr td {
+            border-right: 1px solid #888;
+            border-bottom: 1px solid #888;
+            padding: 5px 15px;
+            width: 50px;
+        }
+    </style>
+</head>
+<body style="overflow-y:scroll;overflow:scroll;">
+<input class="mini-hidden" name="orgId" id="orgId" th:value="${orgId}"/>
+<input class="mini-hidden" name="employeeDept" id="employeeDept" th:value="${employeeDept}"/>
+<a class="mini-button" onclick="exportExcel()">导出模板</a>
+<br/>
+<input type="file" name="file" id="file" style="width:300px;"/>
+<a class="mini-button" onclick="validationData()">数据验证</a>
+<a class="mini-button" onclick="toDb()">导入</a>
+<table width="100%" id="x">
+
+</table>
+
+</body>
+<script type="text/javascript">
+    mini.parse();
+
+    //导出职工模板
+    function exportExcel() {
+        var actionName = "../../personnel/employee/exportExcelTemplate";
+        var form = $("<form>"); //定义一个form表单
+        form.attr('style', 'display:none'); //在form表单中添加查询参数
+        form.attr('target', '');
+        form.attr('method', 'get');
+        form.attr('action', actionName);
+        $('body').append(form); //将表单放置在web中
+        form.submit(); //表单提交
+    }
+
+
+    // 数据验证
+    function validationData() {
+        var file = document.getElementById("file");
+        $.ajaxFileUpload({   //   onefile2
+            url: '../../personnel/employee/oneFileUpload', //用于文件上传的服务器端请求地址
+            fileElementId: file, //文件上传空间的id属性  <input type="file" id="file" name="file" />
+            dataType: 'json', //返回值类型 一般设置为json
+            async: true,
+            success: function (data, status) //服务器成功响应处理函数
+            {
+                // console.log(JSON.stringify(data));
+                console.info(data);
+                $("#x tr").remove();
+                $("#x").append(data.data);
+            },
+            error: function (data, status, e)//服务器响应失败处理函数
+            {
+                alert(e);
+                alert("上传失败");
+            }
+        });
+    }
+
+
+    // 保存数据到数据库
+    function toDb() {
+        var orgId = document.getElementById("orgId").value; //mini.get("orgId").getValue();
+        var employeeDept = document.getElementById("employeeDept").value;  // mini.get("employeeDept").getValue();
+        var file = document.getElementById("file");
+        $.ajaxFileUpload({   //   onefile2
+            url: '../../personnel/employee/toDb', //用于文件上传的服务器端请求地址
+            fileElementId: file, //文件上传空间的id属性
+            data: {
+                "orgId": orgId,
+                "employeeDept": employeeDept
+            },
+            dataType: 'json', //返回值类型 一般设置为json
+            async: true,
+            success: function (data, status) //服务器成功响应处理函数
+            {
+                console.log(JSON.stringify(data));
+                mini.alert(data.msg);
+                CloseWindow("save");
+            },
+            error: function (data, status, e)//服务器响应失败处理函数
+            {
+                alert(e);
+                alert("导入失败");
+            }
+        });
+    }
+
+    function CloseWindow(action) {
+        if (action == "close" && form.isChanged()) {
+            if (confirm("数据被修改了，是否先保存？")) {
+                return false;
+            }
+        }
+        if (window.CloseOwnerWindow)
+            return window.CloseOwnerWindow(action);
+        else
+            window.close();
+    }
+</script>
+
+</html>

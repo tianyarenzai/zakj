@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <title>合同预览</title>
+    <link th:href="@{/css/button-skin.css}" rel="stylesheet" type="text/css"/>
+    <script type="text/javascript" th:src="@{/libs/boot.js}"></script>
+    <link th:href="@{/css/button-skin.css}" rel="stylesheet" type="text/css"/>
+
+    <link rel="stylesheet" th:href="@{/jquery-drag-slider/css/flickity.css}">
+</head>
+<body>
+<script type="text/javascript" th:src="@{/jquery-drag-slider/js/jquery.min.js}"></script>
+<script type="text/javascript" th:src="@{/jquery-drag-slider/js/flickity.pkgd.js}"></script>
+<script type="text/javascript" th:src="@{/jquery-drag-slider/js/index.js}"></script>
+
+<div class="gallery">
+    <div class="gallery-cell" th:each="attachment : ${attachments}">
+        <img th:src="${attachment.attachmentUrl}" alt="orange tree"/>
+    </div>
+</div>
+</body>
+</html>

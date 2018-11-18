@@ -1,0 +1,212 @@
+package com.zakj.auth.controller;
+
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import com.zakj.auth.service.EmployeeRoleService;
+import com.zakj.auth.service.OrganizationService;
+import com.zakj.client.BasicDataFeignClient;
+import com.zakj.utils.EncrypBase;
+import com.zakj.utils.R;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * ClassName：EmployeeRoleController
+ * Description：员工角色授权控制器
+ *
+ * @author ryh
+ * @date 2018/6/28 10:44
+ **/
+@RestController
+@RequestMapping("/emp")
+public class EmployeeRoleController {
+    @Autowired
+    private EmployeeRoleService employeeRoleService;
+    @Autowired
+    private OrganizationService organizationService;
+    @Autowired
+    private BasicDataFeignClient basicDataFeignClient;
+
+    /**
+     * 加载员工授权界面
+     * @param request
+     * @return
+     */
+    @RequestMapping("/view")
+    public ModelAndView loadAuthView(HttpServletRequest request) {
+        ModelAndView mav =new ModelAndView();
+        String tenantId = "";
+        String parentId = "";
+        String type = "";
+        if(request.getParameter("param")!=null) {
+            String params = request.getParameter("param");
+            JSONObject json = JSONArray.parseObject(EncrypBase.decodeStr(params));
+            tenantId = json.get("tenantId").toString();
+            parentId = json.get("parentId").toString();
+            request.getSession().setAttribute("tenantId",tenantId);
+            request.getSession().setAttribute("parentId",parentId);
+        }
+
+        mav.addObject("parentId",parentId);
+        mav.addObject("tenantId",tenantId);
+        mav.addObject("type",type);
+        mav.setViewName("emp/auth_manage");
+        return mav;
+    }
+
+    /**
+     * 加载组织机构树
+     * @param params
+     * @return
+     */
+    @RequestMapping(value ="/org/tree")
+    public List<Map<String, Object>> loadOrgTree(@RequestParam Map<String, Object> params){
+
+        //params.put("orgId", "2c91e98158b3f99f0158b41cffbd0000");
+        //params.put("tenantId", "402881f85c5d670d015c5d6938b50000");
+        try {
+            if (params.size() > 0) {
+                List<Map<String, Object>> organizationList = organizationService.getOrgTree(params);
+                return R.list(organizationList);
+            } else {
+                return null;
+            }
+        }catch (Exception e) {
+            e.printStackTrace();
+            return null;
+
+        }
+    }
+    /**
+     * 获取职位信息
+     * @param params
+     * orgId 学校id
+     * @return
+     */
+    @RequestMapping(value = "/job",produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public  List<Map<String, Object>> getJob(@RequestParam Map<String, Object> params){
+       /* String    orgId = (String) session.getAttribute("orgId");
+        String    tenantId = (String) session.getAttribute("tenantId");*/
+        if(params.size()>0){
+            R r = basicDataFeignClient.getEmployeeJob(params);
+            List<Map<String, Object>> job = (List<Map<String, Object>>)r.get("data");
+            return job;
+        }else {
+            return null;
+        }
+    }
+
+    /**
+     * 获取职工信息
+     * @param params
+     * 	orgId  学校id
+     *  tenantId 企业
+     *  employeeJobId 职位
+     *  employeeName 姓名
+     *  pageSize 条数
+     *  pageIndex   第几页
+     * @return
+     */
+    @RequestMapping(value = "/user/list",produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public R listEmployee(@RequestParam Map<String, Object> params){
+        if(params.size()>0){
+            R r =  basicDataFeignClient.queryEmployeeList(params);
+            return r;
+        }else {
+            return R.error("未传入任何参数！");
+        }
+
+    }
+
+
+    /**
+     * 查询用户所授角色权限
+     * @param params
+     * @param session
+     * @return
+     */
+    @RequestMapping(value = "/role/auth/search", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public R userRoleSearch(@RequestParam Map<String, Object> params, HttpSession session){
+        List<Map<String, Object>>  list = null;
+        List<Map<String, Object>>  checkbox = null;
+        StringBuilder selected = new StringBuilder();
+        try {
+            if (params.get("userIds").toString().split(",").length == 1) {
+                params.put("userId", params.get("userIds").toString());
+                list = employeeRoleService.getRoleCheckByUserId(params);
+
+            } else {
+                params.put("userId", params.get("userIds").toString().split(",")[0]);
+                list = employeeRoleService.getManyRoleCheckByUserId(params);
+            }
+
+            if (StringUtils.isEmpty(params.get("type"))) {
+                if (StringUtils.isEmpty(params.get("tenantId"))) {
+                    params.put("tenantId", session.getAttribute("tenantId"));
+                }
+                checkbox = employeeRoleService.getAllRoleByTenId(params);
+            } else {
+                if (StringUtils.isEmpty(params.get("userId"))) {
+                    params.put("userId", session.getAttribute("userId"));
+                }
+                checkbox = employeeRoleService.getUserLoginRole(params);
+            }
+
+            for (int i = 0; i < list.size(); i++) {
+                selected.append(list.get(i).get("roleId"));
+                if (i < list.size() - 1) {
+                    selected.append(",");
+                }
+            }
+            Map<String, Object> map = new HashMap<String, Object>();
+            map.put("selected", selected);
+            map.put("checkbox", checkbox);
+
+            return R.ok(map);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return R.error();
+
+        }
+    }
+
+    /**
+     * 保存用户角色信息  存在单个授权多个授权
+     * @param params
+     * @return
+     */
+    @RequestMapping(value = "/role/auth/save", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public R saveUserRoleAuth(@RequestParam Map<String, Object> params){
+        try {
+            if(params.get("userIds").toString().split(",").length == 1){
+                 params.put("userId",params.get("userIds").toString());
+                 employeeRoleService.deleteUserRoleAuthByUserId(params);
+                if (! StringUtils.isEmpty(params.get("roleIds"))) { //如果是空还插入 就会插入roleIds为空的数据
+                    employeeRoleService.saveUserRoleAuth(params);
+                }
+            }else {
+                employeeRoleService.deleteUserRoleManyAuthByUserId(params);
+                if (! StringUtils.isEmpty(params.get("roleIds"))){  //如果是空还插入 就会插入roleIds为空的数据
+                    employeeRoleService.saveUserRoleManyAuth(params);
+                }
+            }
+            return  R.ok();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return  R.error();
+
+        }
+
+    }
+}

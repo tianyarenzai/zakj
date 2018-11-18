@@ -1,0 +1,946 @@
+package com.zakj.personnel.entity;
+
+import java.io.Serializable;
+import java.util.Date;
+
+
+/**
+ * InnoDB free: 6144 kB; (`user_id`) REFER `renren_fast/asd_user_account`(`user_id`
+ *
+ * @author zhangxia
+ * @email zhangxia_rgcdlb@163.com
+ * @date 2018-02-24 11:47:53
+ */
+public class SmdEmployeeEntity implements Serializable {
+	private static final long serialVersionUID = 1L;
+	
+	//
+	private String employeeDisable;
+	//
+	private String employeeId;
+	//
+	private String userId;
+	//
+	private String employeeName;
+	//
+	private String employeeSex;
+	//
+	private Date employeeBirthday;
+	//
+	private String isMarried;
+	//
+	private String employeeNation;
+	//
+	private String employeeNativePlace;
+	//
+	private String employeeIdcard;
+	//
+	private String employeeMajor;
+	//
+	private String employeePolitical;
+	//
+	private String employeeEdu;
+	//
+	private String employeeGraduationSchool;
+	//
+	private Date employeeGraduationDate;
+	//
+	private String employeeJob;
+	//
+	private String employeeTitle;
+	//
+	private Date employeeTitleDate;
+	//
+	private String isTecherQualification;
+	//
+	private String employeeQualification;
+	//
+	private String employeeSubject;
+	//
+	private String employeeHealth;
+	//
+	private String employeePhone;
+	//
+	private String employeeAddr;
+	//
+	private String employeePostcode;
+	//
+	private String employeeAddrHome;
+	//
+	private String employeeQq;
+	//
+	private String employeeWebchat;
+	//
+	private String employeeEmail;
+	//
+	private String employeeSkill;
+	//
+	private String employeeImgurl;
+	//
+	private String employeeImgurlTech;
+	//
+	private String employeeImgurlEdu;
+	//
+	private String createUser;
+	//
+	private Date createTime;
+	//
+	private String createDept;
+	//
+	private String gradeId;
+	//职工编号
+	private String employeeNo;
+	//
+	private String employeeIsDirector;
+	//职工所在部门
+	private String employeeDept;
+	//职工所属学校
+	private String employeeSchool;
+	//
+	private String clazzId;
+	//
+	private String orgId;
+	//(转正表Id)
+	private String employeeFormalId;
+	//(离职表Id)
+	private String employeeDepartureId;
+	//(兼职部门)
+	private String parttimeDept;
+	//(兼职职务)
+	private String parttimeJob;
+	//(职务表Id)
+	private String employeeJobId;
+	//
+	private String employeeState;
+	//（兼职学校）
+	private String parttimeOrgId;
+	//（兼职班级）
+	private String parttimeClazzId;
+	//钉钉ID
+	private String ddUserId;
+	//
+	private String employeeDeptName;
+	//省
+	private String province;
+	//市
+	private String city;
+	//县
+	private String county;
+	//学段
+	private String paragraph;
+	//家长
+	private String employeeParent;
+	//家长手机
+	private String employeeParentPhone;
+	//
+	private Date inductionTime;
+	//
+	private String tenantId;
+
+	private  Integer orgCategory;
+
+	private String subjectId;
+
+	/**数据状态（0：正常；1：逻辑删除）*/
+	private Integer systate;
+
+	private String teachClazz;
+
+	/**是否导入数据*/
+	private Integer importExcelFlag;
+
+
+	private Integer sysState;
+
+	/**是否存在简历附件*/
+	private Integer exisitIncident;
+
+	/**
+	 * 设置：
+	 */
+	public void setEmployeeDisable(String employeeDisable) {
+		this.employeeDisable = employeeDisable;
+	}
+	/**
+	 * 获取：
+	 */
+	public String getEmployeeDisable() {
+		return employeeDisable;
+	}
+	/**
+	 * 设置：
+	 */
+	public void setEmployeeId(String employeeId) {
+		this.employeeId = employeeId;
+	}
+	/**
+	 * 获取：
+	 */
+	public String getEmployeeId() {
+		return employeeId;
+	}
+	/**
+	 * 设置：
+	 */
+	public void setUserId(String userId) {
+		this.userId = userId;
+	}
+	/**
+	 * 获取：
+	 */
+	public String getUserId() {
+		return userId;
+	}
+	/**
+	 * 设置：
+	 */
+	public void setEmployeeName(String employeeName) {
+		this.employeeName = employeeName;
+	}
+	/**
+	 * 获取：
+	 */
+	public String getEmployeeName() {
+		return employeeName;
+	}
+	/**
+	 * 设置：
+	 */
+	public void setEmployeeSex(String employeeSex) {
+		this.employeeSex = employeeSex;
+	}
+	/**
+	 * 获取：
+	 */
+	public String getEmployeeSex() {
+		return employeeSex;
+	}
+	/**
+	 * 设置：
+	 */
+	public void setEmployeeBirthday(Date employeeBirthday) {
+		this.employeeBirthday = employeeBirthday;
+	}
+	/**
+	 * 获取：
+	 */
+	public Date getEmployeeBirthday() {
+		return employeeBirthday;
+	}
+	/**
+	 * 设置：
+	 */
+	public void setIsMarried(String isMarried) {
+		this.isMarried = isMarried;
+	}
+	/**
+	 * 获取：
+	 */
+	public String getIsMarried() {
+		return isMarried;
+	}
+	/**
+	 * 设置：
+	 */
+	public void setEmployeeNation(String employeeNation) {
+		this.employeeNation = employeeNation;
+	}
+	/**
+	 * 获取：
+	 */
+	public String getEmployeeNation() {
+		return employeeNation;
+	}
+	/**
+	 * 设置：
+	 */
+	public void setEmployeeNativePlace(String employeeNativePlace) {
+		this.employeeNativePlace = employeeNativePlace;
+	}
+	/**
+	 * 获取：
+	 */
+	public String getEmployeeNativePlace() {
+		return employeeNativePlace;
+	}
+	/**
+	 * 设置：
+	 */
+	public void setEmployeeIdcard(String employeeIdcard) {
+		this.employeeIdcard = employeeIdcard;
+	}
+	/**
+	 * 获取：
+	 */
+	public String getEmployeeIdcard() {
+		return employeeIdcard;
+	}
+	/**
+	 * 设置：
+	 */
+	public void setEmployeeMajor(String employeeMajor) {
+		this.employeeMajor = employeeMajor;
+	}
+	/**
+	 * 获取：
+	 */
+	public String getEmployeeMajor() {
+		return employeeMajor;
+	}
+	/**
+	 * 设置：
+	 */
+	public void setEmployeePolitical(String employeePolitical) {
+		this.employeePolitical = employeePolitical;
+	}
+	/**
+	 * 获取：
+	 */
+	public String getEmployeePolitical() {
+		return employeePolitical;
+	}
+	/**
+	 * 设置：
+	 */
+	public void setEmployeeEdu(String employeeEdu) {
+		this.employeeEdu = employeeEdu;
+	}
+	/**
+	 * 获取：
+	 */
+	public String getEmployeeEdu() {
+		return employeeEdu;
+	}
+	/**
+	 * 设置：
+	 */
+	public void setEmployeeGraduationSchool(String employeeGraduationSchool) {
+		this.employeeGraduationSchool = employeeGraduationSchool;
+	}
+	/**
+	 * 获取：
+	 */
+	public String getEmployeeGraduationSchool() {
+		return employeeGraduationSchool;
+	}
+	/**
+	 * 设置：
+	 */
+	public void setEmployeeGraduationDate(Date employeeGraduationDate) {
+		this.employeeGraduationDate = employeeGraduationDate;
+	}
+	/**
+	 * 获取：
+	 */
+	public Date getEmployeeGraduationDate() {
+		return employeeGraduationDate;
+	}
+	/**
+	 * 设置：
+	 */
+	public void setEmployeeJob(String employeeJob) {
+		this.employeeJob = employeeJob;
+	}
+	/**
+	 * 获取：
+	 */
+	public String getEmployeeJob() {
+		return employeeJob;
+	}
+	/**
+	 * 设置：
+	 */
+	public void setEmployeeTitle(String employeeTitle) {
+		this.employeeTitle = employeeTitle;
+	}
+	/**
+	 * 获取：
+	 */
+	public String getEmployeeTitle() {
+		return employeeTitle;
+	}
+	/**
+	 * 设置：
+	 */
+	public void setEmployeeTitleDate(Date employeeTitleDate) {
+		this.employeeTitleDate = employeeTitleDate;
+	}
+	/**
+	 * 获取：
+	 */
+	public Date getEmployeeTitleDate() {
+		return employeeTitleDate;
+	}
+	/**
+	 * 设置：
+	 */
+	public void setIsTecherQualification(String isTecherQualification) {
+		this.isTecherQualification = isTecherQualification;
+	}
+	/**
+	 * 获取：
+	 */
+	public String getIsTecherQualification() {
+		return isTecherQualification;
+	}
+	/**
+	 * 设置：
+	 */
+	public void setEmployeeQualification(String employeeQualification) {
+		this.employeeQualification = employeeQualification;
+	}
+	/**
+	 * 获取：
+	 */
+	public String getEmployeeQualification() {
+		return employeeQualification;
+	}
+	/**
+	 * 设置：
+	 */
+	public void setEmployeeSubject(String employeeSubject) {
+		this.employeeSubject = employeeSubject;
+	}
+	/**
+	 * 获取：
+	 */
+	public String getEmployeeSubject() {
+		return employeeSubject;
+	}
+	/**
+	 * 设置：
+	 */
+	public void setEmployeeHealth(String employeeHealth) {
+		this.employeeHealth = employeeHealth;
+	}
+	/**
+	 * 获取：
+	 */
+	public String getEmployeeHealth() {
+		return employeeHealth;
+	}
+	/**
+	 * 设置：
+	 */
+	public void setEmployeePhone(String employeePhone) {
+		this.employeePhone = employeePhone;
+	}
+	/**
+	 * 获取：
+	 */
+	public String getEmployeePhone() {
+		return employeePhone;
+	}
+	/**
+	 * 设置：
+	 */
+	public void setEmployeeAddr(String employeeAddr) {
+		this.employeeAddr = employeeAddr;
+	}
+	/**
+	 * 获取：
+	 */
+	public String getEmployeeAddr() {
+		return employeeAddr;
+	}
+	/**
+	 * 设置：
+	 */
+	public void setEmployeePostcode(String employeePostcode) {
+		this.employeePostcode = employeePostcode;
+	}
+	/**
+	 * 获取：
+	 */
+	public String getEmployeePostcode() {
+		return employeePostcode;
+	}
+	/**
+	 * 设置：
+	 */
+	public void setEmployeeAddrHome(String employeeAddrHome) {
+		this.employeeAddrHome = employeeAddrHome;
+	}
+	/**
+	 * 获取：
+	 */
+	public String getEmployeeAddrHome() {
+		return employeeAddrHome;
+	}
+	/**
+	 * 设置：
+	 */
+	public void setEmployeeQq(String employeeQq) {
+		this.employeeQq = employeeQq;
+	}
+	/**
+	 * 获取：
+	 */
+	public String getEmployeeQq() {
+		return employeeQq;
+	}
+	/**
+	 * 设置：
+	 */
+	public void setEmployeeWebchat(String employeeWebchat) {
+		this.employeeWebchat = employeeWebchat;
+	}
+	/**
+	 * 获取：
+	 */
+	public String getEmployeeWebchat() {
+		return employeeWebchat;
+	}
+	/**
+	 * 设置：
+	 */
+	public void setEmployeeEmail(String employeeEmail) {
+		this.employeeEmail = employeeEmail;
+	}
+	/**
+	 * 获取：
+	 */
+	public String getEmployeeEmail() {
+		return employeeEmail;
+	}
+	/**
+	 * 设置：
+	 */
+	public void setEmployeeSkill(String employeeSkill) {
+		this.employeeSkill = employeeSkill;
+	}
+	/**
+	 * 获取：
+	 */
+	public String getEmployeeSkill() {
+		return employeeSkill;
+	}
+	/**
+	 * 设置：
+	 */
+	public void setEmployeeImgurl(String employeeImgurl) {
+		this.employeeImgurl = employeeImgurl;
+	}
+	/**
+	 * 获取：
+	 */
+	public String getEmployeeImgurl() {
+		return employeeImgurl;
+	}
+	/**
+	 * 设置：
+	 */
+	public void setEmployeeImgurlTech(String employeeImgurlTech) {
+		this.employeeImgurlTech = employeeImgurlTech;
+	}
+	/**
+	 * 获取：
+	 */
+	public String getEmployeeImgurlTech() {
+		return employeeImgurlTech;
+	}
+	/**
+	 * 设置：
+	 */
+	public void setEmployeeImgurlEdu(String employeeImgurlEdu) {
+		this.employeeImgurlEdu = employeeImgurlEdu;
+	}
+	/**
+	 * 获取：
+	 */
+	public String getEmployeeImgurlEdu() {
+		return employeeImgurlEdu;
+	}
+	/**
+	 * 设置：
+	 */
+	public void setCreateUser(String createUser) {
+		this.createUser = createUser;
+	}
+	/**
+	 * 获取：
+	 */
+	public String getCreateUser() {
+		return createUser;
+	}
+	/**
+	 * 设置：
+	 */
+	public void setCreateTime(Date createTime) {
+		this.createTime = createTime;
+	}
+	/**
+	 * 获取：
+	 */
+	public Date getCreateTime() {
+		return createTime;
+	}
+	/**
+	 * 设置：
+	 */
+	public void setCreateDept(String createDept) {
+		this.createDept = createDept;
+	}
+	/**
+	 * 获取：
+	 */
+	public String getCreateDept() {
+		return createDept;
+	}
+	/**
+	 * 设置：
+	 */
+	public void setGradeId(String gradeId) {
+		this.gradeId = gradeId;
+	}
+	/**
+	 * 获取：
+	 */
+	public String getGradeId() {
+		return gradeId;
+	}
+	/**
+	 * 设置：职工编号
+	 */
+	public void setEmployeeNo(String employeeNo) {
+		this.employeeNo = employeeNo;
+	}
+	/**
+	 * 获取：职工编号
+	 */
+	public String getEmployeeNo() {
+		return employeeNo;
+	}
+	/**
+	 * 设置：
+	 */
+	public void setEmployeeIsDirector(String employeeIsDirector) {
+		this.employeeIsDirector = employeeIsDirector;
+	}
+	/**
+	 * 获取：
+	 */
+	public String getEmployeeIsDirector() {
+		return employeeIsDirector;
+	}
+	/**
+	 * 设置：职工所在部门
+	 */
+	public void setEmployeeDept(String employeeDept) {
+		this.employeeDept = employeeDept;
+	}
+	/**
+	 * 获取：职工所在部门
+	 */
+	public String getEmployeeDept() {
+		return employeeDept;
+	}
+	/**
+	 * 设置：职工所属学校
+	 */
+	public void setEmployeeSchool(String employeeSchool) {
+		this.employeeSchool = employeeSchool;
+	}
+	/**
+	 * 获取：职工所属学校
+	 */
+	public String getEmployeeSchool() {
+		return employeeSchool;
+	}
+	/**
+	 * 设置：
+	 */
+	public void setClazzId(String clazzId) {
+		this.clazzId = clazzId;
+	}
+	/**
+	 * 获取：
+	 */
+	public String getClazzId() {
+		return clazzId;
+	}
+	/**
+	 * 设置：
+	 */
+	public void setOrgId(String orgId) {
+		this.orgId = orgId;
+	}
+	/**
+	 * 获取：
+	 */
+	public String getOrgId() {
+		return orgId;
+	}
+	/**
+	 * 设置：(转正表Id)
+	 */
+	public void setEmployeeFormalId(String employeeFormalId) {
+		this.employeeFormalId = employeeFormalId;
+	}
+	/**
+	 * 获取：(转正表Id)
+	 */
+	public String getEmployeeFormalId() {
+		return employeeFormalId;
+	}
+	/**
+	 * 设置：(离职表Id)
+	 */
+	public void setEmployeeDepartureId(String employeeDepartureId) {
+		this.employeeDepartureId = employeeDepartureId;
+	}
+	/**
+	 * 获取：(离职表Id)
+	 */
+	public String getEmployeeDepartureId() {
+		return employeeDepartureId;
+	}
+	/**
+	 * 设置：(兼职部门)
+	 */
+	public void setParttimeDept(String parttimeDept) {
+		this.parttimeDept = parttimeDept;
+	}
+	/**
+	 * 获取：(兼职部门)
+	 */
+	public String getParttimeDept() {
+		return parttimeDept;
+	}
+	/**
+	 * 设置：(兼职职务)
+	 */
+	public void setParttimeJob(String parttimeJob) {
+		this.parttimeJob = parttimeJob;
+	}
+	/**
+	 * 获取：(兼职职务)
+	 */
+	public String getParttimeJob() {
+		return parttimeJob;
+	}
+	/**
+	 * 设置：(职务表Id)
+	 */
+	public void setEmployeeJobId(String employeeJobId) {
+		this.employeeJobId = employeeJobId;
+	}
+	/**
+	 * 获取：(职务表Id)
+	 */
+	public String getEmployeeJobId() {
+		return employeeJobId;
+	}
+	/**
+	 * 设置：
+	 */
+	public void setEmployeeState(String employeeState) {
+		this.employeeState = employeeState;
+	}
+	/**
+	 * 获取：
+	 */
+	public String getEmployeeState() {
+		return employeeState;
+	}
+	/**
+	 * 设置：（兼职学校）
+	 */
+	public void setParttimeOrgId(String parttimeOrgId) {
+		this.parttimeOrgId = parttimeOrgId;
+	}
+	/**
+	 * 获取：（兼职学校）
+	 */
+	public String getParttimeOrgId() {
+		return parttimeOrgId;
+	}
+	/**
+	 * 设置：（兼职班级）
+	 */
+	public void setParttimeClazzId(String parttimeClazzId) {
+		this.parttimeClazzId = parttimeClazzId;
+	}
+	/**
+	 * 获取：（兼职班级）
+	 */
+	public String getParttimeClazzId() {
+		return parttimeClazzId;
+	}
+	/**
+	 * 设置：钉钉ID
+	 */
+	public void setDdUserId(String ddUserId) {
+		this.ddUserId = ddUserId;
+	}
+	/**
+	 * 获取：钉钉ID
+	 */
+	public String getDdUserId() {
+		return ddUserId;
+	}
+	/**
+	 * 设置：
+	 */
+	public void setEmployeeDeptName(String employeeDeptName) {
+		this.employeeDeptName = employeeDeptName;
+	}
+	/**
+	 * 获取：
+	 */
+	public String getEmployeeDeptName() {
+		return employeeDeptName;
+	}
+	/**
+	 * 设置：省
+	 */
+	public void setProvince(String province) {
+		this.province = province;
+	}
+	/**
+	 * 获取：省
+	 */
+	public String getProvince() {
+		return province;
+	}
+	/**
+	 * 设置：市
+	 */
+	public void setCity(String city) {
+		this.city = city;
+	}
+	/**
+	 * 获取：市
+	 */
+	public String getCity() {
+		return city;
+	}
+	/**
+	 * 设置：县
+	 */
+	public void setCounty(String county) {
+		this.county = county;
+	}
+	/**
+	 * 获取：县
+	 */
+	public String getCounty() {
+		return county;
+	}
+	/**
+	 * 设置：学段
+	 */
+	public void setParagraph(String paragraph) {
+		this.paragraph = paragraph;
+	}
+	/**
+	 * 获取：学段
+	 */
+	public String getParagraph() {
+		return paragraph;
+	}
+	/**
+	 * 设置：家长
+	 */
+	public void setEmployeeParent(String employeeParent) {
+		this.employeeParent = employeeParent;
+	}
+	/**
+	 * 获取：家长
+	 */
+	public String getEmployeeParent() {
+		return employeeParent;
+	}
+	/**
+	 * 设置：家长手机
+	 */
+	public void setEmployeeParentPhone(String employeeParentPhone) {
+		this.employeeParentPhone = employeeParentPhone;
+	}
+	/**
+	 * 获取：家长手机
+	 */
+	public String getEmployeeParentPhone() {
+		return employeeParentPhone;
+	}
+	/**
+	 * 设置：
+	 */
+	public void setInductionTime(Date inductionTime) {
+		this.inductionTime = inductionTime;
+	}
+	/**
+	 * 获取：
+	 */
+	public Date getInductionTime() {
+		return inductionTime;
+	}
+	/**
+	 * 设置：
+	 */
+	public void setTenantId(String tenantId) {
+		this.tenantId = tenantId;
+	}
+	/**
+	 * 获取：
+	 */
+	public String getTenantId() {
+		return tenantId;
+	}
+
+	public Integer getOrgCategory() {
+		return orgCategory;
+	}
+
+	public void setOrgCategory(Integer orgCategory) {
+		this.orgCategory = orgCategory;
+	}
+
+	public String getSubjectId() {
+		return subjectId;
+	}
+
+	public void setSubjectId(String subjectId) {
+		this.subjectId = subjectId;
+	}
+
+	public Integer getSystate() {
+		return systate;
+	}
+
+	public void setSystate(Integer systate) {
+		this.systate = systate;
+	}
+
+	public String getTeachClazz() {
+		return teachClazz;
+	}
+
+	public void setTeachClazz(String teachClazz) {
+		this.teachClazz = teachClazz;
+	}
+
+	public Integer getImportExcelFlag() {
+		return importExcelFlag;
+	}
+
+	public void setImportExcelFlag(Integer importExcelFlag) {
+		this.importExcelFlag = importExcelFlag;
+	}
+
+	public Integer getSysState() {
+		return sysState;
+	}
+
+	public void setSysState(Integer sysState) {
+		this.sysState = sysState;
+	}
+
+	public Integer getExisitIncident() {
+		return exisitIncident;
+	}
+
+	public void setExisitIncident(Integer exisitIncident) {
+		this.exisitIncident = exisitIncident;
+	}
+}

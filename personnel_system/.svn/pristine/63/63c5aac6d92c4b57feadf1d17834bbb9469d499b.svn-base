@@ -1,0 +1,154 @@
+package com.zakj.personnel.controller;
+
+import com.zakj.personnel.entity.SmdEmployeeJobEntity;
+import com.zakj.personnel.service.SmdEmployeeJobService;
+import com.zakj.personnel.service.SmdEmployeeService;
+import com.zakj.security.common.beans.AjaxListResult;
+import com.zakj.security.controller.BaseController;
+import com.zakj.utils.Query;
+import com.zakj.utils.R;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * 职位表; InnoDB free: 7168 kB
+ *
+ * @author chenshun
+ * @email sunlightcs@gmail.com
+ * @date 2018-03-19 14:36:02
+ */
+@RestController
+@RequestMapping("/employee/employeeJob")
+public class SmdEmployeeJobController extends BaseController {
+    @Autowired
+    private SmdEmployeeJobService smdEmployeeJobService;
+
+    @Autowired
+    private SmdEmployeeService smdEmployeeService;
+
+
+    /**
+     * 获取职务列表信息
+     *
+     * @param params
+     * @return
+     */
+    @RequestMapping("/list")
+    @ResponseBody
+    public R list(@RequestParam Map<String, Object> params) {
+        Query query = new Query(params);
+        List<Map<String, Object>> list = smdEmployeeJobService.queryList(query);
+        long total = smdEmployeeJobService.queryTotal(query);
+        return R.ok(list, total);
+    }
+
+    /**
+     * 进入增加职务页面
+     *
+     * @param request
+     * @param response
+     * @return
+     */
+    @RequestMapping("add")
+    @ResponseBody
+    public ModelAndView add(HttpServletRequest request, HttpServletResponse response) {
+
+        mav.setViewName("/employee/addEmployeeJob");
+        return mav;
+    }
+
+    /**
+     * 进入编辑职务页面
+     *
+     * @param employeeJobId
+     * @return
+     */
+    @RequestMapping("/info/{employeeJobId}")
+    public ModelAndView info(@PathVariable("employeeJobId") String employeeJobId) {
+        SmdEmployeeJobEntity smdEmployeeJob = smdEmployeeJobService.queryObject(employeeJobId);
+        mav.addObject("smdEmployeeJob", smdEmployeeJob);
+        mav.setViewName("employee/editEmployeeJob");
+        return mav;
+    }
+
+
+    /**
+     * 保存职务页面
+     *
+     * @param smdEmployeeJob
+     * @param session
+     * @return
+     */
+    @RequestMapping("/save")
+    public R save(@RequestBody SmdEmployeeJobEntity smdEmployeeJob, HttpSession session) {
+        try {
+            String tenantId = (String) session.getAttribute("tenantId");
+            String userId = (String) session.getAttribute("userId");
+            smdEmployeeJob.setTenantId(tenantId);
+            smdEmployeeJob.setCreateUser(userId);
+            smdEmployeeJob.setCreateTime(new Date());
+
+            smdEmployeeJobService.save(smdEmployeeJob);
+            return R.ok("添加成功!");
+        } catch (Exception e) {
+            return R.error("发生未知异常" + e.getMessage());
+        }
+    }
+
+
+    /**
+     * 修改职务信息
+     *
+     * @param smdEmployeeJob
+     * @return
+     */
+    @RequestMapping("/update")
+    public R update(@RequestBody SmdEmployeeJobEntity smdEmployeeJob, HttpSession session) {
+        smdEmployeeJobService.update(smdEmployeeJob);
+        return R.ok("修改成功!");
+    }
+
+
+    /**
+     * 删除职务信息
+     *
+     * @param request
+     * @param response
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "delete", method = RequestMethod.GET)
+    @ResponseBody
+    public AjaxListResult<Map<String, Object>> delete(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        AjaxListResult<Map<String, Object>> result = new AjaxListResult<Map<String, Object>>();
+        Map<String, Object> map = this.getRequestParams(request);
+        try {
+            String ids = map.get("ids").toString();
+            String employeeJobIds[] = ids.split(",");
+            System.out.println("ids --------------------------- " + ids);
+            // 通过职务Ids查找职工信息
+            List<Map<String, Object>> list = smdEmployeeService.getEmployeeByJobIds(employeeJobIds);
+            if (list.size() == 0) {
+                smdEmployeeJobService.deleteBatch(employeeJobIds);
+                result.setCode(0);
+                result.setMsg("操作成功!");
+            } else {
+                result.setCode(101);
+                result.setMsg("当前要删除的职务在职工信息中有引用，不能删除!");
+            }
+        } catch (Exception e) {
+            result.setCode(101);
+            result.setMsg("发生未知异常:  " + e.getMessage());
+        }
+        return result;
+    }
+
+}

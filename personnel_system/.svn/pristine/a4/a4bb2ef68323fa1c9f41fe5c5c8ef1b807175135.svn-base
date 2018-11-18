@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zakj.personnel.dao.AlyApSevPushMessageItemDao">
+
+	<select id="queryObject" resultType="com.zakj.personnel.entity.AlyApSevPushMessageItemEntity">
+		select * from aly_ap_sev_push_message_item where item_id = #{value}
+	</select>
+
+	<select id="queryList" resultType="com.zakj.personnel.entity.AlyApSevPushMessageItemEntity">
+		select * from aly_ap_sev_push_message_item
+        <choose>
+			<when test="sortField != null and sortField.trim() != ''">
+				order by ${sortField} ${sortOrder}
+			</when>
+			<otherwise>
+                order by item_id desc
+			</otherwise>
+        </choose>
+		<if test="pageIndex != null and pageSize != null">
+			limit #{pageIndex}, #{pageSize}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from aly_ap_sev_push_message_item 
+	</select>
+	 
+	<insert id="save" parameterType="com.zakj.personnel.entity.AlyApSevPushMessageItemEntity" useGeneratedKeys="true" keyProperty="itemId">
+		insert into aly_ap_sev_push_message_item
+		(
+			`message_id`, 
+			`device_id`, 
+			`is_delivery`, 
+			`is_open`, 
+			`is_delete`, 
+			`create_time`
+		)
+		values
+		(
+			#{messageId}, 
+			#{deviceId}, 
+			#{isDelivery}, 
+			#{isOpen}, 
+			#{isDelete}, 
+			#{createTime}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="com.zakj.personnel.entity.AlyApSevPushMessageItemEntity">
+		update aly_ap_sev_push_message_item 
+		<set>
+			<if test="messageId != null">`message_id` = #{messageId}, </if>
+			<if test="deviceId != null">`device_id` = #{deviceId}, </if>
+			<if test="isDelivery != null">`is_delivery` = #{isDelivery}, </if>
+			<if test="isOpen != null">`is_open` = #{isOpen}, </if>
+			<if test="isDelete != null">`is_delete` = #{isDelete}, </if>
+			<if test="createTime != null">`create_time` = #{createTime}</if>
+		</set>
+		where item_id = #{itemId}
+	</update>
+	
+	<delete id="delete">
+		delete from aly_ap_sev_push_message_item where item_id = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from aly_ap_sev_push_message_item where item_id in 
+		<foreach item="itemId" collection="array" open="(" separator="," close=")">
+			#{itemId}
+		</foreach>
+	</delete>
+
+</mapper>

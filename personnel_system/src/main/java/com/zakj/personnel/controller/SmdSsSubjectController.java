@@ -1,0 +1,183 @@
+package com.zakj.personnel.controller;
+
+import com.zakj.client.OrganizationFeignClient;
+import com.zakj.personnel.entity.SmdSsSubjectEntity;
+import com.zakj.personnel.service.SmdSsSubjectService;
+import com.zakj.security.aspect.SysLog;
+import com.zakj.security.common.beans.AjaxListResult;
+import com.zakj.security.controller.BaseController;
+import com.zakj.utils.Query;
+import com.zakj.utils.R;
+import net.sf.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+
+/**
+ * 学科; InnoDB free: 12288 kB
+ *
+ * @author zhangxia
+ * @email zhangxia_rgcdlb@163.com
+ * @date 2018-03-13 16:52:56
+ */
+@RestController
+@RequestMapping("/employee/subject")
+public class SmdSsSubjectController extends BaseController {
+    @Autowired
+    private SmdSsSubjectService smdSsSubjectService;
+
+    @Autowired
+    private OrganizationFeignClient organizationFeignClient;
+
+    /**
+     * 列表
+     */
+    @RequestMapping("/list")
+    public R list(@RequestParam Map<String, Object> params, HttpSession session){
+        //查询列表数据
+       /* String tenantId = (String)session.getAttribute("tenantId");
+        params.put("tenantId", tenantId);*/
+      /*  String orgId = (String) session.getAttribute("orgId");
+        params.put("orgId", orgId);*/
+        Query query = new Query(params);
+        List<Map<String, Object>> smdSsSubjectList = smdSsSubjectService.queryList(query);
+        long total = smdSsSubjectService.queryTotal(query);
+        return R.ok(smdSsSubjectList,total);
+    }
+
+
+    /**
+     * 进入增加页面
+     * @param request
+     * @param response
+     * @return
+     */
+    @RequestMapping("add")
+    public ModelAndView add(HttpServletRequest request, HttpServletResponse response) {
+        mav.setViewName("employee/addsubject");
+        return mav;
+    }
+
+
+    /**
+     * 保存数据
+     *
+     * @param request
+     * @param session
+     * @return
+     * @throws Exception
+     */
+    @SysLog("保存数据")
+    @RequestMapping("save")
+    @ResponseBody
+    public AjaxListResult<Map<String, Object>> save(HttpServletRequest request, HttpSession session) throws Exception {
+        AjaxListResult<Map<String, Object>> result = new AjaxListResult<Map<String, Object>>();
+        Map<String, Object> map = this.getRequestParams(request);
+        try {
+            String data = map.get("data").toString();
+            JSONObject obj = JSONObject.fromObject(data);
+            SmdSsSubjectEntity entity = (SmdSsSubjectEntity) JSONObject.toBean(obj, SmdSsSubjectEntity.class);
+            String tenantId = (String) session.getAttribute("tenantId");
+            entity.setTenantId(tenantId);
+            this.smdSsSubjectService.save(entity);
+            result.setCode(0);
+            result.setMsg("操作成功!");
+        } catch (Exception e) {
+            result.setCode(101);
+            result.setMsg("发生未知异常:" + e.getMessage());
+        }
+        return result;
+    }
+
+
+    /**
+     * 删除学科
+     *
+     * @param request
+     * @param response
+     * @return
+     * @throws Exception
+     */
+    @SysLog("删除学科")
+    @RequestMapping("delete")
+    @ResponseBody
+    public AjaxListResult<Map<String, Object>> delete(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        AjaxListResult<Map<String, Object>> result = new AjaxListResult<Map<String, Object>>();
+        Map<String, Object> map = this.getRequestParams(request);
+        try {
+            String subjectId = map.get("subjectId").toString();
+            smdSsSubjectService.delete(subjectId);
+            result.setCode(0);
+            result.setMsg("操作成功!");
+        } catch (Exception e) {
+            result.setCode(101);
+            result.setMsg("发生未知异常 :" + e.getMessage());
+        }
+        return result;
+    }
+
+
+    /**
+     * 初始化编辑学科页面
+     *
+     * @param request
+     * @param response
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping("getSubjectInfo")
+    public ModelAndView getSubjectInfo(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        Map<String, Object> map = this.getRequestParams(request);
+        try {
+            String subjectId = map.get("subjectId").toString();
+            SmdSsSubjectEntity entity = smdSsSubjectService.queryObject(subjectId);
+            mav.addObject("subject", entity);
+            mav.setViewName("employee/editsubject");
+        } catch (Exception e) {
+            mav.addObject("error", e.getMessage());
+        }
+        return mav;
+    }
+
+
+    /**
+     * 编辑保存学科信息
+     * @param request
+     * @param response
+     * @return
+     * @throws Exception
+     */
+    @SysLog("编辑保存学科信息")
+    @RequestMapping("update")
+    @ResponseBody
+    public AjaxListResult<Map<String, Object>> update(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        AjaxListResult<Map<String, Object>> result = new AjaxListResult<Map<String, Object>>();
+        Map<String, Object> map = this.getRequestParams(request);
+        try {
+            String data = map.get("data").toString();
+            JSONObject obj = JSONObject.fromObject(data);
+            SmdSsSubjectEntity entity = (SmdSsSubjectEntity)JSONObject.toBean(obj, SmdSsSubjectEntity.class);
+            smdSsSubjectService.update(entity);
+            result.setCode(0);
+            result.setMsg("操作成功!");
+        } catch (Exception e) {
+            result.setCode(101);
+            result.setMsg("发生未知异常: " + e.getMessage());
+        }
+        return result;
+    }
+
+
+}

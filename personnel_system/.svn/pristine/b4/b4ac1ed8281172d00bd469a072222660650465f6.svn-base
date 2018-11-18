@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zakj.personnel.dao.SmdCeContractDao">
+
+	<resultMap type="java.util.Map" id="Map">
+		<result property="contractId" column="contract_id"/>
+		<result property="employeeId" column="employee_id"/>
+		<result property="contractName" column="contract_name"/>
+		<result property="number" column="number"/>
+		<result property="typeId" column="type_id"/>
+		<result property="beginTime" column="begin_time"/>
+		<result property="endTime" column="end_time"/>
+		<result property="tenantId" column="tenant_id"/>
+		<result property="orgId" column="org_id"/>
+		<result property="createUser" column="create_user"/>
+		<result property="createDate" column="create_date"/>
+		<result property="createEmpId" column="create_emp_id"/>
+		<result property="createEmpName" column="create_emp_name"/>
+		<result property="updateTime" column="update_time"/>
+		<result property="state" column="state"/>
+		<result property="employeeId" column="employee_id"/>
+		<result property="employeeName" column="employee_name"/>
+		<result property="userId" column="user_id"/>
+		<result property="employeeIdcard" column="employee_idcard"/>
+		<result property="employeeNo" column="employee_no"/>
+		<result property="typeName" column="type_name"/>
+		<result property="years" column="years"/>
+		<result property="remindDate" column="remind_date"/>
+	</resultMap>
+
+
+	<select id="queryObject" resultType="com.zakj.personnel.entity.SmdCeContractEntity">
+		select * from smd_ce_contract where contract_id = #{value}
+	</select>
+
+	<select id="queryList" resultMap="Map">
+		SELECT
+		e.employee_id,
+		e.employee_name,
+		e.user_id,
+		e.employee_idcard,
+		e.employee_no,
+		s.*, c.type_name,
+		TIMESTAMPDIFF(YEAR, s.begin_time, s.end_time) AS years
+		FROM
+		smd_employee e
+		LEFT JOIN smd_ce_contract s  ON e.employee_id = s.employee_id
+		LEFT JOIN smd_ce_contract_type c ON c.type_id = s.type_id
+		<where>
+			<if test="employeeName != null and employeeName != ''">
+				and e.employee_name LIKE  concat('%', #{employeeName}, '%')
+			</if>
+			<if test="number != null and number != ''">
+				and s.number = #{number}
+			</if>
+			<if test="typeName != null and typeName != ''">
+				and s.type_id = #{typeName}
+			</if>
+			<if test="employeeNo != null and employeeNo != ''">
+				and employee_no = #{employeeNo}
+			</if>
+			<if test="orgId != null and orgId.size != 0">
+				and e.org_id in
+				<foreach item="item" index="index" collection="orgId" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+			<if test="tenantId != null and tenantId != ''">
+				and s.tenant_id = #{tenantId}
+			</if>
+		</where>
+        <choose>
+			<when test="sortField != null and sortField.trim() != ''">
+				order by ${sortField} ${sortOrder}
+			</when>
+			<otherwise>
+                order by contract_id desc
+			</otherwise>
+        </choose>
+		<if test="pageIndex != null and pageSize != null">
+			limit #{pageIndex}, #{pageSize}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) FROM
+		 smd_employee e
+		LEFT JOIN smd_ce_contract s  ON e.employee_id = s.employee_id
+		LEFT JOIN smd_ce_contract_type c ON c.type_id = s.type_id
+		<where>
+			<if test="employeeName != null and employeeName != ''">
+				and e.employee_name LIKE  concat('%', #{employeeName}, '%')
+			</if>
+			<if test="number != null and number != ''">
+				and s.number = #{number}
+			</if>
+			<if test="typeName != null and typeName != ''">
+				and s.type_id = #{typeName}
+			</if>
+			<if test="employeeNo != null and employeeNo != ''">
+				and employee_no = #{employeeNo}
+			</if>
+			<if test="orgId != null and orgId.size != 0">
+				and e.org_id in
+				<foreach item="item" index="index" collection="orgId" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+			<if test="tenantId != null and tenantId != ''">
+				and s.tenant_id = #{tenantId}
+			</if>
+		</where>
+	</select>
+
+	<insert id="save" parameterType="com.zakj.personnel.entity.SmdCeContractEntity">
+		<selectKey keyProperty="contractId" resultType="string" order="BEFORE">
+			select replace(uuid(), '-', '') as id from dual
+		</selectKey>
+		insert into smd_ce_contract
+		(
+		`contract_id`,
+		`employee_id`,
+		`contract_name`,
+		`number`,
+		`type_id`,
+		`begin_time`,
+		`end_time`,
+		`remind_date`,
+		`tenant_id`,
+		`org_id`,
+		`create_user`,
+		`create_date`,
+		`create_emp_id`,
+		`create_emp_name`,
+		`update_time`,
+		`state`
+		)
+		values
+		(
+		#{contractId},
+		#{employeeId},
+		#{contractName},
+		#{number},
+		#{typeId},
+		#{beginTime},
+		#{endTime},
+		#{remindDate},
+		#{tenantId},
+		#{orgId},
+		#{createUser},
+		#{createDate},
+		#{createEmpId},
+		#{createEmpName},
+		#{updateTime},
+		#{state}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="com.zakj.personnel.entity.SmdCeContractEntity">
+		update smd_ce_contract 
+		<set>
+			<if test="employeeId != null">`employee_id` = #{employeeId}, </if>
+			<if test="contractName != null">`contract_name` = #{contractName}, </if>
+			<if test="number != null">`number` = #{number}, </if>
+			<if test="typeId != null">`type_id` = #{typeId}, </if>
+			<if test="beginTime != null">`begin_time` = #{beginTime}, </if>
+			<if test="endTime != null">`end_time` = #{endTime}, </if>
+			<if test="remindDate != null">`remind_date` = #{remindDate},</if>
+			<if test="tenantId != null">`tenant_id` = #{tenantId}, </if>
+			<if test="orgId != null">`org_id` = #{orgId}, </if>
+			<if test="createUser != null">`create_user` = #{createUser}, </if>
+			<if test="createDate != null">`create_date` = #{createDate}, </if>
+			<if test="createEmpId != null">`create_emp_id` = #{createEmpId}, </if>
+			<if test="createEmpName != null">`create_emp_name` = #{createEmpName}, </if>
+			<if test="updateTime != null">`update_time` = #{updateTime}, </if>
+			<if test="state != null">`state` = #{state}</if>
+		</set>
+		where contract_id = #{contractId}
+	</update>
+	
+	<delete id="delete">
+		delete from smd_ce_contract where contract_id = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from smd_ce_contract where contract_id in 
+		<foreach item="contractId" collection="array" open="(" separator="," close=")">
+			#{contractId}
+		</foreach>
+	</delete>
+
+	<select id="getAttachmentUrls" resultType="com.zakj.personnel.entity.SmdCeAttachmentEntity">
+		select attachment_url from smd_ce_attachment where contract_id = #{contractId}
+	</select>
+
+</mapper>

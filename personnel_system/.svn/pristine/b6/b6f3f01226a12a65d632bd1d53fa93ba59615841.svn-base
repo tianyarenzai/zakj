@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <title>简历上传</title>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+    <script type="text/javascript" th:src="@{/libs/boot.js}"></script>
+    <link href="/css/button-skin.css" rel="stylesheet" type="text/css" />
+    <script type="text/javascript" th:src = "@{/libs/jquery.json-2.4.min.js}"></script>
+    <script type="text/javascript" th:src = "@{/libs/ajaxfileupload.js}"></script>
+    <style type="text/css">
+        html, body {
+            width: 100%;
+            height: 99%;
+            border: 0;
+            margin: 0;
+            padding: 0;
+            overflow: visible;
+        }
+    </style>
+</head>
+<body>
+<form id="form1" method="post">
+    <input id = "employeeId" name="employeeId" class="mini-hidden" th:value="${employeeId}"/>
+    <input id="employeeImgurlEdu" name="employeeImgurlEdu" class="mini-hidden"/>
+    <table>
+        <tr>
+            <td style="width:100px;">附件:</td>
+            <td>
+                <input type="file" id="file" name="file" style="width: 160px" onchange="setFileValue(this)"/>
+                <a class="mini-button" iconCls="icon-upload" onclick="fileUpload()">上传</a>
+            </td>
+            <script type="text/javascript">
+                function setFileValue(obj)
+                {
+                    var valueString = obj.value;
+                    valueString = valueString.substring(valueString.lastIndexOf('\\') + 1, valueString.length);
+                    var f = mini.get("rewardAttachment");
+                    f.setValue(valueString);
+                }
+            </script>
+        </tr>
+        <tr>
+            <td style="width:100px;">附件名:</td>
+            <td>
+                <input name="rewardAttachment" id = "rewardAttachment" class="mini-textbox" required="true" emptyText="显示上传的附件"
+                       style="width:200px;"/>
+            </td>
+        </tr>
+    </table>
+    <div style="padding:10px; margin-left:20%">
+        <a class="mini-button" onclick="onOk" iconCls="icon-ok">确定</a>
+        <a class="mini-button" onclick="onCancel" iconCls="icon-close">取消</a>
+    </div>
+</form>
+</body>
+<script type="text/javascript">
+    mini.parse();
+    var form = new mini.Form("form1");
+
+    // 上传附件
+    function fileUpload() {
+        var file = document.getElementById("file");
+        $.ajaxFileUpload({   //   onefile2
+            url: '../../file/onefile2', //用于文件上传的服务器端请求地址
+            fileElementId: file, //文件上传空间的id属性  <input type="file" id="file" name="file" />
+            dataType: 'json', //返回值类型 一般设置为json
+            async: true,
+            success: function (data, status) //服务器成功响应处理函数
+            {
+                console.log(JSON.stringify(data));
+                $("#img_page").attr("src", data.map.url);
+                alert("上传成功" + data.map.url);
+                var backUrl = data.map.url;
+                backUrl = backUrl.substr(0, backUrl.indexOf("?"));
+                console.info("backUrl : ---------- " + backUrl);
+                var t = mini.get("employeeImgurlEdu");
+                t.setValue(backUrl);
+            },
+            error: function (data, status, e)//服务器响应失败处理函数
+            {
+                alert(e);
+                alert("上传失败");
+            }
+        });
+    }
+
+    // 点击确定
+    function onOk(){
+        saveData();
+    }
+
+    // 保存数据
+    function saveData(){
+        console.info("saveData。。。。。。。。。。。。");
+        var form = new mini.Form("form1");
+        var o = form.getData();
+        form.validate();
+        if (form.isValid() == false)
+            return;
+        var json = mini.encode(o);
+        console.info("json:------------------ " + json);
+        $.ajax({
+            url: "../../personnel/employee/updateResume",
+            type: 'post',
+            data: {
+                data: json
+            },
+            cache: false,
+            success: function (text) {
+                if (text.code == 0) {
+                    mini.alert(text.msg);
+                } else if (text == 101) {
+                    mini.alert(text.msg);
+                }
+                CloseWindow("save");
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                mini.alert(jqXHR.responseText);
+                CloseWindow();
+            }
+        });
+    }
+
+    // 点击取消
+    function onCancel(){
+        console.info("onCancel ........................... ");
+        CloseWindow("cancel");
+    }
+
+    function CloseWindow(action) {
+        if (action == "close" && form.isChanged()) {
+            if (confirm("数据被修改了，是否先保存？")) {
+                return false;
+            }
+        }
+        if (window.CloseOwnerWindow)
+            return window.CloseOwnerWindow(action);
+        else
+            window.close();
+    }
+</script>
+</html>

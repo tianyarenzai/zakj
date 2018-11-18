@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zakj.personnel.dao.SmdEmployeeDepartureDao">
+	<select id="queryObject" resultType="com.zakj.personnel.entity.SmdEmployeeJobRecordEntity">
+		select * from smd_employee_departure where employee_departure_id = #{value}
+	</select>
+
+	<select id="queryList" resultType="java.util.Map">
+		select * from smd_employee_departure
+		<choose>
+			<when test="sortField != null and sortField.trim() != ''">
+				order by ${sortField} ${sortOrder}
+			</when>
+			<otherwise>
+				order by employee_departure_id desc
+			</otherwise>
+		</choose>
+		<if test="pageIndex != null and pageSize != null">
+			limit #{pageIndex}, #{pageSize}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from smd_employee_departure 
+	</select>
+	 
+	<insert id="save" parameterType="com.zakj.personnel.entity.SmdEmployeeJobRecordEntity">
+		<selectKey keyProperty="employeeDepartureId" resultType="string"
+				   order="BEFORE">
+			select replace(uuid(), '-', '') as id from dual
+		</selectKey>
+		insert into smd_employee_departure
+		(
+			`employee_departure_id`, 
+			`employee_number`, 
+			`employee_departure_time`, 
+			`employee_name`, 
+			`induction_time`, 
+			`employee_job`, 
+			`departure_why`, 
+			`create_user`, 
+			`create_time`, 
+			`create_dept`, 
+			`employee_id`
+		)
+		values
+		(
+			#{employeeDepartureId}, 
+			#{employeeNumber}, 
+			#{employeeDepartureTime}, 
+			#{employeeName}, 
+			#{inductionTime}, 
+			#{employeeJob}, 
+			#{departureWhy}, 
+			#{createUser}, 
+			#{createTime}, 
+			#{createDept}, 
+			#{employeeId}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="com.zakj.personnel.entity.SmdEmployeeJobRecordEntity">
+		update smd_employee_departure 
+		<set>
+			<if test="employeeNumber != null">`employee_number` = #{employeeNumber}, </if>
+			<if test="employeeDepartureTime != null">`employee_departure_time` = #{employeeDepartureTime}, </if>
+			<if test="employeeName != null">`employee_name` = #{employeeName}, </if>
+			<if test="inductionTime != null">`induction_time` = #{inductionTime}, </if>
+			<if test="employeeJob != null">`employee_job` = #{employeeJob}, </if>
+			<if test="departureWhy != null">`departure_why` = #{departureWhy}, </if>
+			<if test="createUser != null">`create_user` = #{createUser}, </if>
+			<if test="createTime != null">`create_time` = #{createTime}, </if>
+			<if test="createDept != null">`create_dept` = #{createDept}, </if>
+			<if test="employeeId != null">`employee_id` = #{employeeId}</if>
+		</set>
+		where employee_departure_id = #{employeeDepartureId}
+	</update>
+	
+	<delete id="delete">
+		delete from smd_employee_departure where employee_departure_id = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from smd_employee_departure where employee_departure_id in 
+		<foreach item="employeeDepartureId" collection="array" open="(" separator="," close=")">
+			#{employeeDepartureId}
+		</foreach>
+	</delete>
+
+</mapper>

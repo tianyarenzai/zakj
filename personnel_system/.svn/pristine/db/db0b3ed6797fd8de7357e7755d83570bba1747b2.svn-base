@@ -1,0 +1,21 @@
+
+    <!DOCTYPE html>
+    <html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>合同预览</title>
+        <link th:href="@{/css/button-skin.css}" rel="stylesheet" type="text/css"/>
+        <script type="text/javascript" th:src="@{/libs/boot.js}"></script>
+</head>
+<body>
+  <div class="gallery">
+      <th:forEach items="${attachments}" var="attachment">
+          <div class="gallery-cell">
+              <img th:src="${attachment.attachmentUrl}" alt="orange tree"/>
+          </div>
+      </th:forEach>
+  </div>
+  <script th:src='@{/jquery-drag-slider/js/jquery.min.js}'></script>
+  <script th:src='@{/jquery-drag-slider/js/flickity.pkgd.js}'></script>
+  <script th:src="@{/jquery-drag-slider/js/index.js}"></script>
+</body>
+</html>

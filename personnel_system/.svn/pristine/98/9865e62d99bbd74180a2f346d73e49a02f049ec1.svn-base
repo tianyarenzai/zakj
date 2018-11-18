@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zakj.personnel.dao.SmdEmployeeJobDao">
+	<resultMap type="java.util.Map" id="Map">
+		<result property="employeeJobId" column="employee_job_id"/>
+		<result property="jobLogo" column="job_logo"/>
+		<result property="employeeJob" column="employee_job"/>
+		<result property="employeeJobNote" column="employee_job_note"/>
+		<result property="createUser" column="create_user"/>
+		<result property="createTime" column="create_time"/>
+		<result property="numberPeople" column="number_people"/>
+		<result property="jobSchool" column="job_school"/>
+		<result property="schoolName" column="school_name"/>
+		<result property="jobRank" column="job_rank"/>
+		<result property="tenantId" column="tenant_id"/>
+	</resultMap>
+
+
+	<select id="queryObject" resultType="com.zakj.personnel.entity.SmdEmployeeJobEntity">
+		select * from smd_employee_job where employee_job_id = #{value}
+	</select>
+
+	<select id="queryList" resultMap="Map">
+		select * from smd_employee_job
+        <choose>
+			<when test="sortField != null and sortField.trim() != ''">
+				order by ${sortField} ${sortOrder}
+			</when>
+			<otherwise>
+                order by employee_job_id desc
+			</otherwise>
+        </choose>
+		<if test="pageIndex != null and pageSize != null">
+			limit #{pageIndex}, #{pageSize}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from smd_employee_job 
+	</select>
+	 
+	<insert id="save" parameterType="com.zakj.personnel.entity.SmdEmployeeJobEntity">
+		<selectKey keyProperty="employeeJobId" resultType="string"
+				   order="BEFORE">
+			select replace(uuid(), '-', '') as id from dual
+		</selectKey>
+		insert into smd_employee_job
+		(
+			`employee_job_id`, 
+			`job_logo`, 
+			`employee_job`, 
+			`employee_job_note`, 
+			`create_user`, 
+			`create_time`, 
+			`number_people`, 
+			`job_school`, 
+			`school_name`, 
+			`job_rank`, 
+			`tenant_id`
+		)
+		values
+		(
+			#{employeeJobId}, 
+			#{jobLogo}, 
+			#{employeeJob}, 
+			#{employeeJobNote}, 
+			#{createUser}, 
+			#{createTime}, 
+			#{numberPeople}, 
+			#{jobSchool}, 
+			#{schoolName}, 
+			#{jobRank}, 
+			#{tenantId}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="com.zakj.personnel.entity.SmdEmployeeJobEntity">
+		update smd_employee_job 
+		<set>
+			<if test="jobLogo != null">`job_logo` = #{jobLogo}, </if>
+			<if test="employeeJob != null">`employee_job` = #{employeeJob}, </if>
+			<if test="employeeJobNote != null">`employee_job_note` = #{employeeJobNote}, </if>
+			<if test="createUser != null">`create_user` = #{createUser}, </if>
+			<if test="createTime != null">`create_time` = #{createTime}, </if>
+			<if test="numberPeople != null">`number_people` = #{numberPeople}, </if>
+			<if test="jobSchool != null">`job_school` = #{jobSchool}, </if>
+			<if test="schoolName != null">`school_name` = #{schoolName}, </if>
+			<if test="jobRank != null">`job_rank` = #{jobRank}, </if>
+			<if test="tenantId != null">`tenant_id` = #{tenantId}</if>
+		</set>
+		where employee_job_id = #{employeeJobId}
+	</update>
+	
+	<delete id="delete">
+		delete from smd_employee_job where employee_job_id = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from smd_employee_job where employee_job_id in 
+		<foreach item="employeeJobId" collection="array" open="(" separator="," close=")">
+			#{employeeJobId}
+		</foreach>
+	</delete>
+
+</mapper>

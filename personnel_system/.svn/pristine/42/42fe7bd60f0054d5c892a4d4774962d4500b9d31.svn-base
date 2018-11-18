@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <title>增加奖惩记录</title>
+    <link th:href="@{/css/button-skin.css}" rel="stylesheet" type="text/css"/>
+    <script type="text/javascript" th:src="@{/libs/boot.js}"></script>
+    <script type="text/javascript" src="http://gosspublic.alicdn.com/aliyun-oss-sdk.min.js"></script>
+    <script th:src="@{/libs/ajaxfileupload.js}" type="text/javascript"></script>
+    <style type="text/css">
+        html, body {
+            width: 100%;
+            height: 99%;
+            border: 0;
+            margin-left: 15%;
+            padding: 0;
+            overflow: visible;
+        }
+    </style>
+</head>
+<body class="background:green;">
+<form id="form1" method="post">
+    <input id="rewardUrl" name="rewardUrl" class="mini-hidden"/>
+    <div style="padding-left:20px;padding-bottom:5px;padding-top:5px;">
+        <table style="table-layout:fixed;">
+            <tr style="height: 35px;">
+                <td style="width:100px;">
+                    职工姓名
+                </td>
+                <td>
+                    <input id="lookup2" name="employeeId" class="mini-lookup" style="width:200px;"
+                           textField="employeeName" valueField="employeeId" popupWidth="auto"
+                           popup="#gridPanel" grid="#datagrid1" multiSelect="true"/>
+                </td>
+            </tr>
+            <tr>
+                <td style="width:100px;">
+                    奖惩名目:
+                </td>
+                <td>
+                    <input name="rewardName" class="mini-textbox" required="true" emptyText="请输入奖惩名目"
+                           style="width:200px;"/>
+                </td>
+            </tr>
+            <tr>
+                <td style="width:100px;">奖惩内容：</td>
+                <td>
+                    <input id="rewardContent" name="rewardContent" class="mini-textarea" style="width:200px;"
+                           emptyText="请选择合同类型" required="true"/>
+                </td>
+            </tr>
+            <tr>
+                <td style="width:100px;">日期：</td>
+                <td>
+                    <input id="rewardDate" name="rewardDate" class="mini-datepicker" required="true"
+                           style="width:200px;"/>
+                </td>
+            </tr>
+            <tr>
+                <td style="width:100px;">奖惩单位：</td>
+                <td>
+                    <input id="rewardUnit" name="rewardUnit" class="mini-combobox" valueField="orgId"
+                           textField="orgName"
+                           url="../../auth/org/getOrganizations" style="width:200px;" emptyText="请选择单位"
+                           required="true"/>
+                </td>
+            </tr>
+            <tr>
+                <td style="width:100px;">奖惩类别:</td>
+                <td>
+                    <select name="rewardType" class="mini-combobox" url="" style="width:200px;" emptyText="请选择奖惩类别">
+                        <option value="0">奖励</option>
+                        <option value="1">惩罚</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td style="width:100px;">附件:</td>
+                <td>
+                    <input type="file" id="file" name="file" style="width: 160px" onchange="setFileValue(this)"/>
+                    <a class="mini-button" iconCls="icon-upload" onclick="fileUpload()"></a>
+                </td>
+                <script type="text/javascript">
+                    function setFileValue(obj) {
+                        var valueString = obj.value;
+                        valueString = valueString.substring(valueString.lastIndexOf('\\') + 1, valueString.length);
+                        var f = mini.get("rewardAttachment");
+                        f.setValue(valueString);
+                    }
+                </script>
+            </tr>
+            <tr>
+                <td style="width:100px;">附件名:</td>
+                <td>
+                    <input name="rewardAttachment" id="rewardAttachment" class="mini-textbox" required="true"
+                           emptyText="显示上传的附件" style="width:200px;"/>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div style="padding:10px; margin-left:20%">
+        <a class="mini-button" iconCls="icon-ok" onclick="onOk">确定</a>
+        <a class="mini-button" iconCls="icon-close" onclick="onCancel">取消</a>
+    </div>
+</form>
+<div id="gridPanel" class="mini-panel" title="header" iconCls="icon-add" style="width:450px;height:250px;"
+     showToolbar="true" showCloseButton="true" showHeader="false" bodyStyle="padding:0" borderStyle="border:0">
+    <div property="toolbar" style="padding:5px;padding-left:8px;text-align:center;">
+        <div style="float:left;padding-bottom:2px;">
+            <span>姓名：</span>
+            <input id="keyText" class="mini-textbox" style="width:160px;" onenter="onSearchClick"/>
+            <a class="mini-button" iconCls="icon-search" onclick="onSearchClick">查询</a>
+            <a class="mini-button" iconCls="icon-clear" onclick="onClearClick">清除</a>
+        </div>
+        <div style="float:right;padding-bottom:2px;">
+            <a class="mini-button" iconCls="icon-close" onclick="onCloseClick">关闭</a>
+        </div>
+        <div style="clear:both;"></div>
+    </div>
+    <div id="datagrid1" class="mini-datagrid" style="width:100%;height:100%;"
+         borderStyle="border:0" showPageSize="false" showPageIndex="false"
+         url="../../personnel/employee/list">
+        <div property="columns">
+            <div type="checkcolumn"></div>
+            <div field="employeeName" width="80" headerAlign="center"
+                 align="center" allowsort="true" renderer="onActionRenderer">姓名
+            </div>
+            <div field="employeeSex" width="50" align="center"
+                 headerAlign="center" allowsort="true">性别
+            </div>
+            <div field="employeeState" width="80" align="center"
+                 headerAlign="center" allowsort="true" renderer="onMarriedRenderer">职位状态
+            </div>
+            <div field="employeeNo" width="80" align="center"
+                 headerAlign="center" allowsort="true">职工编号
+            </div>
+            <div field="employeePolitical" width="80" headerAlign="center"
+                 align="center" allowSort="true">政治面貌
+            </div>
+            <div field="employeeDeptName" name="onEmployeeJob" width="100"
+                 align="center" headerAlign="center" allowSort="true">员工所在部门
+            </div>
+            <div field="employeeJob" width="100" align="center"
+                 headerAlign="center">职务
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script type="text/javascript">
+    mini.parse();
+    var grid = mini.get("datagrid1");
+    var keyText = mini.get("keyText");
+
+    grid.load({
+        employeeName: "",
+        pageIndex: 0,
+        pageSize: 200,
+        sortField: "",
+        sortOrder: "asc",
+        orgFatherId: "",
+        orgId: "",
+        orgName: "",
+        employeeSchool: "",
+        dada: "",
+        orgCategory: "",
+        employeeJob: ""
+    });
+
+    // 查询
+    function onSearchClick(e) {
+        grid.load({
+            employeeName: keyText.value,
+            pageIndex: 0,
+            pageSize: 200,
+            sortField: "",
+            sortOrder: "asc",
+            orgFatherId: "",
+            orgId: "",
+            orgName: "",
+            employeeSchool: "",
+            dada: "",
+            orgCategory: "",
+            employeeJob: ""
+        });
+    }
+
+    // 清除
+    function onCloseClick(e) {
+        var lookup2 = mini.get("lookup2");
+        lookup2.hidePopup();
+    }
+
+    function onClearClick(e) {
+        var lookup2 = mini.get("lookup2");
+        lookup2.deselectAll();
+    }
+
+    function onMarriedRenderer(e) {
+        if (e.value == 1) {
+            return "试用";
+        } else if (e.value == 2) {
+            return "正式";
+        } else if (e.value == 3) {
+            return "离职";
+        }
+    }
+
+
+    function onCloseClick(e) {
+        var obj = e.sender;
+        obj.setText("");
+        obj.setValue("");
+    }
+
+
+    // 上传附件
+    function fileUpload() {
+        var file = document.getElementById("file");
+        $.ajaxFileUpload({   //   onefile2
+            url: '../../file/onefile2', //用于文件上传的服务器端请求地址
+            fileElementId: file, //文件上传空间的id属性  <input type="file" id="file" name="file" />
+            dataType: 'json', //返回值类型 一般设置为json
+            success: function (data, status) //服务器成功响应处理函数
+            {
+                console.log(JSON.stringify(data));
+                if (data.map.url != null) {
+                    $("#img_page").attr("src", data.map.url);
+                    var backUrl = data.map.url;
+                    backUrl = backUrl.substr(0, backUrl.indexOf("?"));
+                    console.info("backUrl : ---------- " + backUrl);
+                    var t = mini.get("rewardUrl");
+                    t.setValue(backUrl);
+                    mini.alert("上传成功!");
+                }
+
+
+            },
+            error: function (data, status, e)//服务器响应失败处理函数
+            {
+                alert(e);
+                alert("上传失败");
+            }
+        });
+    }
+
+
+    // 点击确定
+    function onOk() {
+        saveData();
+    }
+
+    // 保存数据
+    function saveData() {
+        console.info("saveData。。。。。。。。。。。。");
+        var form = new mini.Form("form1");
+        var o = form.getData();
+        form.validate();
+        if (form.isValid() == false)
+            return;
+        var json = mini.encode(o);
+        console.info("json:------------------ " + json);
+        $.ajax({
+            url: "../../employee/reward/save",
+            type: 'post',
+            data: {
+                data: json
+            },
+            cache: false,
+            success: function (text) {
+                if (text.code == 0) {
+                    mini.alert(text.msg);
+                } else if (text == 101) {
+                    mini.alert(text.msg);
+                }
+                CloseWindow("save");
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                mini.alert(jqXHR.responseText);
+                CloseWindow();
+            }
+        });
+    }
+
+    // 点击取消
+    function onCancel() {
+        console.info("onCancel ........................... ");
+        CloseWindow("cancel");
+    }
+
+    function CloseWindow(action) {
+        if (action == "close" && form.isChanged()) {
+            if (confirm("数据被修改了，是否先保存？")) {
+                return false;
+            }
+        }
+        if (window.CloseOwnerWindow)
+            return window.CloseOwnerWindow(action);
+        else
+            window.close();
+    }
+</script>
+</html>

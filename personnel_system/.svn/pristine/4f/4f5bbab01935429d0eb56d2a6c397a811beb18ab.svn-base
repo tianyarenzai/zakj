@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<html>
+<head>
+    <meta charset="utf-8" name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"></meta>
+    <title>奖惩管理</title>
+    <script type="text/javascript" th:src="@{/libs/boot.js}"></script>
+    <link href="/css/button-skin.css" rel="stylesheet" type="text/css" />
+    <style type="text/css">
+        html, body {
+            width: 100%;
+            height: 99%;
+            border: 0;
+            margin: 0;
+            padding: 0;
+            overflow: visible;
+        }
+    </style>
+</head>
+<body>
+<div style="width:97%;margin-left:1.5%;">
+    <div class="mini-toolbar" style="border-bottom:0;padding:0px; height: 30px">
+        <table style="width:98%;">
+            <tr>
+                <td style="white-space:nowrap;">
+                    <input id="employeeName" name="employee_name" class="mini-textbox" emptyText="请输入姓名"
+                           style="width:100px;" onenter="onKeyEnter"/>
+                    &nbsp;
+                    <input id="number" name="number" class="mini-textbox" emptyText="请输入合同编号"
+                           style="width:100px;" onenter="onKeyEnter"/>
+                    &nbsp;
+                    <input id="typeName" name="type_name" class="mini-combobox" emptyText="请选择合同类型"
+                           style="width: 100px" onenter="onKeyEnter" valueField="typeId" textField="typeName"
+                           url="../employee/contracttype/getContractTypes"/>
+                    &nbsp;
+                    <input id="employeeNo" name="employee_no" class="mini-textbox" emptyText="请输入工号"
+                           style="width: 100px" onenter="onKeyEnter"/> &nbsp;
+                    <a class="mini-button" iconCls="icon-search" onclick="search()">查询</a>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+<!--  <%&#45;&#45;奖惩列表&#45;&#45;%>-->
+<div class="mini-fit">
+    <div id="datagrid1" class="mini-datagrid" style="width:97%;height:100%;float:left;margin-left:1.5%;"
+         url="../employee/contract/list" idField="id"
+         allowResize="true" sizeList="[20,30,50,100]" pageSize="200">
+        <div property="columns">
+            <div type="indexcolumn"></div>
+            <div type="checkcolumn"></div>
+            <div field="number" width="80" headerAlign="center" align="center" allowsort="true">合同编号
+            </div>
+            <div field="employeeName" width="50" align="center"
+                 headerAlign="center" allowsort="true">姓名
+            </div>
+            <div field="contractName" width="50" align="center"
+                 headerAlign="center" allowsort="true">合同名称
+            </div>
+            <div field="employeeIdcard" width="80" align="center"
+                 headerAlign="center" allowsort="true">证件号
+            </div>
+            <div field="beginTime" width="80" align="center"
+                 headerAlign="center" allowsort="true" renderer="onBirthdayRenderer">生效日期
+            </div>
+            <div field="endTime" width="80" align="center"
+                 headerAlign="center" allowsort="true" renderer="onBirthdayRenderer">失效日期
+            </div>
+            <div field="remindDate" width="80" align="center"
+                 headerAlign="center" allowsort="true" renderer="onBirthdayRenderer">提醒日期
+            </div>
+            <div field="years" width="40" headerAlign="center"
+                 align="center" allowSort="true">年限
+            </div>
+            <div field="typeName" width="80" headerAlign="center"
+                 align="center" allowSort="true">合同类型
+            </div>
+            <div field="expired" width="30" align="center"
+                 headerAlign="center" allowSort="true" renderer="isEnd">是否到期
+            </div>
+            <div field="oper" width="80" align="center"
+                 headerAlign="center" renderer="oper">操作
+            </div>
+            <div field="attachment" name="attachment" width="100" headerAlign="center"
+                 align="center" allowSort="true">附件
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script type="text/javascript">
+    mini.parse();
+    var grid = mini.get("datagrid1");
+
+    grid.load({
+        key: "", //自定义
+        pageIndex: 0,
+        pageSize: 100,
+        sortField: "",
+        sortOrder: "asc",
+        employeeName: "",
+        number: "",
+        typeName: "",
+        employeeNo: ""
+    });
+
+    //时间格式
+    function onBirthdayRenderer(e) {
+        var value = e.value;
+        if (value)
+            return mini.formatDate(value, 'yyyy-MM-dd');
+        return "";
+    }
+
+    grid.on("drawcell", function (e) {
+        var record = e.record,
+            column = e.column,
+            field = e.field,
+            value = e.value;
+
+        var employeeId = record.employeeId;
+        var contractId = record.contractId;
+        if (column.name == "attachment") {
+            e.cellStyle = "text-align:center";
+            if (contractId == null) {
+                e.cellHtml = '<a class="mini-button" style="color: #2254ff;width: 50px; height: 20px;" onclick="javascript:upload(\''
+                    + employeeId + '\')">' + '附件' + '</a>';
+            } else {
+                e.cellHtml = '<a class="mini-button" style="color: #2254ff;width: 50px; height: 20px;" onclick="javascript:view(\''
+                    + contractId + '\')">' + '预览' + '</a>';
+            }
+        }
+    });
+
+    // 是否到期
+    function isEnd(e) {
+        var record = e.record;
+        var beginDate = record.beginTime;
+        var endDate = record.endTime;
+        if (beginDate < endDate) {
+            return "否";
+        } else {
+            return "是";
+        }
+    }
+
+
+    // 删除
+    function del() {
+        var grid = mini.get("datagrid1");
+        var row = grid.getSelected();
+        console.info("contractId ------------------------ " + row.contractId);
+        if (row) {
+            if (confirm("确定删除记录么？")) {
+                grid.loading("操作中，请稍后......");
+                $.ajax({
+                    url: "../employee/contract/delete?contractId=" + row.contractId,
+                    success: function (text) {
+                        if (text.code == 0) {
+                            mini.alert(text.msg);
+                        } else if (text == 101) {
+                            mini.alert(text.msg);
+                        }
+                        grid.reload();
+                    },
+                    error: function () {
+                    }
+                });
+            }
+        } else {
+            mini.alert("请选择一条信息！");
+        }
+    }
+
+
+    // 操作列
+    function oper(e) {
+        var record = e.record;
+        var uid = record.contractId;
+        var userId = record.userId;
+        if (record.remind_date > new Date() && record.remind_date < record.end_time) {
+            var s = '<a class="mini-button" style="color: #2254ff;width: 50px; height: 20px;" onclick="javascript:remind(\''
+                + uid + '\' , \'' + userId + '\')">' + '提醒' + '</a>';
+            return s;
+        } else {
+            return "";
+        }
+    }
+
+
+    // 合同到期提醒
+    function remind(uid, userId) {
+        console.info("合同Id----------------------------- " + uid);
+        console.info("合同Id----------------------------- " + userId);
+        mini.open({
+            url: "../employee/contract/remind?contractId=" + uid + "&userId=" + userId,
+            title: "合同到期提醒",
+            width: 400,
+            height: 230,
+            onload: function () {
+            },
+            ondestroy: function (action) {
+                grid.reload();
+            }
+        });
+    }
+
+    // 附件上传
+    function upload(employeeId) {
+        mini.open({
+            url: "../employee/contract/upload?employeeId=" + employeeId,
+            title: "附件上传",
+            width: 600,
+            height: 450,
+            onload: function () {
+            },
+            ondestroy: function (action) {
+                grid.reload();
+            }
+        });
+    }
+
+
+    // 附件预览
+    function view(contractId) {
+        console.info("contractId -------------------------- " + contractId);
+        mini.open({
+            url: "../employee/contract/contractView?contractId=" + contractId,
+            title: "合同预览",
+            width: 700,
+            height: 500,
+            onload: function () {
+            },
+            ondestroy: function (action) {
+                grid.reload();
+            }
+        });
+    }
+
+
+    // 搜索
+    function search() {
+        console.info("search");
+        var employeeName = mini.get("employeeName").getValue();
+        var number = mini.get("number").getValue();
+        var typeName = mini.get("typeName").getValue();
+        var employeeNo = mini.get("employeeNo").getValue();
+        grid.load({
+            employeeName: employeeName,
+            number: number,
+            typeName: typeName,
+            employeeNo: employeeNo
+        });
+    }
+</script>
+</html>

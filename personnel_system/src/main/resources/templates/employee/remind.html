@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <title>合同到期提醒</title>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <link th:href="@{/css/button-skin.css}" rel="stylesheet" type="text/css" />
+    <script type="text/javascript" th:src="@{/libs/boot.js}"></script>
+    <style type="text/css">
+        html, body {
+            width: 100%;
+            height: 99%;
+            border: 0;
+            margin: 0;
+            padding: 0;
+            overflow: visible;
+        }
+    </style>
+</head>
+<body>
+<form id="form1" method="post">
+    <input class="mini-hidden" name = "contractId" th:value="${contractId}"/>
+    <input class="mini-hidden" name="userId" th:value="${userId}">
+    <div style="padding-left:20px;padding-top:5px;">
+        <table style="table-layout:fixed;">
+            <tr style="height: 35px;">
+                <td style="width:100px;">提醒时间：</td>
+                <td>
+                    <input name="remindTime" class="mini-datepicker" emptyText="请选择日期"
+                           valueType="string" required = "true" style="width: 200px"/>
+                </td>
+            </tr>
+            <tr>
+                <td style="width:100px;">提醒类型:</td>
+                <td>
+                    <div name = "remindType" class="mini-radiobuttonlist" repeatLayout="table" repeatDirection="vertical"
+                         textField="text" valueField="id" url="../../selects/remindType.txt"  style="width: 200px">
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td style="width:100px;">提醒内容：</td>
+                <td>
+                    <input name="content" class="mini-textarea" required = "true" style="width: 200px"/>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div style="margin-left: 35%">
+        <a class="mini-button" iconCls="icon-ok" onclick="onOk">确定</a>
+        <a class="mini-button" iconCls="icon-close" onclick="onCancel">取消</a>
+    </div>
+</form>
+</body>
+<script type="text/javascript">
+    // 点击确定
+    function onOk(){
+        saveData();
+    }
+
+    // 保存数据
+    function saveData(){
+        console.info("saveData。。。。。。。。。。。。");
+        var form = new mini.Form("form1");
+        var o = form.getData();
+        form.validate();
+        if (form.isValid() == false)
+            return;
+        var json = mini.encode(o);
+        console.info("json:------------------ " + json);
+        $.ajax({
+            url: "../../employee/smdceremind/save",
+            type: 'post',
+            data: {
+                data: json
+            },
+            cache: false,
+            success: function (text) {
+                if (text.code == 0) {
+                    mini.alert(text.msg);
+                } else if (text.code == 101) {
+                    mini.alert(text.msg);
+                }
+                CloseWindow("save");
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                mini.alert(jqXHR.responseText);
+                CloseWindow();
+            }
+        });
+    }
+
+    // 点击取消
+    function onCancel(){
+        console.info("onCancel ........................... ");
+        CloseWindow("cancel");
+    }
+
+    function CloseWindow(action) {
+        if (action == "close" && form.isChanged()) {
+            if (confirm("数据被修改了，是否先保存？")) {
+                return false;
+            }
+        }
+        if (window.CloseOwnerWindow)
+            return window.CloseOwnerWindow(action);
+        else
+            window.close();
+    }
+
+</script>
+</html>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zajy.security.persist.dao.ScSysOperatorDao">
+
+	<select id="queryUserCount" resultType="int">
+		select count(1) from sc_sys_operator ${filterSql}
+	</select>
+
+	<select id="queryUserList" resultType="com.zajy.security.persist.bean.ScSysOperatorBean">
+		select * from sc_sys_operator
+		${filterSql}
+	</select>
+
+</mapper>

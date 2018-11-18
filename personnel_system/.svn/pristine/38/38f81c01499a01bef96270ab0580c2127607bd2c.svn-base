@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <title>职务列表信息</title>
+    <link th:href="@{/css/button-skin.css}" rel="stylesheet" type="text/css"/>
+    <script type="text/javascript" th:src="@{/libs/boot.js}"></script>
+    <style type="text/css">
+        html, body {
+            width: 100%;
+            height: 98%;
+            border: 0;
+            margin: 0;
+            padding: 0;
+            overflow: visible;
+        }
+    </style>
+</head>
+<body>
+<div style="width:98%;margin-left:1%;margin-top:15px;">
+    <div class="mini-toolbar" style="border-bottom:0;padding:0px; height: 30px">
+        <table style="width:100%;">
+            <tr>
+                <td style="white-space:nowrap;width:84%;">
+                    <a class="mini-button" iconCls="icon-add" onclick="add()">增加</a>
+                    <a class="mini-button" iconCls="icon-edit" onclick="edit()">编辑</a>
+                    <a class="mini-button" iconCls="icon-remove" onclick="remove()">删除</a>
+                </td>
+<!--                <td style="white-space:nowrap;">
+                    <input id="studentSchool"
+                           name="orgId" class="mini-combobox" valueField="orgId"
+                           textField="orgName" url="../auth/org/getOrganizations"
+                           style="width:150px;" emptyText="请选择所属学校"/>
+                    <a class="mini-button" iconCls="icon-search" onclick="search()">查询</a>
+                </td>-->
+            </tr>
+        </table>
+    </div>
+</div>
+<div class="mini-fit">
+    <div id="datagrid1" class="mini-datagrid" style="width:98%;height:100%;float:left;margin-left:1%;"
+         url="../employee/employeeJob/list" idField="id"
+         allowResize="true" sizeList="[10,20,30,50,100]" multiSelect="true" pageSize="20">
+        <div property="columns">
+            <div type="indexcolumn" headerAlign="center">序号</div>
+            <div type="checkcolumn" headerAlign="center">全选</div>
+            <div field="jobLogo" width="120" headerAlign="center"
+                 align="center">拼音简写
+            </div>
+            <div field="employeeJob" width="60" headerAlign="center"
+                 align="center">职工职务
+            </div>
+            <div field="numberPeople" width="40" headerAlign="center"
+                 align="center">人数
+            </div>
+            <!--            <div field="schoolName" width="60" headerAlign="center"
+                             align="center" allowSort="true">学校</div>-->
+            <div field="employeeJobNote" width="60" headerAlign="center"
+                 align="center">备注
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script type="text/javascript">
+    mini.parse();
+    var grid = mini.get("datagrid1");
+
+    grid.load({
+        pageIndex: 0,
+        pageSize: 100,
+        sortField: "",
+        sortOrder: "asc"
+    });
+
+
+    // 点击增加
+    function add() {
+        console.info("add");
+        var grid = mini.get("datagrid1");
+        mini.open({
+            url: "../employee/employeeJob/add",
+            title: "添加职务",
+            width: 500,
+            height: 400,
+            onload: function () {
+                var iframe = this.getIFrameEl();
+            },
+            ondestroy: function (action) {
+                grid.reload();
+            }
+        });
+    }
+
+    // 点击编辑
+    function edit() {
+        console.info("edit");
+        var row = grid.getSelected();
+        console.info("employeeJobId ------------------- " + row.employeeJobId);
+        if (row) {
+            mini.open({
+                url: "../employee/employeeJob/info/" + row.employeeJobId,
+                title: "编辑职务信息",
+                width: 500,
+                height: 400,
+                onload: function () {
+                },
+                ondestroy: function (action) {
+                    grid.reload();
+                }
+            });
+        } else {
+            mini.alert("请选中一个职工");
+        }
+    }
+
+
+    // 点击删除
+    function remove() {
+        console.info("remove ");
+        var rows = grid.getSelecteds();
+        if (rows.length > 0) {
+            mini.confirm("确定删除记录？", "确定？", function (action) {
+                    if (action == "ok") {
+                        var ids = [];
+                        for (var i = 0, l = rows.length; i < l; i++) {
+                            var r = rows[i];
+                            ids.push(r.employeeJobId);
+                        }
+                        console.info("ids ----------------------- " + ids);
+                        $.ajax({
+                            url: "../employee/employeeJob/delete?ids=" + ids,
+                            success: function (text) {
+                                if (text.code == 0) {
+                                    mini.alert(text.msg);
+                                } else if (text.code == 101) {
+                                    mini.alert(text.msg);
+                                }
+                                grid.reload();
+                            },
+                            error: function () {
+                            }
+                        });
+                    } else {
+                        mini.alert("不删除!");
+                    }
+                }
+            );
+        } else {
+            mini.alert("请选择一条信息！");
+        }
+    }
+
+/*    function search() {
+        var orgId = mini.get("studentSchool").getValue();
+        grid.load({
+            pageIndex: 0,
+            pageSize: 20,
+            sortField: "",
+            sortOrder: "asc",
+            orgId: orgId
+        });
+        mini.parse();
+    }*/
+
+</script>
+</html>

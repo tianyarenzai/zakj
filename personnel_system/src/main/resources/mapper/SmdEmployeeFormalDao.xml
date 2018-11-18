@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zakj.personnel.dao.SmdEmployeeFormalDao">
+	<select id="queryObject" resultType="com.zakj.personnel.entity.SmdEmployeeFormalEntity">
+		select * from smd_employee_formal where employee_formal_id = #{value}
+	</select>
+
+	<select id="queryList" resultType="com.zakj.personnel.entity.SmdEmployeeFormalEntity">
+		select * from smd_employee_formal
+		<choose>
+			<when test="sortField != null and sortField.trim() != ''">
+				order by ${sortField} ${sortOrder}
+			</when>
+			<otherwise>
+				order by employee_formal_id desc
+			</otherwise>
+		</choose>
+		<if test="pageIndex != null and pageSize != null">
+			limit #{pageIndex}, #{pageSize}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from smd_employee_formal 
+	</select>
+	 
+	<insert id="save" parameterType="com.zakj.personnel.entity.SmdEmployeeFormalEntity">
+		<selectKey keyProperty="employeeFormalId" resultType="string"
+				   order="BEFORE">
+			select replace(uuid(), '-', '') as id from dual
+		</selectKey>
+		insert into smd_employee_formal
+		(
+			`employee_formal_id`, 
+			`employee_id`, 
+			`formal_time`, 
+			`trial_salary`, 
+			`official_salary`, 
+			`induction_time`, 
+			`Contract_no`, 
+			`contract_start_date`, 
+			`contract_deadline`, 
+			`create_user`, 
+			`create_time`, 
+			`create_dept`
+		)
+		values
+		(
+			#{employeeFormalId}, 
+			#{employeeId}, 
+			#{formalTime}, 
+			#{trialSalary}, 
+			#{officialSalary}, 
+			#{inductionTime}, 
+			#{contractNo}, 
+			#{contractStartDate}, 
+			#{contractDeadline}, 
+			#{createUser}, 
+			#{createTime}, 
+			#{createDept}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="com.zakj.personnel.entity.SmdEmployeeFormalEntity">
+		update smd_employee_formal 
+		<set>
+			<if test="employeeId != null">`employee_id` = #{employeeId}, </if>
+			<if test="formalTime != null">`formal_time` = #{formalTime}, </if>
+			<if test="trialSalary != null">`trial_salary` = #{trialSalary}, </if>
+			<if test="officialSalary != null">`official_salary` = #{officialSalary}, </if>
+			<if test="inductionTime != null">`induction_time` = #{inductionTime}, </if>
+			<if test="contractNo != null">`Contract_no` = #{contractNo}, </if>
+			<if test="contractStartDate != null">`contract_start_date` = #{contractStartDate}, </if>
+			<if test="contractDeadline != null">`contract_deadline` = #{contractDeadline}, </if>
+			<if test="createUser != null">`create_user` = #{createUser}, </if>
+			<if test="createTime != null">`create_time` = #{createTime}, </if>
+			<if test="createDept != null">`create_dept` = #{createDept}</if>
+		</set>
+		where employee_formal_id = #{employeeFormalId}
+	</update>
+	
+	<delete id="delete">
+		delete from smd_employee_formal where employee_formal_id = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from smd_employee_formal where employee_formal_id in 
+		<foreach item="employeeFormalId" collection="array" open="(" separator="," close=")">
+			#{employeeFormalId}
+		</foreach>
+	</delete>
+
+</mapper>

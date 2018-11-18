@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/auth-center.iml" filepath="$PROJECT_DIR$/auth-center.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../charge-system/charge-system.iml" filepath="$PROJECT_DIR$/../charge-system/charge-system.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../registry-center/registry-center.iml" filepath="$PROJECT_DIR$/../registry-center/registry-center.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../school-basic-data/school-basic-data.iml" filepath="$PROJECT_DIR$/../school-basic-data/school-basic-data.iml" />
+    </modules>
+  </component>
+</project>

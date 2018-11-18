@@ -1,0 +1,184 @@
+    <!DOCTYPE html>
+    <html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>树形联动</title>
+        <link th:href="@{/css/button-skin.css}" rel="stylesheet" type="text/css"/>
+        <link th:href="@{/css/style.css}" rel="stylesheet" type="text/css"/>
+        <script type="text/javascript" th:src="@{/libs/boot.js}"></script>
+    <style type="text/css">
+        html, body {
+            width: 100%;
+            height: 99%;
+            border: 0;
+            margin: 0;
+            padding: 0;
+            overflow: visible;
+        }
+    </style>
+    <title>职工调岗</title>
+</head>
+<body>
+<div id="usual1" class="usual">
+    <div class="itab">
+        <ul>
+            <li>
+                <a iconCls="icon-save" onclick="onJob()" class="selected">岗位调整</a>
+            </li>
+            <li>
+                <a iconCls="icon-save" onclick="onJobRecord()">岗位变更信息</a>
+            </li>
+        </ul>
+    </div>
+    <form id="form1" method="post">
+        <input id="employeeId" name="employeeId" class="mini-hidden" th:value="${employeeId}"/>
+        <input id="orgId" name="orgId" class="mini-hidden" th:value="${orgId}"/>
+        <input name="employeeEmail" class="mini-hidden"/>
+        <!-- 此处借用该变量名 -->
+        <input name="employeeSkill" class="mini-hidden"/>
+        <input name="clazzName" class="mini-hidden"/>
+        <input name="parttimeClazzName" class="mini-hidden"/>
+        <input name="employeeSchool" class="mini-hidden"/>
+        <input name="parttimeSchoolName" class="mini-hidden"/>
+        <input name="jobName" class="mini-hidden"/>
+        <input name="parttimeJobName" class="mini-hidden"/>
+        <input name="employeeDeptName" class="mini-hidden"/>
+        <input name="parttimeDeptName" class="mini-hidden"/>
+        <!-- 此处借用该变量名 -->
+        <div style="padding-left:300px;padding-bottom:25px;padding-top:25px;">
+            <table style="text-align: center;">
+                <tr>
+                    <td style="width:130px;">职工姓名：</td>
+                    <td style="width:190px;">
+                        <input id="employeeName" name="employeeName" style="width:200px;" class="mini-textbox"
+                               required="true" enabled="false" th:value="${employeeName}"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width:130px;">所属学校：</td>
+                    <td><input id="employeeSchooleId" name="employeeSchooleId" class="mini-combobox" valueField="org_id" textField="org_name"
+                               url="../../auth/org/getOrganizations" onvaluechanged="onOrgId" style="width:200px;" emptyText="请选择所属学校"
+                               th:value="${orgId}"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width:130px;">所属部门：</td>
+                    <td style="width:200px;">
+                        <input id="employeeDeptId" name="employeeDeptId" style="width:200px;" class="mini-combobox"
+                               valueField="org_id" textField="org_name" showNullItem="true"
+                               emptyText="请选择部门" required="true"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td>所属职务：</td>
+                    <td style="width:200px;">
+                        <input id="employeeJobId" name="employeeJobId" class="mini-combobox" valueField="employee_job_id"
+                               textField="employee_job" style="width:200px;"  emptyText="请选择所属职务"
+                                url="../../personnel/employee/getEmployeeJobs"/>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div style="text-align:center;padding:10px;">
+            <a class="mini-button" iconCls="icon-ok" onclick="onOk">确定</a>
+            <a class="mini-button" iconCls="icon-close" onclick="onCancel">取消</a>
+        </div>
+    </form>
+</div>
+</body>
+<script type="text/javascript">
+    mini.parse();
+    var form = new mini.Form("form1");
+
+    function SaveData() {
+        var o = form.getData();
+        form.validate();
+        if (form.isValid() == false) return;
+        var json = mini.decode([o]);
+        json[0].employeeSchooleName = mini.get("employeeSchooleId").getText();
+        console.info("employeeSchool: --------------------- " + json[0].employeeSchooleName);
+        json[0].employeeDeptName = mini.get("employeeDeptId").getText();
+        console.info("employeeDept ------------------------- " + json[0].employeeDeptName);
+        json[0].employeeJobName = mini.get("employeeJobId").getText();
+        console.info("employeeJob: ------------------------- " + json[0].employeeJobName);
+        var jsontext = mini.encode(json[0]);
+        console.info(jsontext);
+        $.ajax({
+            url: "../../employee/smdemployeejobrecord/saveData",
+            type: 'post',
+            data: {
+                data: jsontext
+            },
+            cache: false,
+            success: function (text) {
+                if (text.code == 0) {
+                    mini.alert(text.msg);
+                } else if (text.code == 101) {
+                    mini.alert(text.msg);
+                }
+                CloseWindow("save");
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                alert(jqXHR.responseText);
+                CloseWindow();
+            }
+        });
+    }
+
+    function GetData() {
+        var o = form.getData();
+        return o;
+    }
+
+    function CloseWindow(action) {
+        if (action == "close" && form.isChanged()) {
+            if (confirm("数据被修改了，是否先保存？")) {
+                return false;
+            }
+        }
+        if (window.CloseOwnerWindow)
+            return window.CloseOwnerWindow(action);
+        else
+            window.close();
+    }
+
+    function onOk(e) {
+        SaveData();
+    }
+
+    function onCancel(e) {
+        CloseWindow("cancel");
+    }
+
+
+    //部门职位
+    function onOrgId(e) {
+        mini.parse();
+        var orgId = mini.get("employeeSchooleId");
+        var id = orgId.getValue();
+        console.info("id ------------------------ " + id);
+        var employeeDept = mini.get("employeeDeptId");
+        var url = "../../auth/org/getDeptsByOrgId?orgId=" + id;
+        employeeDept.setUrl(url);
+    }
+
+
+    //////////////////////////////////////////////////////////////////
+    function onJobRecord() {
+        var employeeId = mini.get("employeeId").getValue();
+        var employeeName = mini.get("employeeName").getValue();
+        mini.open({
+            url: "../../personnel/employee/onJobRecord?employeeId=" + employeeId
+                    + "&employeeName=" + encodeURIComponent(encodeURIComponent(employeeName)),
+            title: "岗位变更信息",
+            width: 1100,
+            height: 450,
+            onload: function () {
+            },
+
+        });
+        CloseWindow();
+    }
+</script>
+</html>
+
+

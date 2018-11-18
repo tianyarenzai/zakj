@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <title>班主任及任课管理</title>
+    <link th:href="@{/css/button-skin.css}" rel="stylesheet" type="text/css"/>
+    <script type="text/javascript" th:src="@{/libs/boot.js}"></script>
+    <style type="text/css">
+        html, body {
+            width: 100%;
+            height: 99%;
+            border: 0;
+            margin: 0;
+            padding: 0;
+            overflow: visible;
+        }
+    </style>
+</head>
+<body>
+
+<div style="width:97%;margin-left:1.5%;">
+    <div showCollapseButton="false" style="border:0px;">
+        <table>
+            <tr>
+                <td>
+                    <input id="orgId" name="orgId" class="mini-combobox"
+                           valueField="orgId" textField="orgName"
+                           url="../auth/org/getOrganizations" style="width:180px;"
+                           emptyText="请选择学校" onvaluechanged="orgId(e)"/>
+                    <input id="gradeId" style="width:150px;" name="gradeId"
+                           class="mini-combobox" onvaluechanged="onGrade(e)"
+                           valueField="gradeId" textField="gradeYearName"
+                           showNullItem="true" emptyText="请选择年级"/>
+                    <input id="clazzId" onclick="onClazz(e)" name="clazzId"
+                           class="mini-combobox" valueField="clazzId" style="width:100px;"
+                           textField="sysClazzName" emptyText="请选择班级"/>
+                    <input id="subjectId" name="subjectId" class="mini-combobox" style="width: 160px"
+                           valueField="schoolSubjectId" textField="subjectName" emptyText="请选择擅长科目"
+                           url="../../employee/schoolsubject/getSchoolSubjects"/>
+                    <input id="employeeName" name="employeeName" class="mini-textbox" emptyText="请输入姓名"
+                           style="width:100px;"/> &nbsp;&nbsp;
+                    <a class="mini-button" iconCls="icon-search" onclick="search()">查询</a>
+                </td>
+                <td>
+                    <a class="mini-button" iconCls="icon-tip"  onclick="onTeach()">任教</a>
+                    <a class="mini-button" iconCls="icon-goto"  onclick="setHeaderTeacher()">设置班主任</a>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+<div class="mini-fit">
+    <div id="datagrid1" class="mini-datagrid" style="width:97%;height:100%;float:left;margin-left:1.5%;"
+         url="../employee/headTeacher/getHeadTeacherTeachClazzs" idField="id"
+         allowResize="true" sizeList="[20,30,50,100]" pageSize="20">
+        <div property="columns">
+            <div type="indexcolumn"></div>
+            <div type="checkcolumn"></div>
+            <div field="employeeName" width="130" align="center" headerAlign="center">职工姓名</div>
+            <div field="subjectName" width="130" align="center" headerAlign="center">擅长科目</div>
+            <div field="gradeName" width="130" align="center" headerAlign="center">班主任所带班级</div>
+            <div field="clazz" width="130" align="center" headerAlign="center">所带班级</div>
+        </div>
+    </div>
+</div>
+</body>
+
+<script type="text/javascript">
+    mini.parse();
+    var grid = mini.get("datagrid1");
+    // var studentSchool = mini.get("orgId");
+    // studentSchool.select(1);
+    grid.load({
+        pageIndex: 0,
+        pageSize: 20,
+        sortField: "",
+        sortOrder: "desc",
+        orgId: "",
+        gradeId: "",
+        clazzId: "",
+        subjectId: "",
+        employeeName: ""
+    });
+
+    function onKeyEnter(e) {
+        search();
+    }
+
+    // 搜索
+    function search() {
+        var orgId = mini.get("orgId").getValue();
+        var gradeId = mini.get("gradeId").getValue();
+        var clazzId = mini.get("clazzId").getValue();
+        var subjectId = mini.get("subjectId").getValue();
+        var employeeName = mini.get("employeeName").getValue();
+        grid.load({
+            pageIndex: 0,
+            pageSize: 20,
+            sortField: "",
+            sortOrder: "desc",
+            orgId: orgId,
+            gradeId: gradeId,
+            clazzId: clazzId,
+            subjectId: subjectId,
+            employeeName: employeeName
+        });
+        mini.parse();
+    }
+
+
+    // 改变学校列表的值
+    function orgId(e) {
+        console.info("value ------------------------------ " + e.value);
+        var gradeId = mini.get("gradeId");
+        var url = "../student/grade/getGradesByOrgId?orgId=" + e.value;
+        gradeId.setUrl(url);
+        mini.get("clazzId").setValue("");
+    }
+
+    //班级联动
+    function onClazz() {
+        var gradeId = mini.get("gradeId").getValue();
+        var clazz = mini.get("clazzId");
+        var url = "../student/clazz/getClazzsByGradeId?gradeId=" + gradeId;
+        clazz.setUrl(url);
+    }
+
+    function onGrade(e) {
+        mini.get("clazzId").setValue("");
+    }
+
+    // 点击任教
+    function onTeach() {
+        var grid = mini.get("datagrid1");
+        var row = grid.getSelected();
+        if (row) {
+            mini.open({
+                url: "../personnel/employee/onTeach?employeeId=" + row.employeeId + "&orgId=" + row.orgId,
+                title: "任教调整",
+                width: 900,
+                height: 400,
+                onload: function () {
+                },
+                ondestroy: function (action) {
+                    grid.reload();
+                }
+            });
+        } else {
+            mini.alert("请选中一个职工");
+        }
+    }
+
+
+    // 设置班主任
+    function setHeaderTeacher() {
+        var grid = mini.get("datagrid1");
+        var row = grid.getSelected();
+        if (row) {
+            mini.open({
+                url: "../personnel/employee/headerTeacher?employeeId=" + row.employeeId + "&orgId=" + row.orgId,
+                title: "设置班主任",
+                width: 400,
+                height: 200,
+                onload: function () {
+                },
+                ondestroy: function (action) {
+                    grid.reload();
+                }
+            });
+        } else {
+            mini.alert("请选中一个职工");
+        }
+    }
+
+</script>
+</html>

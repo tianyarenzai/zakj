@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zakj.auth.dao.EmployeeRoleDao">
+    <select id="getRoleCheckByUserId" resultType="java.util.Map">
+       SELECT
+	    a.role_id AS roleId
+        FROM
+            (
+                SELECT
+                    role_id
+                FROM
+                    asd_user_role_auth
+                WHERE
+                    account_id = #{userId}
+                UNION
+                    SELECT
+                        role_id
+                    FROM
+                        asd_user_role_many_auth
+                    WHERE
+                        account_id = #{userId}
+            ) a
+        LEFT JOIN asd_role b ON a.role_id = b.role_id
+        WHERE
+	      is_enable = '1'
+    </select>
+
+    <select id="getManyRoleCheckByUserId" resultType="java.util.Map">
+        select role_id  AS roleId from asd_user_role_many_auth where account_id =  #{userId}
+    </select>
+    <select id="getAllRoleByTenId" resultType="java.util.Map">
+        SELECT
+            role_id AS roleId,
+            role_name AS roleName
+        FROM
+            asd_role
+        WHERE
+            is_enable = '1'
+            and  create_user = #{tenantId};
+    </select>
+    <select id="getUserLoginRole" resultType="java.util.Map">
+      SELECT
+            b.role_id AS roleId,
+            b.role_name AS roleName
+        FROM
+            (
+                SELECT
+                    role_id
+                FROM
+                    asd_user_role_auth
+                WHERE
+                    account_id =   #{userId}
+                UNION
+                    SELECT
+                        role_id
+                    FROM
+                        asd_user_role_many_auth
+                    WHERE
+                        account_id =   #{userId}
+            ) a
+        LEFT JOIN asd_role b ON a.role_id = b.role_id
+        WHERE
+            is_enable = '1' ;
+    </select>
+    <insert id="saveUserRoleAuth" parameterType="java.util.List" >
+        insert into asd_user_role_auth(user_role_id,role_id,account_id) values
+        <foreach collection ="list" item="userRoleAuth" index= "index" separator =",">
+            ( #{userRoleAuth.userRoleId}, #{userRoleAuth.roleId}, #{userRoleAuth.userId})
+        </foreach >
+
+    </insert>
+    <insert id="saveUserRoleManyAuth" parameterType="java.util.List" >
+        insert into asd_user_role_many_auth(user_role_id,role_id,account_id) values
+        <foreach collection ="list" item="userRoleAuth" index= "index" separator =",">
+             ( #{userRoleAuth.userRoleId}, #{userRoleAuth.roleId}, #{userRoleAuth.userId})
+        </foreach >
+
+    </insert>
+    <delete id="deleteUserRoleAuthByUserId" parameterType="java.util.Map">
+        delete from asd_user_role_auth where account_id  = #{userId}
+
+    </delete>
+    <delete id="deleteUserRoleManyAuthByUserId" parameterType="java.util.List">
+        delete from asd_user_role_many_auth where  account_id in
+        <foreach collection ="list" item="userRoleAuth" index= "index"  open="(" separator="," close=")">
+            #{userRoleAuth.userId}
+        </foreach>
+    </delete>
+</mapper>

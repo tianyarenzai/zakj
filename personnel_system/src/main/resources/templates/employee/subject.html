@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"></meta>
+    <title>学科管理</title>
+    <script type="text/javascript" th:src="@{/libs/boot.js}"></script>
+    <link href="/css/button-skin.css" rel="stylesheet" type="text/css"/>
+    <style type="text/css">
+        html, body {
+            width: 100%;
+            height: 99%;
+            border: 0;
+            margin: 0;
+            padding: 0;
+            overflow: visible;
+        }
+    </style>
+</head>
+<body>
+<div style="width:97%;margin-left:1.5%;">
+    <div class="mini-toolbar" style="border-bottom:0;padding:0px; height: 40px">
+        <table style="width:98%;">
+            <tr>
+                <td style="white-space:nowrap;">
+                    <a class="mini-button" iconCls="icon-add" onclick="add()">新增</a>
+                    <a class="mini-button" iconCls="icon-remove" onclick="del()">删除</a>
+                    <a class="mini-button" iconCls="icon-edit" onclick="edit()">编辑</a>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+<div class="mini-fit">
+    <div id="datagrid1" class="mini-datagrid" style="width:97%;height:100%;float:left;margin-left:1.5%;"
+         url="../employee/subject/list" idField="id"
+         allowResize="true" sizeList="[20,30,50,100]" pageSize="200">
+        <div property="columns">
+            <div type="indexcolumn"></div>
+            <div type="checkcolumn"></div>
+            <div field="subjectName" width="80" headerAlign="center" align="center" allowsort="true">学科名</div>
+            <div field="note" width="50" align="center" headerAlign="center" allowsort="true">备注</div>
+        </div>
+    </div>
+</div>
+</body>
+<script type="text/javascript">
+    mini.parse();
+    var grid = mini.get("datagrid1");
+    grid.load({
+        key: "", //自定义
+        employeeName: "",
+        pageIndex: 0,
+        pageSize: 100,
+        sortField: "",
+        sortOrder: "asc",
+    });
+
+
+    // 点击增加
+    function add() {
+        var grid = mini.get("datagrid1");
+        mini.open({
+            url: "../employee/subject/add",
+            title: "添加学科",
+            width: 500,
+            height: 300,
+            onload: function () {
+            },
+            ondestroy: function (action) {
+                grid.reload();
+            }
+        });
+    }
+
+    // 点击删除
+    function del() {
+        var grid = mini.get("datagrid1");
+        var row = grid.getSelected();
+        if (row) {
+            if (confirm("确定删除记录么？")) {
+                grid.loading("操作中，请稍后......");
+                $.ajax({
+                    url: "../employee/subject/delete?subjectId=" + row.subjectId,
+                    success: function (text) {
+                        if (text.code == 0) {
+                            mini.alert(text.msg);
+                        } else if (text == 101) {
+                            mini.alert(text.msg);
+                        }
+                        grid.reload();
+                    },
+                    error: function () {
+                    }
+                });
+            }
+        } else {
+            mini.alert("请选择一条信息！");
+        }
+    }
+
+
+    // 点击编辑
+    function edit() {
+        var grid = mini.get("datagrid1");
+        var row = grid.getSelected();
+        mini.open({
+            url: "../employee/subject/getSubjectInfo?subjectId=" + row.subjectId,
+            title: "编辑学科",
+            width: 500,
+            height: 300,
+            onload: function () {
+            },
+            ondestroy: function (action) {
+                grid.reload();
+            }
+        });
+    }
+
+
+</script>
+</html>

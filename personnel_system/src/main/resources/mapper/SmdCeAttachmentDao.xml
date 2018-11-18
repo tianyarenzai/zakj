@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zakj.personnel.dao.SmdCeAttachmentDao">
+	<select id="queryObject" resultType="com.zakj.personnel.entity.SmdCeAttachmentEntity">
+		select * from smd_ce_attachment where attachment_id = #{value}
+	</select>
+
+	<select id="queryList" resultType="java.util.Map">
+		select * from smd_ce_attachment
+        <choose>
+			<when test="sortField != null and sortField.trim() != ''">
+				order by ${sortField} ${sortOrder}
+			</when>
+			<otherwise>
+                order by attachment_id desc
+			</otherwise>
+        </choose>
+		<if test="pageIndex != null and pageSize != null">
+			limit #{pageIndex}, #{pageSize}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from smd_ce_attachment 
+	</select>
+	 
+	<insert id="save" parameterType="com.zakj.personnel.entity.SmdCeAttachmentEntity">
+		<selectKey keyProperty="attachmentId" resultType="string" order="BEFORE">
+			select replace(uuid(), '-', '') as id from dual
+		</selectKey>
+		insert into smd_ce_attachment
+		(
+			`attachment_id`, 
+			`contract_id`, 
+			`attachment_url`, 
+			`attachment_type`, 
+			`attachment_name`, 
+			`create_user`, 
+			`create_date`, 
+			`create_emp_id`, 
+			`create_emp_name`, 
+			`update_time`, 
+			`state`
+		)
+		values
+		(
+			#{attachmentId}, 
+			#{contractId}, 
+			#{attachmentUrl}, 
+			#{attachmentType}, 
+			#{attachmentName}, 
+			#{createUser}, 
+			#{createDate}, 
+			#{createEmpId}, 
+			#{createEmpName}, 
+			#{updateTime}, 
+			#{state}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="com.zakj.personnel.entity.SmdCeAttachmentEntity">
+		update smd_ce_attachment 
+		<set>
+			<if test="contractId != null">`contract_id` = #{contractId}, </if>
+			<if test="attachmentUrl != null">`attachment_url` = #{attachmentUrl}, </if>
+			<if test="attachmentType != null">`attachment_type` = #{attachmentType}, </if>
+			<if test="attachmentName != null">`attachment_name` = #{attachmentName}, </if>
+			<if test="createUser != null">`create_user` = #{createUser}, </if>
+			<if test="createDate != null">`create_date` = #{createDate}, </if>
+			<if test="createEmpId != null">`create_emp_id` = #{createEmpId}, </if>
+			<if test="createEmpName != null">`create_emp_name` = #{createEmpName}, </if>
+			<if test="updateTime != null">`update_time` = #{updateTime}, </if>
+			<if test="state != null">`state` = #{state}</if>
+		</set>
+		where attachment_id = #{attachmentId}
+	</update>
+	
+	<delete id="delete">
+		delete from smd_ce_attachment where attachment_id = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from smd_ce_attachment where attachment_id in 
+		<foreach item="attachmentId" collection="array" open="(" separator="," close=")">
+			#{attachmentId}
+		</foreach>
+	</delete>
+
+</mapper>

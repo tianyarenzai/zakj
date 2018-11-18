@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="za-employee:war">
+    <output-path>$PROJECT_DIR$/../../svn/target</output-path>
+    <root id="archive" name="za-employee.war">
+      <element id="artifact" artifact-name="za-employee:war exploded" />
+    </root>
+  </artifact>
+</component>

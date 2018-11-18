@@ -1,0 +1,79 @@
+#公共配置
+server:
+  port: 8801
+
+spring:
+  profiles:
+    active: dev #激活哪一个环境的配置文件
+  application:
+    name: auth-center
+  jackson:
+    time-zone: GMT+8
+    date-format: yyyy-MM-dd HH:mm:ss
+  resources:
+    static-locations: classpath:/static/,classpath:/templates/
+  thymeleaf:
+    mode: HTML5
+    cache: false
+    prefix: classpath:/templates/
+    content-type: text/html
+    suffix: .html
+    encoding: UTF-8
+mybatis:
+  typeAliasesPackage: com.zakj.auth.entity
+  mapperLocations: classpath:mapper/**.xml
+
+feign:
+  hystrix:
+    enabled: true
+#解决Feign/Ribbon第一次请求失败的问题
+#方法二:
+hystrix:
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 5000
+
+#开发环境
+---
+spring:
+  profiles: dev
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://192.168.1.138:3306/za_edu_cloud_platform_auth?useUnicode=true&characterEncoding=UTF-8
+    username: sa
+    password: bj_zakj
+
+eureka:
+  client:
+    serviceUrl:
+        defaultZone: http://localhost:8761/eureka/
+
+#测试环境
+---
+spring:
+  profiles: test
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/za_edu_cloud_platform_auth??useUnicode=true&characterEncoding=UTF-8
+    username: zakj
+    password: zakj
+
+
+#生产环境
+---
+spring:
+  profiles: prod
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    driver-class-name: com.mysql.jdbc.Driver
+    url:
+    username:
+    password:
+
+
+

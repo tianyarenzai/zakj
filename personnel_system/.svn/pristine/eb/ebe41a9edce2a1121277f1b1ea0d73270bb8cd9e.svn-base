@@ -1,0 +1,161 @@
+	<!DOCTYPE html>
+	<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+	<head>
+		<title>职称管理</title>
+		<link th:href="@{/css/button-skin.css}" rel="stylesheet" type="text/css"/>
+		<script type="text/javascript" th:src="@{/libs/boot.js}"></script>
+
+
+	<style type="text/css">
+		html,body
+		{
+			width:100%;
+			height:99%;
+			border:0;
+			margin:0;
+			padding:0;
+			overflow:visible;
+		}
+	</style>
+</head>
+<body>
+	<div style="width:97%;margin-left:1.5%;">
+		<div class="mini-toolbar" style="border-bottom:0;padding:0px;">
+			<table style="width:95%;" >
+				<tr>
+					<td style="width:90%;">
+						<a class="mini-button" iconCls="icon-add" onclick="add()">增加</a>
+						<a class="mini-button" iconCls="icon-edit" onclick="edit()">编辑</a>
+						<a class="mini-button" iconCls="icon-remove" onclick="remove()">删除</a>
+					</td>
+					<td style="white-space:nowrap;">
+					<input id="studentSchool"
+							name="orgId" class="mini-combobox" valueField="orgId"
+							textField="orgName" url="../auth/org/getOrganizations"
+							style="width:150px;" emptyText="请选择所属学校"/>
+							  <a class="mini-button" iconCls="icon-search" onclick="search()">查询</a>
+					</td>
+				</tr>
+			</table>
+		</div>
+	</div>
+		<div class="mini-fit">
+			<div id="datagrid1" class="mini-datagrid" style="width:97%;height:100%;float:left;margin-left:1.5%;"
+				 url="../employee/employeeTitle/list" idField="id"
+				 allowResize="true" sizeList="[20,30,50,100]" pageSize="20">
+				<div property="columns">
+					<div type="indexcolumn"></div>
+					<div type="checkcolumn"></div>
+					<div field="teacherTitleName" width="130" align="center"
+						 headerAlign="center" >职称名称</div>
+					<div field="createTime" width="130" align="center"
+						 headerAlign="center" renderer="onBirthdayRenderers">创建时间</div>
+<!--					<div field="orgName" width="130" align="center"
+						 headerAlign="center">创建所属学校</div>-->
+					<div field="createUserName" width="100" align="center"
+						 headerAlign="center">创建人</div>
+				</div>
+			</div>
+		</div>
+</body>
+<script type="text/javascript">
+	mini.parse();
+	var grid = mini.get("datagrid1");
+	var studentSchool=mini.get("studentSchool");
+	studentSchool.select(0);
+	grid.load({
+		pageIndex : 0,
+		pageSize : 20,
+		sortField : "",
+		sortOrder : "asc",
+		orgId:studentSchool.getValue(),
+	});
+	grid.frozenColumns(0, 1);
+
+	// 弹出增加页面
+    function add() {
+        var grid = mini.get("datagrid1");
+        mini.open({
+            url : "../employee/employeeTitle/add",
+            title : "添加职称",
+            width : 320,
+            height : 240,
+            onload : function() {
+                var iframe = this.getIFrameEl();
+            },
+            ondestroy : function(action){
+                grid.reload();
+            }
+        });
+    }
+
+    // 弹出编辑页面
+	function edit() {
+		var row = grid.getSelected();
+		if (row) {
+			mini.open({
+				url : "../employee/employeeTitle/employeeTitleInfo?teacherTitleId=" + row.teacherTitleId,
+				title : "修改职称",
+				width : 320,
+				height : 240,
+				onload : function() {
+                    var iframe = this.getIFrameEl();
+				},
+				ondestroy : function(action) {
+					grid.reload();
+				}
+			});
+		} else {
+			mini.alert("请选中一条记录");
+		}
+	}
+
+	// 删除职称信息
+    function remove() {
+        var grid = mini.get("datagrid1");
+        var row = grid.getSelected();
+        if (row) {
+            if (confirm("确定删除记录么？")) {
+                grid.loading("操作中，请稍后......");
+                $.ajax({
+                    url : "../employee/employeeTitle/delete?teacherTitleId=" + row.teacherTitleId,
+                    success : function(text) {
+                        if (text.code == 0) {
+                            mini.alert(text.msg);
+                        } else if (text == 101) {
+                            mini.alert(text.msg);
+                        }
+                        grid.reload();
+                    },
+                    error : function() {
+                    }
+                });
+            }
+        } else {
+            mini.alert("请选择一条信息！");
+        }
+    }
+
+
+
+    function onBirthdayRenderers(e) {
+		var value = e.value;
+		if (value)
+			return mini.formatDate(value, 'yyyy-MM-dd HH:mm:ss');
+		return "";
+	}
+
+	function onKeyEnter(e) {
+		search();
+	}
+	
+	
+	function search() {
+		var orgId = mini.get("studentSchool").getValue();
+		grid.load({
+			orgId : orgId,
+		});
+		mini.parse();
+	}
+</script>
+</html>

@@ -1,0 +1,113 @@
+
+
+    <!DOCTYPE html>
+    <html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>增加学科</title>
+        <link th:href="@{/css/button-skin.css}" rel="stylesheet" type="text/css"/>
+        <script type="text/javascript" th:src="@{/libs/boot.js}"></script>
+    <script type="text/javascript" src="http://gosspublic.alicdn.com/aliyun-oss-sdk.min.js"></script>
+    <style type="text/css">
+        html, body {
+            width: 100%;
+            height: 99%;
+            border: 0;
+            margin: 0;
+            padding: 0;
+            overflow: visible;
+        }
+    </style>
+</head>
+<body>
+<form id="form1" method="post">
+    <input class="mini-hidden" name="subjectId" th:value="${subject.subjectId}"/>
+    <div style="padding-left:20px;padding-bottom:5px;padding-top:5px;">
+        <table style="table-layout:fixed;">
+            <tr style="height: 35px;">
+                <td style="width:100px;">
+                    学科：
+                </td>
+                <td style="width:190px;">
+                    <input name="subjectName" class="mini-textbox" required="true" emptyText="请输入学科名"
+                           style="width:190px;" th:value="${subject.subjectName}"/>
+                </td>
+            </tr>
+            <tr>
+                <td style="width:80px;">
+                    学校:
+                </td>
+                <td style="width:190px;">
+                    <input id="orgId" name="orgId" class="mini-combobox" valueField="org_id" textField="org_name" style="width:190px;"
+                           url="../../auth/org/getOrganizations" th:value="${subject.orgId}"/>
+                </td>
+            </tr>
+            <tr>
+                <td width="65px">备注：</td>
+                <td>
+                    <input id="note" name="note" class="mini-textarea" style="width:190px;" required="true" th:value="${subject.note}"/>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div style="text-align:center;padding:10px;margin-left: -15%">
+        <a class="mini-button" iconCls="icon-ok" onclick="onOk">确定</a> <a
+            class="mini-button" iconCls="icon-close" onclick="onCancel">取消</a>
+    </div>
+</form>
+</body>
+<script type="text/javascript">
+    function onOk(){
+        saveData();
+    }
+
+    // 保存数据
+    function saveData(){
+        console.info("saveData。。。。。。。。。。。。");
+        var form = new mini.Form("form1");
+        var o = form.getData();
+        form.validate();
+        if (form.isValid() == false)
+            return;
+        var json = mini.encode(o);
+        console.info("json:------------------ " + json);
+        $.ajax({
+            url: "../../employee/subject/update",
+            type: 'post',
+            data: {
+                data: json
+            },
+            cache: false,
+            success: function (text) {
+                if (text.code == 0) {
+                    mini.alert(text.msg);
+                } else if (text == 101) {
+                    mini.alert(text.msg);
+                }
+                CloseWindow("save");
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                mini.alert(jqXHR.responseText);
+                CloseWindow();
+            }
+        });
+    }
+
+    // 点击取消
+    function onCancel(){
+        console.info("onCancel ........................... ");
+        CloseWindow("cancel");
+    }
+
+    function CloseWindow(action) {
+        if (action == "close" && form.isChanged()) {
+            if (confirm("数据被修改了，是否先保存？")) {
+                return false;
+            }
+        }
+        if (window.CloseOwnerWindow)
+            return window.CloseOwnerWindow(action);
+        else
+            window.close();
+    }
+</script>
+</html>
